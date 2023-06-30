@@ -18,6 +18,10 @@ class CookieManager {
      */
     public static function setCookie( $name, $value = "", array $options = [] ) {
 
+        $options['secure'] = false;
+        $options['domain'] = null;
+        $options['samesite'] = 'Lax';
+
         if ( version_compare( PHP_VERSION, '7.3.0' ) >= 0 ) {
             return setcookie( $name, $value, $options );
         } else {
