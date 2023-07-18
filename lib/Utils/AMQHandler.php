@@ -24,6 +24,8 @@ class AMQHandler extends Stomp {
 
     const CLIENT_TYPE_PUBLISHER  = 'Publisher';
     const CLIENT_TYPE_SUBSCRIBER = 'Subscriber';
+    
+    const REQUEST_TIMEOUT = 10;
 
     public $persistent = 'true';
 
@@ -143,7 +145,7 @@ class AMQHandler extends Stomp {
                 CURLOPT_HEADER         => false,
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_USERAGENT      => INIT::MATECAT_USER_AGENT . INIT::$BUILD_NUMBER,
-                CURLOPT_CONNECTTIMEOUT => 5, // a timeout to call itself should not be too much higher :D
+                CURLOPT_CONNECTTIMEOUT => self::REQUEST_TIMEOUT, // a timeout to call itself should not be too much higher :D
                 CURLOPT_SSL_VERIFYPEER => true,
                 CURLOPT_SSL_VERIFYHOST => 2,
                 CURLOPT_HTTPHEADER     => [ 'Authorization: Basic ' . base64_encode( INIT::$QUEUE_CREDENTIALS ) ]
@@ -151,11 +153,16 @@ class AMQHandler extends Stomp {
 
         $resource = $mHandler->createResource( $queue_interface_url, $options );
         $mHandler->multiExec();
-        $result = $mHandler->getSingleContent( $resource );
+        $response = $mHandler->getSingleContent( $resource );
         $mHandler->multiCurlCloseAll();
-        $result = json_decode( $result, true );
+        $result = json_decode( $response, true );
 
-        Utils::raiseJsonExceptionError();
+        $errorMsg = Utils::raiseJsonExceptionError(false);
+        if (!empty($errorMsg)) {
+            Log::doJsonLog( serialize($response) );
+            throw new Exception( $errorMsg );
+
+        }
 
         return $result[ 'value' ];
 
@@ -187,7 +194,7 @@ class AMQHandler extends Stomp {
                 CURLOPT_HEADER         => false,
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_USERAGENT      => INIT::MATECAT_USER_AGENT . INIT::$BUILD_NUMBER,
-                CURLOPT_CONNECTTIMEOUT => 5, // a timeout to call itself should not be too much higher :D
+                CURLOPT_CONNECTTIMEOUT => self::REQUEST_TIMEOUT, // a timeout to call itself should not be too much higher :D
                 CURLOPT_SSL_VERIFYPEER => true,
                 CURLOPT_SSL_VERIFYHOST => 2,
                 CURLOPT_HTTPHEADER     => [ 'Authorization: Basic ' . base64_encode( INIT::$QUEUE_CREDENTIALS ) ]

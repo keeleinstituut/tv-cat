@@ -64,6 +64,7 @@ chmod 400 $APP_ROOT/inc/oauth-token-key.txt
 chmod 400 $APP_ROOT/inc/login_secret.dat
 chmod 400 $APP_ROOT/nodejs/config.ini
 
+echo 'Starting configure apache'
 
 cat > /etc/apache2/sites-enabled/000-default.conf <<EOT
 <VirtualHost *:80>
@@ -103,4 +104,5 @@ cat > /etc/apache2/sites-enabled/000-default.conf <<EOT
 </VirtualHost>
 EOT
 
+# shellcheck disable=SC2068
 docker-php-entrypoint $@
