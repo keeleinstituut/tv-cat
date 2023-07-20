@@ -91,7 +91,13 @@ class Engines_MTee extends Engines_AbstractEngine
             ]
         ]);
 
-        $this->call("translate_relative_url", $parameters, true, true);
+        //$this->call("translate_relative_url", $parameters, true, true);
+
+        $this->result = $this->_decode([
+            'translations' => [
+                ['translation' => "It's a mock data than was received from MTee"]
+            ]
+        ], $parameters, 'translate_relative_url' );
 
         return $this->result;
     }

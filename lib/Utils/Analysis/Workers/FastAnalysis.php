@@ -163,7 +163,8 @@ class FastAnalysis extends AbstractDaemon {
 
                 // disable TM analysis
 
-                $disable_Tms_Analysis = $this->actual_project_row[ 'id_tms' ] == 0 && $this->actual_project_row[ 'id_mt_engine' ] == 0;
+                $disable_Tms_Analysis = $this->actual_project_row[ 'id_tms' ] == 0 &&
+                    $this->actual_project_row[ 'id_mt_engine' ] == 0;
 
                 if ( $disable_Tms_Analysis ) {
 
@@ -181,18 +182,13 @@ class FastAnalysis extends AbstractDaemon {
                 }
 
                 try {
-                    $fastReport = $this->_fetchMyMemoryFast( $pid );
-                    self::_TimeStampMsg( "Fast $pid result: " . count( $fastReport->responseData ) . " segments." );
+                    $this->_fetchFast( $pid );
                 } catch ( Exception $e ) {
                     if ( $e->getCode() == self::ERR_TOO_LARGE ) {
                         self::_updateProject( $pid, ProjectStatus::STATUS_NOT_TO_ANALYZE );
                         //next project
                         continue;
-                    } elseif ( $e->getCode() == self::ERR_500 ) {
-                        self::_updateProject( $pid, ProjectStatus::STATUS_NOT_TO_ANALYZE );
-                        //next project
-                        continue;
-                    } elseif ( $e->getCode() == self::ERR_EMPTY_RESPONSE ) {
+                    } elseif ( $e->getCode() == self::ERR_EMPTY_RESPONSE || $e->getCode() == self::ERR_500 ) {
                         // NOTE: This exception code is NO MORE used ( keep the code to remember how to reset the status )
                         self::_TimeStampMsg( $e->getMessage() );
                         self::_updateProject( $pid, ProjectStatus::STATUS_NEW );
@@ -204,31 +200,11 @@ class FastAnalysis extends AbstractDaemon {
                     }
                 }
 
-                if ( $fastReport->responseStatus == 200 ) {
-                    $fastResultData = $fastReport->responseData;
-                } else {
-                    self::_TimeStampMsg( "Pid $pid failed fast analysis." );
-                    $fastResultData = [];
-                }
-
-                unset( $fastReport );
-
-                foreach ( $fastResultData as $k => $v ) {
-
-                    if ( $v[ 'type' ] == "50%-74%" ) {
-                        $fastResultData[ $k ][ 'type' ] = "NO_MATCH";
-                    }
-
-                    $this->segments[ $this->segment_hashes[ $k ] ][ 'wc' ]         = $fastResultData[ $k ][ 'wc' ];
-                    $this->segments[ $this->segment_hashes[ $k ] ][ 'match_type' ] = strtoupper( $fastResultData[ $k ][ 'type' ] );
-
-                }
                 //clean the reverse lookup array
                 $this->segment_hashes = null;
 
                 // INSERT DATA
                 self::_TimeStampMsg( "Inserting segments..." );
-
                 try {
                     $insertReportRes = $this->_insertFastAnalysis( $pid, PayableRates::$DEFAULT_PAYABLE_RATES, $featureSet, $perform_Tms_Analysis );
                 } catch ( Exception $e ) {
@@ -262,17 +238,9 @@ class FastAnalysis extends AbstractDaemon {
 
     /**
      * @param $pid
-     *
-     * @return \Engines_Results_MyMemory_AnalyzeResponse
      * @throws Exception
      */
-    protected function _fetchMyMemoryFast( $pid ) {
-
-        /**
-         * @var $myMemory \Engines_MyMemory
-         */
-        $myMemory = Engine::getInstance( 1 /* MyMemory */ );
-
+    protected function _fetchFast($pid ) {
         $fs = $this->files_storage;
 
         try {
@@ -299,48 +267,8 @@ class FastAnalysis extends AbstractDaemon {
             throw new Exception( $exceptionMsg, self::ERR_NO_SEGMENTS );
         }
 
-        //compose a lookup array
-        $this->segment_hashes = [];
-
-        $total_source_words  = 0;
-        $fastSegmentsRequest = [];
-        foreach ( $this->segments as $pos => $segment ) {
-
-            $fastSegmentsRequest[ $pos ][ 'jsid' ]         = $segment[ 'jsid' ];
-            $fastSegmentsRequest[ $pos ][ 'segment' ]      = $segment[ 'segment' ];
-            $fastSegmentsRequest[ $pos ][ 'segment_hash' ] = $segment[ 'segment_hash' ];
-            $fastSegmentsRequest[ $pos ][ 'source' ]       = $segment[ 'source' ];
-            $fastSegmentsRequest[ $pos ][ 'count' ]        = $segment[ 'raw_word_count' ];
-
-            //set a reverse lookup array to get the right segment is by its position
-            $this->segment_hashes[ $segment[ 'jsid' ] ] = $pos;
-
-            $total_source_words += $segment[ 'raw_word_count' ];
-            if ( $total_source_words > INIT::$MAX_SOURCE_WORDS ) {
-                throw new Exception( "Project too large. Skip.", self::ERR_TOO_LARGE );
-            }
-
-        }
-
         self::_TimeStampMsg( "Done." );
         self::_TimeStampMsg( "Pid $pid: " . count( $this->segments ) . " segments" );
-        self::_TimeStampMsg( "Sending query to MyMemory analysis..." );
-
-        /**
-         * @var $result \Engines_Results_MyMemory_AnalyzeResponse
-         */
-        $result = $myMemory->fastAnalysis( $fastSegmentsRequest );
-
-        if ( isset( $result->error->code ) && $result->error->code == -28 ) { //curl timed out
-            throw new Exception( "MyMemory Fast Analysis Failed. {$result->error->message}", self::ERR_TOO_LARGE );
-        } elseif ( $result->responseStatus == 504 ) { //Gateway time out
-            throw new Exception( "MyMemory Fast Analysis Failed. {$result->error->message}", self::ERR_TOO_LARGE );
-        } elseif ( $result->responseStatus == 500 || $result->responseStatus == 502 ) { // server error, could depend on request
-            throw new Exception( "MyMemory Internal Server Error. Pid: " . $pid, self::ERR_500 );
-        }
-
-        return $result;
-
     }
 
     public static function sigSwitch( $sig_no ) {
@@ -488,7 +416,7 @@ class FastAnalysis extends AbstractDaemon {
                 //here we are pruning the segments that must not be sent to the engines for the TM analysis
                 //because we multiply the word_count with the equivalentWordMapping ( and this can be 0 for some values )
                 //we must check if the value of $fastReport[ $k ]['wc'] and not $data[ 'eq_word_count' ]
-                if ( $this->segments[ $k ][ 'wc' ] > 0 && $perform_Tms_Analysis ) {
+                if ( $perform_Tms_Analysis ) {
 
                     /**
                      *
@@ -500,12 +428,6 @@ class FastAnalysis extends AbstractDaemon {
                     $this->segments[ $k ][ 'date_insert' ]   = date_create()->format( 'Y-m-d H:i:s' );
                     $this->segments[ $k ][ 'eq_word_count' ] = ( (float)$eq_word > $segment->raw_word_count ) ? $segment->raw_word_count : (float)$eq_word;;
                     $this->segments[ $k ][ 'standard_word_count' ] = ( (float)$standard_words > $segment->raw_word_count ) ? $segment->raw_word_count : (float)$standard_words;
-
-                } elseif ( $perform_Tms_Analysis ) {
-
-                    Log::doJsonLog( 'Skipped Fast Segment: ' . var_export( $this->segments[ $k ], true ) );
-                    // this segment must not be sent to the TM analysis queue
-                    unset( $this->segments[ $k ] );
 
                 } else {
                     //In this case the TM analysis is disabled
@@ -651,6 +573,10 @@ class FastAnalysis extends AbstractDaemon {
                         $element->params    = $queue_element;
                         $element->classLoad = '\Analysis\Workers\TMAnalysisWorker';
 
+                        Log::doJsonLog([
+                            'Sent message to ' . $queueInfo->queue_name . ' queue for the TMAnalysisWorker'
+                        ], 'FastAnalysis-Debug.log');
+
                         self::$queueHandler->send( $queueInfo->queue_name, $element, [ 'persistent' => self::$queueHandler->persistent ] );
                         self::_TimeStampMsg( "AMQ Set Executed " . ( $k + 1 ) . " Language: $language" );
 
@@ -672,6 +598,10 @@ class FastAnalysis extends AbstractDaemon {
     }
 
     protected function _getWordCountForSegment( $segmentArray, $equivalentWordMapping ) {
+        if (!isset($segmentArray[ 'match_type' ]) || !isset($segmentArray[ 'wc' ])) {
+            $segmentArray[ 'match_type' ] = "NO_MATCH";
+            $segmentArray[ 'wc' ] = 0;
+        }
 
         switch ( $segmentArray[ 'match_type' ] ) {
             case '75%-84%':
