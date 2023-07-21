@@ -2,12 +2,6 @@
 
 class EnginesModel_MTeeStruct extends EnginesModel_EngineStruct {
 
-    public function __construct(array $array_params = [])
-    {
-        $this->base_url = INIT::$MTEE_BASE_URL;
-        parent::__construct($array_params);
-    }
-
     /**
      * @var string
      */

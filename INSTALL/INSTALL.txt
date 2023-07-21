@@ -23,7 +23,7 @@ Client side requirements
 - Javascript enabled
 
 Instructions (based on a Debian distro)
-1) create database using the file matecat.sql in lib/model folder
+1) create database using the file 0_matecat.sql in lib/model folder
 2) edit the file inc/config.ini.sample.php with
     - the right parameters for the connection to the database
       [db]

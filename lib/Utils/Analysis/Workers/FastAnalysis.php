@@ -600,7 +600,7 @@ class FastAnalysis extends AbstractDaemon {
     protected function _getWordCountForSegment( $segmentArray, $equivalentWordMapping ) {
         if (!isset($segmentArray[ 'match_type' ]) || !isset($segmentArray[ 'wc' ])) {
             $segmentArray[ 'match_type' ] = "NO_MATCH";
-            $segmentArray[ 'wc' ] = 0;
+            $segmentArray[ 'wc' ] = $segmentArray['raw_word_count'];
         }
 
         switch ( $segmentArray[ 'match_type' ] ) {

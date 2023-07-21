@@ -406,7 +406,7 @@ class GetContributionWorker extends AbstractWorker {
 
             $_config[ 'get_mt' ]  = true;
             $_config[ 'mt_only' ] = false;
-            if ( $jobStruct->id_mt_engine != 1 && $jobStruct->id_mt_engine != Engines_MTee::getMTeeID()) {
+            if ( $jobStruct->id_mt_engine != 1) {
                 /**
                  * Don't get MT contribution from MyMemory ( Custom MT )
                  */

@@ -24,6 +24,8 @@ class Engines_MTee extends Engines_AbstractEngine
         if ($this->engineRecord->type != "MT") {
             throw new Exception("Engine {$this->engineRecord->id} is not a MT engine, found {$this->engineRecord->type} -> {$this->engineRecord->class_load}");
         }
+
+        $this->engineRecord['base_url'] = INIT::$MTEE_BASE_URL;
     }
 
     protected function _fixLangCode($lang)
@@ -78,12 +80,25 @@ class Engines_MTee extends Engines_AbstractEngine
 
     public function get($_config)
     {
+        if (!self::isSupportedLanguageDirection($_config['target'], $_config['source'])) {
+            // {"error":{"code":404006,"message":"Language direction is not found"}} is the response from MTee
+            $this->result = $this->_decode([
+                'error' => [
+                    'code' => 404006,
+                    'message' => 'Language direction is not found'
+                ]
+            ]);
+
+            return $this->result;
+        }
+
         $parameters = [];
         $parameters['trgLang'] = $this->_fixLangCode($_config['target']);
         $parameters['srcLang'] = $this->_fixLangCode($_config['source']);
-        $parameters['domain'] = isset($_config['domain']) ? $_config['domain'] : null;
+        $parameters['domain'] = null;
         $parameters['text'] = [$this->_preserveSpecialStrings($_config['segment'])];
         $parameters['textType'] = self::TRANSLATION_TYPE_PLAIN_TEXT;
+
 
         $this->_setAdditionalCurlParams([
             CURLOPT_HTTPHEADER => [
@@ -91,13 +106,7 @@ class Engines_MTee extends Engines_AbstractEngine
             ]
         ]);
 
-        //$this->call("translate_relative_url", $parameters, true, true);
-
-        $this->result = $this->_decode([
-            'translations' => [
-                ['translation' => "It's a mock data than was received from MTee"]
-            ]
-        ], $parameters, 'translate_relative_url' );
+        $this->call("translate_relative_url", $parameters, true, true);
 
         return $this->result;
     }

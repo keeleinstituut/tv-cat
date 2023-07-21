@@ -77,7 +77,8 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - ../INSTALL/matecat.sql:/docker-entrypoint-initdb.d/matecat.sql
+      - ../INSTALL/sql/0_matecat.sql:/docker-entrypoint-initdb.d/0_matecat.sql
+      - ../INSTALL/sql/1_mtee_engine.sql:/docker-entrypoint-initdb.d/1_mtee_engine.sql
 
   matecat-filters:
     build:
