@@ -18,6 +18,10 @@ class CookieManager {
      */
     public static function setCookie( $name, $value = "", array $options = [] ) {
 
+        $options['secure'] = INIT::$COOKIE_SECURE;
+        $options['domain'] = INIT::$COOKIE_DOMAIN;
+        $options['samesite'] = INIT::$COOKIE_SAMESITE;
+
         if ( version_compare( PHP_VERSION, '7.3.0' ) >= 0 ) {
             return setcookie( $name, $value, $options );
         } else {
@@ -31,7 +35,5 @@ class CookieManager {
                     $options[ 'httponly' ]
             );
         }
-
     }
-
 }
