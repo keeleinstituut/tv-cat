@@ -57,12 +57,15 @@ services:
       - SSE_QUEUE_USER=admin
       - SSE_QUEUE_PASSWORD=admin
 
+      # Needed for init database with MySQL dump.
+      - MYSQL_ROOT_PASSWORD=root
+
   redis:
     image: redis:latest
 
   mysql:
     image: mysql:latest
-    command: mysqld --sql_mode="NO_ENGINE_SUBSTITUTION"
+    command: mysqld --sql_mode="NO_ENGINE_SUBSTITUTION" --default-authentication-plugin=mysql_native_password
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_USER=temp
@@ -70,8 +73,6 @@ services:
       - MYSQL_DATABASE=temp
     ports:
       - 3306:3306
-    volumes:
-      - ../INSTALL/matecat.sql:/docker-entrypoint-initdb.d/matecat.sql
 
   matecat-filters:
     build:
