@@ -61,6 +61,12 @@ services:
 
       # Needed for init database with MySQL dump.
       - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - ../lib:/var/www/html/lib
+      - ../migrations:/var/www/html/migrations
+      - ../support_scripts:/var/www/html/support_scripts
+      - ../test:/var/www/html/test
+      - ../index.php:/var/www/html/index.php
 
   redis:
     image: redis:latest

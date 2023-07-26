@@ -3,24 +3,13 @@
 namespace API\App;
 
 use AbstractControllers\IController;
+use API\V2\KleinController;
 use Database;
 use FeatureSet;
 use INIT;
 use RuntimeException;
 
-class HealthzController implements IController {
-
-    protected $request;
-    protected $response;
-    protected $service;
-    protected $app;
-
-    public function __construct( $request, $response, $service, $app ) {
-        $this->request  = $request;
-        $this->response = $response;
-        $this->service  = $service;
-        $this->app      = $app;
-    }
+class HealthzController extends KleinController {
 
     public function ping()
     {
@@ -30,24 +19,5 @@ class HealthzController implements IController {
         }
 
         $this->response->json( [] );
-    }
-
-    public function getUser()
-    {
-        return null;
-    }
-
-    public function userIsLogged()
-    {
-        return false;
-    }
-
-    public function getFeatureSet()
-    {
-        return [];
-    }
-
-    public function setFeatureSet(FeatureSet $features)
-    {
     }
 }
