@@ -36,12 +36,8 @@ WORKDIR $APP_ROOT
 RUN apt-get update
 RUN apt-get install -y libzip-dev gnupg2 screen
 
-# RUN apt-key adv --keyserver pgp.mit.edu --recv-keys 3A79BD29
-
-# RUN echo "deb http://repo.mysql.com/apt/debian/ buster mysql-8.0" > /etc/apt/sources.list.d/mysql.list
-
-# RUN apt-get update \
-#     && apt-get install -y mysql-community-client
+RUN apt-get update \
+     && apt-get install -y default-mysql-client
 
 RUN docker-php-ext-configure pcntl --enable-pcntl \
   && docker-php-ext-install \
