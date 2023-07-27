@@ -118,4 +118,7 @@ else
   echo "Dump(s) imported successfully"
 fi
 
+
+su -l www-data -s /bin/bash -c "php $APP_ROOT/support_scripts/run-sql-migrations.php"
+
 docker-php-entrypoint $@
