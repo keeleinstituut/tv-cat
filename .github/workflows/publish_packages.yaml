@@ -10,7 +10,7 @@ jobs:
     uses: keeleinstituut/tv-devops/.github/workflows/publish_if_necessary.yaml@feat/#421/allow-file-and-context-inputs-for-docker
     with:
       github_organization: ${{ github.repository_owner }}
-      app_name: ${{ github.event.repository.name }}
+      app_name: tv-cat-web-service
       git_tag: ${{ github.ref_name }}
       dockerfile_path: ./docker/Dockerfile
       docker_context_path: .
@@ -20,7 +20,7 @@ jobs:
     uses: keeleinstituut/tv-devops/.github/workflows/publish_if_necessary.yaml@feat/#421/allow-file-and-context-inputs-for-docker
     with:
       github_organization: ${{ github.repository_owner }}
-      app_name: ${{ github.event.repository.name }}
+      app_name: tv-cat-filters-service
       git_tag: ${{ github.ref_name }}
       dockerfile_path: ./docker/matecat-filters/Dockerfile
       docker_context_path: ./docker/matecat-filters
@@ -30,7 +30,7 @@ jobs:
     uses: keeleinstituut/tv-devops/.github/workflows/publish_if_necessary.yaml@feat/#421/allow-file-and-context-inputs-for-docker
     with:
       github_organization: ${{ github.repository_owner }}
-      app_name: ${{ github.event.repository.name }}
+      app_name: tv-cat-activemq-service
       git_tag: ${{ github.ref_name }}
       dockerfile_path: ./docker/amq/Dockerfile
       docker_context_path: ./docker/amq
