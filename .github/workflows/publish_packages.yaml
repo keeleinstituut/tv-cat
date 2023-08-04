@@ -22,8 +22,8 @@ jobs:
       github_organization: ${{ github.repository_owner }}
       app_name: ${{ github.event.repository.name }}
       git_tag: ${{ github.ref_name }}
-      dockerfile_path: ./matecat-filters/Dockerfile
-      docker_context_path: ./matecat-filters
+      dockerfile_path: ./docker/matecat-filters/Dockerfile
+      docker_context_path: ./docker/matecat-filters
       helm_chart_path: ./helm/filters
 
   publish_activemq_if_necessary:
@@ -32,6 +32,6 @@ jobs:
       github_organization: ${{ github.repository_owner }}
       app_name: ${{ github.event.repository.name }}
       git_tag: ${{ github.ref_name }}
-      dockerfile_path: ./amq/Dockerfile
-      docker_context_path: ./amq
+      dockerfile_path: .docker/amq/Dockerfile
+      docker_context_path: .docker/amq
       helm_chart_path: ./helm/activemq
