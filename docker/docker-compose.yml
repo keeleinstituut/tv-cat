@@ -62,6 +62,7 @@ services:
       - ../support_scripts:/var/www/html/support_scripts
       - ../test:/var/www/html/test
       - ../index.php:/var/www/html/index.php
+      - ../public/js/cat_source:/var/www/html/public/js/cat_source
 
   redis:
     image: redis:latest

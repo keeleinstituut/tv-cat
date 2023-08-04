@@ -15,7 +15,6 @@ import CatToolActions from '../../../actions/CatToolActions'
 import {TabGlossaryContext} from './TabGlossaryContext'
 import {SearchTerms} from './SearchTerms'
 import GlossaryList from './GlossaryList'
-import TermForm from './TermForm'
 import {SegmentContext} from '../SegmentContext'
 import SegmentUtils from '../../../utils/segmentUtils'
 import {SegmentFooterTabError} from '../SegmentFooterTabError'
@@ -49,6 +48,7 @@ export const SegmentFooterTabGlossary = ({
 }) => {
   const [isActive, setIsActive] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
+  const [searchDataset, setSearchDataset] = useState(undefined)
   const [showForm, setShowForm] = useState(false)
   const [showMore, setShowMore] = useState(false)
   const [domainsResponse, setDomainsResponse] = useState(undefined)
@@ -474,6 +474,8 @@ export const SegmentFooterTabGlossary = ({
         terms,
         searchTerm,
         setSearchTerm,
+        searchDataset,
+        setSearchDataset,
         previousSearchTermRef,
         haveKeysGlossary,
         isLoading,
@@ -503,23 +505,11 @@ export const SegmentFooterTabGlossary = ({
       >
         {!clientConnected ? (
           <SegmentFooterTabError />
-        ) : haveKeysGlossary ? (
-          <>
-            <SearchTerms />
-            {showForm && <TermForm />}
-            <GlossaryList />
-          </>
-        ) : showForm ? (
-          <TermForm />
-        ) : haveKeysGlossary === false ? (
-          <div className="no_keys_glossary">
-            <p>No glossary available.</p>
-            <button className="glossary__button-add" onClick={openForm}>
-              + Click here to create one
-            </button>
-          </div>
         ) : (
-          <span className="loading_label">Loading</span>
+            <>
+                <SearchTerms/>
+                <GlossaryList/>
+            </>
         )}
       </div>
     </TabGlossaryContext.Provider>

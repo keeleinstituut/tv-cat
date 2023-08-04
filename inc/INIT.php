@@ -293,6 +293,8 @@ class INIT {
     public static $REPLACE_HISTORY_DRIVER;
     public static $REPLACE_HISTORY_TTL;
 
+    public static $EKILEX_API_KEY = 'demo@matecat.com';
+
     public function __construct() {
 
         self::$OAUTH_CLIENT_ID       = @INIT::$OAUTH_CONFIG[ 'OAUTH_CLIENT_ID' ];
