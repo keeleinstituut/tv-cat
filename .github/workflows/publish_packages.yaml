@@ -32,6 +32,6 @@ jobs:
       github_organization: ${{ github.repository_owner }}
       app_name: ${{ github.event.repository.name }}
       git_tag: ${{ github.ref_name }}
-      dockerfile_path: .docker/amq/Dockerfile
-      docker_context_path: .docker/amq
+      dockerfile_path: ./docker/amq/Dockerfile
+      docker_context_path: ./docker/amq
       helm_chart_path: ./helm/activemq
