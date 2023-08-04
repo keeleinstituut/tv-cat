@@ -1,5 +1,5 @@
 apiVersion: v2
-name: tv-cat-activamq-service
+name: tv-cat-activemq-service
 description: A Helm chart for Tõlkevärav’s CAT service’s Apache ActiveMQ
 
 # A chart can be either an 'application' or a 'library' chart.
