@@ -11,7 +11,7 @@
 /README.md
 /LICENSE.md
 /composer.*
-/helm*
+/helm
 
 # Build related files
 /node_modules

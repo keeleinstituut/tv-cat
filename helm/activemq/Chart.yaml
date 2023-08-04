@@ -1,6 +1,6 @@
 apiVersion: v2
-name: tv-cat-filters-service
-description: A Helm chart for Matecat filters used by Tõlkevärav’s CAT service
+name: tv-cat-activamq-service
+description: A Helm chart for Tõlkevärav’s CAT service’s Apache ActiveMQ
 
 # A chart can be either an 'application' or a 'library' chart.
 #
