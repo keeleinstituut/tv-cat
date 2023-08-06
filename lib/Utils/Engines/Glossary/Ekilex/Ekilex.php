@@ -2,6 +2,7 @@
 
 namespace Engines\Glossary\Ekilex;
 
+use INIT;
 use MultiCurlHandler;
 use RuntimeException;
 
@@ -11,12 +12,13 @@ class Ekilex
 
     private string $apiKey;
 
+    const MAX_SYNONYMS_PER_LEXEME = 10;
     const SEPARATOR = '; ';
 
     public function __construct()
     {
-        $this->apiBaseUrl = 'https://ekilex.ee/api';
-        $this->apiKey = '';
+        $this->apiBaseUrl = INIT::$EKILEX_API_BASE_URL;
+        $this->apiKey = INIT::$EKILEX_API_KEY;
     }
 
     public function getSynonymsInTargetLanguage($source, $sourceLanguage, $targetLanguage, $dataset): array
@@ -51,15 +53,10 @@ class Ekilex
                 $sentences = $lexeme->getSentences();
                 $definitions = $lexeme->getDefinitions();
                 $notes = $lexeme->getNotes();
-                $synonymsIds = array_keys($synonymsMap);
-                $newSynonymsIds = array_values(
-                    array_filter($synonymsIds, function ($synonymId) use ($synonymsMetaMap) {
-                        return !isset($synonymsMetaMap[$synonymId]);
-                    })
-                );
+                $synonymsIds = array_slice(array_keys($synonymsMap), 0, self::MAX_SYNONYMS_PER_LEXEME);
 
-                if (!empty($newSynonymsIds)) {
-                    foreach ($this->getWordsDetailsResponses($newSynonymsIds, $dataset) as $synonymId => $synonymDetailsResponse) {
+                if (!empty($synonymsIds)) {
+                    foreach ($this->getWordsDetailsResponses($synonymsIds, $dataset) as $synonymId => $synonymDetailsResponse) {
                         foreach ($synonymDetailsResponse['lexemes'] as $synonymLexemeData) {
                             $synonymLexeme = new Lexeme($synonymLexemeData);
                             $synonymsMetaMap[$synonymId] = [
@@ -72,7 +69,7 @@ class Ekilex
                 }
 
 
-                foreach ($newSynonymsIds as $synonymId) {
+                foreach ($synonymsIds as $synonymId) {
                     if (!isset($synonymsMetaMap[$synonymId])) {
                         continue;
                     }
