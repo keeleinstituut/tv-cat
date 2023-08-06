@@ -17,6 +17,8 @@ services:
       - LOGIN_SECRET=YTM2ZDZTdiNG93f37ba2cb6df39999afe2789c8bff9aea42a605134cf4ce8ae63bc2656baed911620d93c9b10fb6b688e02766253208a6bc23424d08fe1fbfb0b260ba54b7c8d827ab03fee89f3b9a11f8fc40eb31a26d88fea683d52e11ba6c92bdce20bdd704fb7bafb2fa005ba8107653ec192befbdf60c386d7a026a2b7b77738c7d64d5cd9bfd79017a7fef90835c033767d744313ff240f1e16e4d1bac2bfb4edcd5105aeadac865385cb13f8914e505141b26ac8c4d23bb19041bb6c3ea6267d5db483d2d3d68c01d399e9f3c62a132c736a8ec6118f3e553b41e14c7783423a8527009f92042f1ca742705838a64f826033380b3faa9822c8c4b380f
       - MATECAT_CLI_HTTP_HOST=http://localhost:8080
       - MATECAT_COOKIE_DOMAIN=localhost
+      - MATECAT_COOKIE_SECURE=false
+      - MATECAT_COOKIE_SAMESITE=Lex
       - MATECAT_ENABLE_MULTI_DOMAIN_API=no
 
       - MATECAT_DB_SERVER=mysql
@@ -64,12 +66,21 @@ services:
       - ../index.php:/var/www/html/index.php
       - ../public/js/cat_source:/var/www/html/public/js/cat_source
 
+      # Needed for init database with MySQL dump.
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - ../lib:/var/www/html/lib
+      - ../migrations:/var/www/html/migrations
+      - ../support_scripts:/var/www/html/support_scripts
+      - ../test:/var/www/html/test
+      - ../index.php:/var/www/html/index.php
+
   redis:
     image: redis:latest
 
   mysql:
     image: mysql:latest
-    command: mysqld --sql_mode="NO_ENGINE_SUBSTITUTION"
+    command: mysqld --sql_mode="NO_ENGINE_SUBSTITUTION" --default-authentication-plugin=mysql_native_password
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_USER=temp
@@ -77,8 +88,6 @@ services:
       - MYSQL_DATABASE=temp
     ports:
       - 3306:3306
-    volumes:
-      - ../INSTALL/matecat.sql:/docker-entrypoint-initdb.d/matecat.sql
 
   matecat-filters:
     build:
