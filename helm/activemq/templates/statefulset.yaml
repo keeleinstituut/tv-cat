@@ -1,4 +1,6 @@
 {{- $pvcName := printf "%s-pvc" (include "tv-cat-activemq-service.name" .) -}}
+{{- $healthEndpointAddress := printf "http://localhost:%s/api/jolokia/exec/org.apache.activemq:type=Broker,brokerName=localhost,service=Health/healthStatus" .Values.jmxPort -}}
+
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -40,13 +42,13 @@ spec:
               command:
                 - "/bin/sh"
                 - "-c"
-                - test 'Good' = "$(curl -f -u $ACTIVEMQ_USERNAME:$ACTIVEMQ_PASSWORD -s '{{ .Values.healthEndpoint }}' | jq -r .value)"
+                - test 'Good' = "$(curl -f -u $ACTIVEMQ_USERNAME:$ACTIVEMQ_PASSWORD -s '{{ $healthEndpointAddress }}' | jq -r .value)"
           readinessProbe:
             exec:
               command:
                 - "/bin/sh"
                 - "-c"
-                - test 'Good' = "$(curl -f -u $ACTIVEMQ_USERNAME:$ACTIVEMQ_PASSWORD -s '{{ .Values.healthEndpoint }}' | jq -r .value)"
+                - test 'Good' = "$(curl -f -u $ACTIVEMQ_USERNAME:$ACTIVEMQ_PASSWORD -s '{{ $healthEndpointAddress }}' | jq -r .value)"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- if .Values.extraEnvVars }}

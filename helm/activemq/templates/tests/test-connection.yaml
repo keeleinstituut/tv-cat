@@ -1,3 +1,5 @@
+{{- $healthEndpointAddress := printf "http://%s.%s.svc.cluster.local:%s/api/jolokia/exec/org.apache.activemq:type=Broker,brokerName=localhost,service=Health/healthStatus" (include "tv-cat-activemq-service.fullname" .) .Release.Namespace .Values.jmxPort -}}
+
 apiVersion: v1
 kind: Pod
 metadata:
@@ -8,8 +10,9 @@ metadata:
     "helm.sh/hook": test
 spec:
   containers:
-    - name: wget
+    - name: parse-health-endpoint-response
       image: busybox
       command: ['wget']
-      args: ['{{ include "tv-cat-activemq-service.fullname" . }}:{{ .Values.service.port }}']
+      args:
+        - '{{ $healthEndpointAddress }}'
   restartPolicy: Never
