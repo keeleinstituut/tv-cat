@@ -431,7 +431,7 @@ class INIT {
      */
     public static $MAX_FILENAME_LENGTH = 210;
 
-    public static $AUTOLOAD_PLUGINS = [];
+    public static $AUTOLOAD_PLUGINS = '[]';
 
     /**
      * Definitions for the asynchronous task runner

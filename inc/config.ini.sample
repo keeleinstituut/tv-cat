@@ -47,7 +47,7 @@ LXQ_PARTNERID = false
 
 FILE_STORAGE_METHOD = 's3'
 
-AUTOLOAD_PLUGINS[] = "review_extended"
+AUTOLOAD_PLUGINS = ['review_extended']
 
 ;AWS_ACCESS_KEY_ID = 'xxxxxxx'
 ;AWS_SECRET_KEY = 'xxxxxxxxxxxx'
