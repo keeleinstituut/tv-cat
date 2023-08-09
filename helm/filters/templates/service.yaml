@@ -5,11 +5,8 @@ metadata:
   labels:
     {{- include "tv-cat-filters-service.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  clusterIP: None
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: http
-      protocol: TCP
-      name: http
+    - port: {{ .Values.port }}
   selector:
     {{- include "tv-cat-filters-service.selectorLabels" . | nindent 4 }}
