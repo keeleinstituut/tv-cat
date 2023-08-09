@@ -42,13 +42,17 @@ spec:
               containerPort: 80
               protocol: TCP
           livenessProbe:
-            httpGet:
-              path: /api/app/healthz
-              port: http
+            exec:
+              command:
+                - "/bin/sh"
+                - "-c"
+                - "test 'Good' = $(curl -f -u '{{ .Values.activemqUsername }}:{{ .Values.activemqPassword }}' -s '{{ .Values.healthEndpoint }}' | jq -r .value)"
           readinessProbe:
-            httpGet:
-              path: /api/app/healthz
-              port: http
+            exec:
+              command:
+                - "/bin/sh"
+                - "-c"
+                - "test 'Good' = $(curl -f -u '{{ .Values.activemqUsername }}:{{ .Values.activemqPassword }}' -s '{{ .Values.healthEndpoint }}' | jq -r .value)"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- if .Values.extraEnvVars }}

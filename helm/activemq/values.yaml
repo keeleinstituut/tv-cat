@@ -98,3 +98,7 @@ extraEnvVarsSecret: ""
 
 volumes: []
 volumeMounts: []
+
+activemqUsername: ""
+activemqPassword: ""
+healthEndpoint: "http://localhost:8161/api/jolokia/exec/org.apache.activemq:type=Broker,brokerName=localhost,service=Health/healthStatus"

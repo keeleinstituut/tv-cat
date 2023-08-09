@@ -38,13 +38,17 @@ spec:
               containerPort: 80
               protocol: TCP
           livenessProbe:
-            httpGet:
-              path: /api/app/healthz
-              port: http
+            exec:
+              command:
+                - "/bin/sh"
+                - "-c"
+                - "curl -f '{{ .Values.healthEndpoint }}'"
           readinessProbe:
-            httpGet:
-              path: /api/app/healthz
-              port: http
+            exec:
+              command:
+                - "/bin/sh"
+                - "-c"
+                - "curl -f '{{ .Values.healthEndpoint }}'"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- if .Values.extraEnvVars }}
