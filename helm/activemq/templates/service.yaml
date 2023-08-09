@@ -7,7 +7,9 @@ metadata:
 spec:
   clusterIP: None
   ports:
-    - port: {{ .Values.brokerPort }}
-    - port: {{ .Values.jmxPort }}
+    - name: brokerPort
+      port: {{ .Values.brokerPort }}
+    - name: jmxPort
+      port: {{ .Values.jmxPort }}
   selector:
     {{- include "tv-cat-activemq-service.selectorLabels" . | nindent 4 }}
