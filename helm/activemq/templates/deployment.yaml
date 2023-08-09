@@ -46,7 +46,7 @@ spec:
               command:
                 - "/bin/sh"
                 - "-c"
-                - test 'Good' = "$(curl -f -u '{{ .Values.activemqUsername }}:{{ .Values.activemqPassword }}' -s '{{ .Values.healthEndpoint }}' | jq -r .value)"
+                - test 'Good' = "$(curl -f -u $ACTIVEMQ_USERNAME:$ACTIVEMQ_PASSWORD -s '{{ .Values.healthEndpoint }}' | jq -r .value)"
           readinessProbe:
             exec:
               command:
