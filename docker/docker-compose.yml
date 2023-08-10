@@ -61,6 +61,7 @@ services:
 
       # Needed for init database with MySQL dump.
       - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_PORT=3306
     volumes:
       - ../lib:/var/www/html/lib
       - ../migrations:/var/www/html/migrations
