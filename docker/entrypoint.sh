@@ -104,12 +104,12 @@ cat > /etc/apache2/sites-enabled/000-default.conf <<EOT
 EOT
 
 echo "Importing MySQL dump(s)"
-until mysql -h $MATECAT_DB_SERVER -P $MYSQL_PORT -u root -p$MYSQL_ROOT_PASSWORD -e "SELECT 1" > /dev/null 2>&1; do
+until mysql -h $MATECAT_DB_SERVER -P $MYSQL_PORT -u root -p$MYSQL_ROOT_PASSWORD -e "SELECT 1"; do
   echo "MySQL is unavailable - sleeping"
   sleep 1
 done
 
-if mysql -h $MATECAT_DB_SERVER -P $MYSQL_PORT -u root -p$MYSQL_ROOT_PASSWORD $MATECAT_DB_DATABASE > /dev/null 2>&1; then
+if mysql -h $MATECAT_DB_SERVER -P $MYSQL_PORT -u root -p$MYSQL_ROOT_PASSWORD $MATECAT_DB_DATABASE; then
   echo "Database dump(s) already imported"
 else
   mysql -h $MATECAT_DB_SERVER -P $MYSQL_PORT -u root -p$MYSQL_ROOT_PASSWORD < $APP_ROOT/INSTALL/matecat.sql
