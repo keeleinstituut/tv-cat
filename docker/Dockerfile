@@ -26,6 +26,10 @@ FROM php:7.4.26-apache-buster as runtime
 
 ENV APP_ROOT /var/www/html
 
+ENV STORAGE_PATH $APP_ROOT/storage
+RUN mkdir -p $STORAGE_PATH && chown www-data:www-data $STORAGE_PATH
+VOLUME $STORAGE_PATH
+
 # Fetch composer.phar from composer stage
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
