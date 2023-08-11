@@ -1,4 +1,5 @@
 #!/bin/bash
+set -Eeuo pipefail
 
 MATECAT_ENV=$(env | grep '^MATECAT_' | sed -En "s/^MATECAT_//p")
 
