@@ -55,6 +55,7 @@ chown www-data:www-data $APP_ROOT/inc/oauth_config.ini
 chown www-data:www-data $APP_ROOT/inc/oauth-token-key.txt
 chown www-data:www-data $APP_ROOT/inc/login_secret.dat
 chown www-data:www-data $APP_ROOT/nodejs/config.ini
+chown www-data:www-data $STORAGE_PATH
 
 chmod 400 $APP_ROOT/inc/config.ini
 chmod 400 $APP_ROOT/inc/task_manager_config.ini
