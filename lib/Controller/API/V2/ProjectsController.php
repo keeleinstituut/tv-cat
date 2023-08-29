@@ -5,7 +5,9 @@ namespace API\V2;
 use API\V2\Json\Project;
 use API\V2\Json\ProjectAnonymous;
 use API\V2\Validators\ProjectPasswordValidator;
+use Exception;
 use Jobs_JobDao;
+use TMKeysUtils;
 use Translations_SegmentTranslationDao;
 use Utils;
 
@@ -113,6 +115,52 @@ class ProjectsController extends KleinController {
 
         $this->response->json( [ 'code' => 1, 'data' => "OK", 'status' => $status ] );
 
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    public function addTMKeys()
+    {
+        $project = $this->project;
+        $newKeys = TMKeysUtils::parse($this->getPutParams()['tm_keys'] ?? '');
+        foreach ($project->getJobs() as $job) {
+            $jobKeys = !empty($job['tm_keys']) ? json_decode($job['tm_keys']) : [];
+            $jobKeys = array_combine(array_column($jobKeys, 'key'), $jobKeys);
+            foreach ($newKeys as $newKey) {
+                $jobKeys[$newKey['key']] = $newKey;
+            }
+
+            Jobs_JobDao::updateJobTMKeys($job, array_values($jobKeys));
+        }
+
+        $this->response->json([]);
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    public function removeTMKeys()
+    {
+        $project = $this->project;
+        $keysToRemove = explode(',', $this->getPutParams()['tm_keys'] ?? '');
+        foreach ($project->getJobs() as $job) {
+            if (empty($job['tm_keys'])) {
+                continue;
+            }
+
+            $jobTMKeys = json_decode($job['tm_keys']) ?: [];
+            $jobTMKeys = array_combine(array_column($jobTMKeys, 'key'), $jobTMKeys);
+            foreach ($keysToRemove as $keyToRemove) {
+                unset($jobTMKeys[trim($keyToRemove)]);
+            }
+
+            Jobs_JobDao::updateJobTMKeys($job, array_values($jobTMKeys));
+        }
+
+        $this->response->json([]);
     }
 
     protected function afterConstruct() {

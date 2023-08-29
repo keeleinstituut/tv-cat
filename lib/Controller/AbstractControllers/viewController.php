@@ -169,6 +169,9 @@ abstract class viewController extends controller {
 
         $MMTLicense = $this->userIsLogged ? $this->featureSet->filter( "MMTLicense", $this->user) : [];
         $isAnInternalUser  = $this->userIsLogged ? $this->featureSet->filter( "isAnInternalUser", $this->user->email) : false;
+        if ($MMTLicense instanceof Users_UserStruct) {
+            $MMTLicense = [];
+        }
 
         $this->template->logged_user      = $this->user->shortName();
         $this->template->extended_user    = $this->user->fullName();
@@ -322,8 +325,11 @@ abstract class viewController extends controller {
 
         $isAnInternalUser  = $this->userIsLogged ? $this->featureSet->filter( "isAnInternalUser", $this->user->email) : false;
 
-        if($isAnInternalUser){
+        if($isAnInternalUser) {
             $MMTLicense = $this->userIsLogged ? $this->featureSet->filter( "MMTLicense", $this->user) : [];
+            if ($MMTLicense instanceof Users_UserStruct) {
+                $MMTLicense = [];
+            }
 
             if(!empty($MMTLicense) and isset($MMTLicense['id'])){
                 foreach ($engines as $index => $engine){
