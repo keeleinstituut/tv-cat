@@ -441,6 +441,8 @@ class INIT {
 
     public static $SEND_ERR_MAIL_REPORT = true;
 
+    public static $NEC_TM_BASE_URL = 'http://localhost:5001';
+
     /**
      * Initialize the Class Instance
      */
