@@ -12,6 +12,8 @@ class Constants_Engines {
     const TM   = "TM";
     const NONE = "NONE";
 
+    const NO_MT_ENGINE_ID = 0;
+
     const MY_MEMORY        = 'MyMemory';
     const MOSES            = 'Moses';
     const TAUYOU	       = 'Tauyou';
@@ -57,5 +59,10 @@ class Constants_Engines {
         if( defined( 'self::' . $engine ) ){
             self::$ENGINES_LIST[ $engine ] = $engine;
         }
+    }
+
+    public static function getNoMTEngineID(): int
+    {
+        return 0;
     }
 }
