@@ -26,7 +26,7 @@ set_time_limit( 300 );
  * 'target_lang'        => (string) RFC 3066 language(s) Code. Comma separated ( it-IT,fr-FR,es-ES )
  * 'tms_engine'         => (int)    Identifier for Memory Server ( ZERO means disabled, ONE means MyMemory )
  * 'mt_engine'          => (int)    Identifier for TM Server ( ZERO means disabled, ONE means MyMemory )
- * 'private_tm_key'     => (string) Private Key for MyMemory ( set to new to create a new one )
+ * 'private_tm_key'     => (string) TM identifier for NecTM
  *
  */
 class NewController extends ajaxController {
@@ -175,8 +175,6 @@ class NewController extends ajaxController {
         $filterArgs = $this->featureSet->filter( 'filterNewProjectInputFilters', $filterArgs, $this->userIsLogged );
 
         $this->postInput = filter_input_array( INPUT_POST, $filterArgs );
-
-
         /**
          * ----------------------------------
          * Note 2022-10-13
@@ -848,21 +846,6 @@ class NewController extends ajaxController {
     }
 
     /**
-     * @param $elem
-     *
-     * @return array
-     */
-    private static function __sanitizeTmKeyArr( $elem ) {
-
-        $element = new TmKeyManagement_TmKeyStruct( $elem );
-        $element->complete_format = true;
-        $elem = TmKeyManagement_TmKeyManagement::sanitize( $element );
-
-        return $elem->toArray();
-
-    }
-
-    /**
      * Expects the metadata param to be a json formatted string and tries to convert it
      * in array.
      * Json string is expected to be flat key value, this is enforced padding 1 to json
@@ -917,143 +900,12 @@ class NewController extends ajaxController {
 
     }
 
-    private static function __parseTmKeyInput( $tmKeyString ) {
-        $tmKeyString = trim( $tmKeyString );
-        $tmKeyInfo   = explode( ":", $tmKeyString );
-        $read        = true;
-        $write       = true;
-
-        $permissionString = @$tmKeyInfo[ 1 ];
-
-        //if the key is not set, return null. It will be filtered in the next lines.
-        if ( empty( $tmKeyInfo[ 0 ] ) ) {
-            return null;
-        } //if permissions are set, check if they are allowed or not and eventually set permissions
-
-        //permission string check
-        switch ( $permissionString ) {
-            case 'r':
-                $write = false;
-                break;
-            case 'w':
-                $read = false;
-                break;
-            case 'rw':
-            case ''  :
-            case null:
-                break;
-            //permission string not allowed
-            default:
-                $allowed_permissions = implode( ", ", Constants_TmKeyPermissions::$_accepted_grants );
-                throw new Exception( "Permission modifier string not allowed. Allowed: <empty>, $allowed_permissions" );
-                break;
-        }
-
-        return [
-                'key' => $tmKeyInfo[ 0 ],
-                'r'   => $read,
-                'w'   => $write,
-        ];
-    }
-
+    /**
+     * @throws Exception
+     */
     protected function __validateTmAndKeys() {
 
-        try {
-            $this->private_tm_key = array_map(
-                    [ 'NewController', '__parseTmKeyInput' ],
-                    explode( ",", $this->postInput[ 'private_tm_key' ] )
-            );
-        } catch ( Exception $e ) {
-            throw new Exception( $e->getMessage(), -6 );
-        }
-
-        if ( count( $this->private_tm_key ) > self::MAX_NUM_KEYS ) {
-            throw new Exception( "Too much keys provided. Max number of keys is " . self::MAX_NUM_KEYS, -2 );
-        }
-
-        $this->private_tm_key = array_values( array_filter( $this->private_tm_key ) );
-
-        //If a TMX file has been uploaded and no key was provided, create a new key.
-        if ( empty( $this->private_tm_key ) ) {
-            foreach ( $_FILES as $_fileinfo ) {
-                $pathinfo = AbstractFilesStorage::pathinfo_fix( $_fileinfo[ 'name' ] );
-                if ( $pathinfo[ 'extension' ] == 'tmx' ) {
-                    $this->private_tm_key[] = [ 'key' => 'new' ];
-                    break;
-                }
-            }
-        }
-
-        //remove all empty entries
-        foreach ( $this->private_tm_key as $__key_idx => $tm_key ) {
-            //from api a key is sent and the value is 'new'
-            if ( $tm_key[ 'key' ] == 'new' ) {
-
-                try {
-
-                    $APIKeySrv = new TMSService();
-
-                    $newUser = $APIKeySrv->createMyMemoryKey();
-
-                    //TODO: i need to store an array of these
-                    $this->private_tm_user = $newUser->id;
-                    $this->private_tm_pass = $newUser->pass;
-
-                    $this->private_tm_key[ $__key_idx ] =
-                            [
-                                    'key'  => $newUser->key,
-                                    'name' => null,
-                                    'r'    => $tm_key[ 'r' ],
-                                    'w'    => $tm_key[ 'w' ]
-
-                            ];
-                    $this->new_keys[]                   = $newUser->key;
-
-                } catch ( Exception $e ) {
-                    throw new Exception( $e->getMessage(), -1 );
-                }
-
-            } //if a string is sent, transform it into a valid array
-            elseif ( !empty( $tm_key ) ) {
-
-                $uid = $this->user->uid;
-
-                $this_tm_key = [
-                        'key'  => $tm_key[ 'key' ],
-                        'name' => null,
-                        'r'    => $tm_key[ 'r' ],
-                        'w'    => $tm_key[ 'w' ]
-                ];
-
-                /**
-                 * Get the key description/name from the user keyring
-                 */
-                if ( $uid ) {
-                    $mkDao = new TmKeyManagement_MemoryKeyDao();
-
-                    /**
-                     * @var $keyRing TmKeyManagement_MemoryKeyStruct[]
-                     */
-                    $keyRing = $mkDao->read(
-                            ( new TmKeyManagement_MemoryKeyStruct( [
-                                    'uid'    => $uid,
-                                    'tm_key' => new TmKeyManagement_TmKeyStruct( $this_tm_key )
-                            ] )
-                            )
-                    );
-
-                    if ( count( $keyRing ) > 0 ) {
-                        $this_tm_key[ 'name' ] = $keyRing[ 0 ]->tm_key->name;
-                    }
-                }
-
-                $this->private_tm_key[ $__key_idx ] = $this_tm_key;
-            }
-
-            $this->private_tm_key[ $__key_idx ] = self::__sanitizeTmKeyArr( $this->private_tm_key[ $__key_idx ] );
-
-        }
-
+        $this->private_tm_key = TMKeysUtils::parse($this->postInput[ 'private_tm_key' ]);
     }
 
     /**

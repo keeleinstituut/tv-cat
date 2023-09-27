@@ -516,15 +516,6 @@ class ProjectManager {
         unset( $sortedFiles );
         unset( $sortedMeta );
 
-        if ( count( $this->projectStructure[ 'private_tm_key' ] ) ) {
-            $this->setPrivateTMKeys( $firstTMXFileName );
-
-            if ( count( $this->projectStructure[ 'result' ][ 'errors' ] ) > 0 ) {
-                // This return value was introduced after a refactoring
-                return;
-            }
-        }
-
         $uploadDir = $this->uploadDir = INIT::$QUEUE_PROJECT_REPOSITORY . DIRECTORY_SEPARATOR . $this->projectStructure[ 'uploadToken' ];
 
         \Log::doJsonLog( $uploadDir );
@@ -533,20 +524,6 @@ class ProjectManager {
         $linkFiles = $fs->getHashesFromDir( $this->uploadDir );
 
         \Log::doJsonLog( $linkFiles );
-
-        /*
-            loop through all input files to
-            1) upload INSERT INTMX and Glossaries
-        */
-        try {
-            $this->_pushTMXToMyMemory();
-        } catch ( Exception $e ) {
-            $this->_log( $e->getMessage() );
-
-            //exit project creation
-            return false;
-        }
-        //TMX Management
 
         /*
             loop through all input files to
@@ -1286,7 +1263,7 @@ class ProjectManager {
                     $newTmKey = TmKeyManagement_TmKeyManagement::getTmKeyStructure();
                     $newTmKey->complete_format = true;
                     $newTmKey->tm    = true;
-                    $newTmKey->glos  = true;
+                    $newTmKey->glos  = false;
                     $newTmKey->owner = true;
                     $newTmKey->name  = $tmKeyObj[ 'name' ];
                     $newTmKey->key   = $tmKeyObj[ 'key' ];
@@ -1295,10 +1272,6 @@ class ProjectManager {
 
                     $tm_key[] = $newTmKey;
                 }
-
-                //TODO: change this: private tm key field should not be used
-                //set private tm key string to the first tm_key for retro-compatibility
-
             }
 
             // check for job_first_segment and job_last_segment existence
@@ -1749,27 +1722,19 @@ class ProjectManager {
         $total_raw_wc         = $first_job[ 'total_raw_wc' ];
         $standard_analysis_wc = $first_job[ 'standard_analysis_wc' ];
 
-        //merge TM keys: preserve only owner's keys
+        //merge TM keys
         $tm_keys = [];
         foreach ( $jobStructs as $chunk_info ) {
-            $tm_keys[] = $chunk_info[ 'tm_keys' ];
-        }
-
-        try {
-            $owner_tm_keys = TmKeyManagement_TmKeyManagement::getOwnerKeys( $tm_keys );
-
-            /**
-             * @var $owner_key TmKeyManagement_TmKeyStruct
-             */
-            foreach ( $owner_tm_keys as $i => $owner_key ) {
-                $owner_key->complete_format = true;
-                $owner_tm_keys[ $i ] = $owner_key->toArray();
+            $chunkTMKeys = json_decode($chunk_info[ 'tm_keys' ] ?: []);
+            if (empty($chunkTMKeys)) {
+                continue;
             }
 
-            $first_job[ 'tm_keys' ] = json_encode( $owner_tm_keys );
-        } catch ( Exception $e ) {
-            $this->_log( __METHOD__ . " -> Merge Jobs error - TM key problem: " . $e->getMessage() );
+            $chunkTMKeys = array_combine(array_column($chunkTMKeys, 'key'), $chunkTMKeys);
+            $tm_keys = array_merge($tm_keys, $chunkTMKeys);
         }
+
+        $first_job[ 'tm_keys' ] = json_encode(array_values($tm_keys));
 
         $totalAvgPee     = 0;
         $totalTimeToEdit = 0;
@@ -2551,7 +2516,6 @@ class ProjectManager {
                 !isset( $xliff_trans_unit[ 'alt-trans' ] ) ||
                 empty( $xliff_file_attributes[ 'source-language' ] ) ||
                 empty( $xliff_file_attributes[ 'target-language' ] ) ||
-                count( $this->projectStructure[ 'private_tm_key' ] ) == 0 ||
                 $this->features->filter( 'doNotManageAlternativeTranslations', true, $xliff_trans_unit, $xliff_file_attributes )
         ) {
             return;
@@ -3183,139 +3147,6 @@ class ProjectManager {
 
         return $mustBeConverted;
 
-    }
-
-    /**
-     *
-     * What this function does:
-     *
-     * 1. validate the input private keys
-     * 2. set the primary key into the engine object
-     * 3. check if the user is logged and if so add the new keys to his keyring
-     * 4. ensure tm_user and tm_pass are populated even if missing
-     * 5. insert translator
-     * 6. run a callback to plugins to filter the private_tm_key value
-     *
-     * @param $firstTMXFileName
-     *
-     * @return bool
-     * @throws \API\V2\Exceptions\AuthenticationError
-     * @throws \Exceptions\NotFoundException
-     * @throws \Exceptions\ValidationError
-     * @throws \TaskRunner\Exceptions\EndQueueException
-     * @throws \TaskRunner\Exceptions\ReQueueException
-     */
-    private function setPrivateTMKeys( $firstTMXFileName ) {
-
-        foreach ( $this->projectStructure[ 'private_tm_key' ] as $i => $_tmKey ) {
-
-            $this->tmxServiceWrapper->setTmKey( $_tmKey[ 'key' ] );
-
-            try {
-
-                $keyExists = $this->tmxServiceWrapper->checkCorrectKey();
-
-                if ( !isset( $keyExists ) || $keyExists === false ) {
-                    $this->_log( __METHOD__ . " -> TM key is not valid." );
-
-                    throw new Exception( "TM key is not valid: " . $_tmKey[ 'key' ], -4 );
-                }
-
-            } catch ( Exception $e ) {
-
-                $this->projectStructure[ 'result' ][ 'errors' ][] = [
-                        "code" => $e->getCode(), "message" => $e->getMessage()
-                ];
-
-                return false;
-            }
-
-            // TODO: evaluate if it's the case to remove this line from here. This is required for later calls
-            // for instance when it's time to push the TMX the TM Engine.
-
-        }
-
-
-        //check if the MyMemory keys provided by the user are already associated to him.
-        if ( $this->projectStructure[ 'userIsLogged' ] ) {
-
-            $mkDao = new TmKeyManagement_MemoryKeyDao( $this->dbHandler );
-
-            $searchMemoryKey      = new TmKeyManagement_MemoryKeyStruct();
-            $searchMemoryKey->uid = $this->projectStructure[ 'uid' ];
-
-            $userMemoryKeys = $mkDao->read( $searchMemoryKey );
-
-            $userTmKeys             = [];
-            $memoryKeysToBeInserted = [];
-
-            //extract user tm keys
-            foreach ( $userMemoryKeys as $_memoKey ) {
-                /**
-                 * @var $_memoKey TmKeyManagement_MemoryKeyStruct
-                 */
-                $userTmKeys[] = $_memoKey->tm_key->key;
-            }
-
-
-            foreach ( $this->projectStructure[ 'private_tm_key' ] as $_tmKey ) {
-
-                if ( !in_array( $_tmKey[ 'key' ], $userTmKeys ) ) {
-                    $newMemoryKey   = new TmKeyManagement_MemoryKeyStruct();
-                    $newTmKey       = new TmKeyManagement_TmKeyStruct();
-                    $newTmKey->key  = $_tmKey[ 'key' ];
-                    $newTmKey->tm   = true;
-                    $newTmKey->glos = true;
-
-                    //THIS IS A NEW KEY and must be inserted into the user keyring
-                    //So, if a TMX file is present in the list of uploaded files, and the Key name provided is empty
-                    // assign TMX name to the key
-                    $newTmKey->name = ( !empty( $_tmKey[ 'name' ] ) ? $_tmKey[ 'name' ] : $firstTMXFileName );
-
-                    $newMemoryKey->tm_key = $newTmKey;
-                    $newMemoryKey->uid    = $this->projectStructure[ 'uid' ];
-
-                    $memoryKeysToBeInserted[] = $newMemoryKey;
-                } else {
-                    $this->_log( 'skip insertion' );
-                }
-
-            }
-            try {
-                $mkDao->createList( $memoryKeysToBeInserted );
-
-                $featuresSet = new FeatureSet();
-                $featuresSet->run( 'postTMKeyCreation', $memoryKeysToBeInserted, $this->projectStructure[ 'uid' ] );
-
-            } catch ( Exception $e ) {
-                $this->_log( $e->getMessage() );
-
-                # Here we handle the error, displaying HTML, logging, ...
-                $output = "<pre>\n";
-                $output .= $e->getMessage() . "\n\t";
-                $output .= "</pre>";
-                Utils::sendErrMailReport( $output );
-
-            }
-
-        }
-
-        //the base case is when the user clicks on "generate private TM" button:
-        //a (user, pass, key) tuple is generated and can be inserted
-        //if it comes with it's own key without querying the creation API, create a (key,key,key) user
-        if ( empty( $this->projectStructure[ 'private_tm_user' ] ) ) {
-            $this->projectStructure[ 'private_tm_user' ] = $this->projectStructure[ 'private_tm_key' ][ 0 ][ 'key' ];
-            $this->projectStructure[ 'private_tm_pass' ] = $this->projectStructure[ 'private_tm_key' ][ 0 ][ 'key' ];
-        }
-
-        $this->projectStructure[ 'private_tm_key' ] = $this->features->filter( 'filter_project_manager_private_tm_key',
-                $this->projectStructure[ 'private_tm_key' ],
-                [ 'project_structure' => $this->projectStructure ]
-        );
-
-        if ( count( $this->projectStructure[ 'private_tm_key' ] ) > 0 ) {
-            $this->tmxServiceWrapper->setTmKey( $this->projectStructure[ 'private_tm_key' ][ 0 ][ 'key' ] );
-        }
     }
 
     /**

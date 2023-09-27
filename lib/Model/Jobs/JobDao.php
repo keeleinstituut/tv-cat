@@ -863,4 +863,9 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
 
         return (float)$object->standard_word_count;
     }
+
+    public static function updateJobTMKeys( Jobs_JobStruct $jStruct, $tm_keys ) {
+        self::updateFields( [ 'tm_keys' => json_encode($tm_keys) ], [ 'id' => $jStruct->id ] );
+        ( new Jobs_JobDao )->destroyCacheByProjectId( $jStruct->id_project );
+    }
 }
