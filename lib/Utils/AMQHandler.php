@@ -125,7 +125,7 @@ class AMQHandler extends Stomp {
      * @return mixed
      * @throws Exception
      */
-    public function getQueueLength( $queueName = null ) {
+    public function getQueueLength( $queueName = null, $retry = 1 ) {
 
         if ( !empty( $queueName ) ) {
             $queue = $queueName;
@@ -155,7 +155,15 @@ class AMQHandler extends Stomp {
         $mHandler->multiCurlCloseAll();
         $result = json_decode( $result, true );
 
-        Utils::raiseJsonExceptionError();
+        try {
+            Utils::raiseJsonExceptionError();
+        } catch (Exception $e) {
+            if ($retry < 10) {
+                return $this->getQueueLength($queueName, ++$retry);
+            }
+
+            throw $e;
+        }
 
         return $result[ 'value' ];
 

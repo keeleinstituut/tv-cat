@@ -261,7 +261,7 @@ let CatToolActions = {
       })
 
       // check job keys have glossary (response sse channel)
-      checkJobKeysHaveGlossary()
+      //checkJobKeysHaveGlossary()
     } else {
       AppDispatcher.dispatch({
         actionType: CattolConstants.UPDATE_TM_KEYS,
