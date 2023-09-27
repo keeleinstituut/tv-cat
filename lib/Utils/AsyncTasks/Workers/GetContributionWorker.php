@@ -12,8 +12,10 @@ namespace AsyncTasks\Workers;
 use Constants\Ices;
 use Constants_TranslationStatus;
 use Contribution\ContributionRequestStruct;
+use Engines_MTee;
 use FeatureSet;
 use INIT;
+use Log;
 use PostProcess;
 use Stomp;
 use Matecat\SubFiltering\MateCatFilter;
@@ -142,7 +144,6 @@ class GetContributionWorker extends AbstractWorker {
         ];
 
         $message = json_encode( $_object, true );
-
         $stomp = new Stomp( INIT::$QUEUE_BROKER_ADDRESS );
         $stomp->connect();
         $stomp->send( INIT::$SSE_NOTIFICATIONS_QUEUE_NAME,
@@ -405,7 +406,7 @@ class GetContributionWorker extends AbstractWorker {
 
             $_config[ 'get_mt' ]  = true;
             $_config[ 'mt_only' ] = false;
-            if ( $jobStruct->id_mt_engine != 1 ) {
+            if ( $jobStruct->id_mt_engine != 1) {
                 /**
                  * Don't get MT contribution from MyMemory ( Custom MT )
                  */
@@ -419,7 +420,7 @@ class GetContributionWorker extends AbstractWorker {
             $_TMS = true; /* MyMemory */
 
         } else {
-            if ( $jobStruct->id_tms == 0 && $jobStruct->id_mt_engine == 1 ) {
+            if ( $jobStruct->id_tms == 0 && ($jobStruct->id_mt_engine == 1 || $jobStruct->id_mt_engine == Engines_MTee::getMTeeID())) {
 
                 /**
                  * MyMemory disabled but MT Enabled and it is NOT a Custom one
