@@ -296,6 +296,8 @@ class INIT {
     public static $REPLACE_HISTORY_DRIVER;
     public static $REPLACE_HISTORY_TTL;
 
+    public static $MTEE_BASE_URL = 'https://tolkevarav.eki.ee/api';
+
     public function __construct() {
 
         self::$OAUTH_CLIENT_ID       = @INIT::$OAUTH_CONFIG[ 'OAUTH_CLIENT_ID' ];
