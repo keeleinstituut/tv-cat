@@ -60,9 +60,4 @@ class Constants_Engines {
             self::$ENGINES_LIST[ $engine ] = $engine;
         }
     }
-
-    public static function getNoMTEngineID(): int
-    {
-        return 0;
-    }
 }
