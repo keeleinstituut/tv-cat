@@ -87,7 +87,7 @@ class ProjectsController extends KleinController {
         $this->response->json( [ 'project' => $formatted->renderItem( $this->project ) ] );
     }
 
-    public function setMTEnabled()
+    public function toggleMTEnabled()
     {
         $project = $this->project;
         $enableMT = boolval($this->getPutParams()['enabled'] ?? true);
