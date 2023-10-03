@@ -38,6 +38,11 @@ services:
       - MATECAT_SMTP_SENDER=no-reply@matecat.loc
       - MATECAT_SMTP_HOSTNAME=localhost
 
+      - MATECAT_NECTM_KEYCLOAK_BASE_URL=https://sso.dev.tolkevarav.eki.ee
+      - MATECAT_NECTM_KEYCLOAK_REALM=tolkevarav-dev
+      - MATECAT_NECTM_KEYCLOAK_CLIENT_ID=tv-cat-service
+      - MATECAT_NECTM_KEYCLOAK_CLIENT_SECRET=zVGXqAaGPLU6cEXbbBFNRimn2PnHno0z
+
       - MATECAT_FILTERS_ADDRESS=http://matecat-filters:8732
 
       - MATECAT_LXQ_LICENSE=false

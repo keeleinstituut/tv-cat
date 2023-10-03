@@ -33,7 +33,7 @@
         "ext-zip": "*",
         "ext-fileinfo": "*",
         "ext-mbstring": "*",
-        "ext-zlib": "*"
-
+        "ext-zlib": "*",
+        "firebase/php-jwt": "^5.5"
     }
 }

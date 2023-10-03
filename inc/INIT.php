@@ -296,6 +296,15 @@ class INIT {
     public static $REPLACE_HISTORY_DRIVER;
     public static $REPLACE_HISTORY_TTL;
 
+    public static $NECTM_KEYCLOAK_BASE_URL;
+    public static $NECTM_KEYCLOAK_REALM;
+    public static $NECTM_KEYCLOAK_CLIENT_ID;
+    public static $NECTM_KEYCLOAK_CLIENT_SECRET;
+    public static $NECTM_KEYCLOAK_CACHE_EXPIRY_DELAY = 10;
+    public static $NECTM_KEYCLOAK_JWK_CACHE_TTL = 86400;
+    public static $NECTM_KEYCLOAK_LEEWAY = 0;
+
+
     public function __construct() {
 
         self::$OAUTH_CLIENT_ID       = @INIT::$OAUTH_CONFIG[ 'OAUTH_CLIENT_ID' ];
