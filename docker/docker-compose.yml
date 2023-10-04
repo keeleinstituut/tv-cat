@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3.8'
 
 services:
   app:
@@ -70,6 +70,7 @@ services:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_PORT=3306
     volumes:
+      - app_storage:/var/www/html/storage
       - ../lib:/var/www/html/lib
       - ../migrations:/var/www/html/migrations
       - ../support_scripts:/var/www/html/support_scripts
@@ -111,3 +112,5 @@ services:
   #     - AMQ_EXTRA_ARGS=--nio --host=0.0.0.0 --http-host=0.0.0.0 --relax-jolokia
   #     - AMQ_USER=admin
   #     - AMQ_PASSWORD=admin
+volumes:
+  app_storage: {}
