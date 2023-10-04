@@ -1,0 +1,106 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: ./..
+      dockerfile: docker/Dockerfile
+    depends_on:
+      - mysql
+      - amq
+      - redis
+      - matecat-filters
+    ports:
+      - 8080:80
+      - 8443:443
+    environment:
+      - LOGIN_SECRET=YTM2ZDZTdiNG93f37ba2cb6df39999afe2789c8bff9aea42a605134cf4ce8ae63bc2656baed911620d93c9b10fb6b688e02766253208a6bc23424d08fe1fbfb0b260ba54b7c8d827ab03fee89f3b9a11f8fc40eb31a26d88fea683d52e11ba6c92bdce20bdd704fb7bafb2fa005ba8107653ec192befbdf60c386d7a026a2b7b77738c7d64d5cd9bfd79017a7fef90835c033767d744313ff240f1e16e4d1bac2bfb4edcd5105aeadac865385cb13f8914e505141b26ac8c4d23bb19041bb6c3ea6267d5db483d2d3d68c01d399e9f3c62a132c736a8ec6118f3e553b41e14c7783423a8527009f92042f1ca742705838a64f826033380b3faa9822c8c4b380f
+      - MATECAT_CLI_HTTP_HOST=http://localhost:8080
+      - MATECAT_COOKIE_DOMAIN=localhost
+      - MATECAT_COOKIE_SECURE=false
+      - MATECAT_COOKIE_SAMESITE=Lex
+      - MATECAT_ENABLE_MULTI_DOMAIN_API=no
+
+      - MATECAT_DB_SERVER=mysql
+      - MATECAT_DB_DATABASE=matecat
+      - MATECAT_DB_USER=matecat
+      - MATECAT_DB_PASS=matecat01
+
+      - MATECAT_REDIS_SERVERS=tcp://redis:6379
+      - MATECAT_QUEUE_BROKER_ADDRESS=tcp://amq:61613
+      - MATECAT_QUEUE_DQF_ADDRESS=tcp://amq:61613
+      - MATECAT_QUEUE_JMX_ADDRESS=http://amq:8161
+      - MATECAT_QUEUE_CREDENTIALS=admin:admin
+      - MATECAT_SSE_BASE_URL=localhost:8080/sse
+      - MATECAT_STORAGE_DIR=/var/www/html/storage
+      - MATECAT_SMTP_HOST=localhost
+      - MATECAT_SMTP_PORT=25
+      - MATECAT_SMTP_SENDER=no-reply@matecat.loc
+      - MATECAT_SMTP_HOSTNAME=localhost
+
+      - MATECAT_FILTERS_ADDRESS=http://matecat-filters:8732
+
+      - MATECAT_LXQ_LICENSE=false
+      - MATECAT_LXQ_PARTNERID=false
+
+      - MATECAT_FILE_STORAGE_METHOD=fs
+
+      - MATECAT_AUTOLOAD_PLUGINS=["review_extended"]
+
+      # - MATECAT_AWS_ACCESS_KEY_ID=xxxxxxx
+      # - MATECAT_AWS_SECRET_KEY=xxxxxxxxxxxx
+      # - MATECAT_AWS_VERSION=latest
+      # - MATECAT_AWS_REGION=us-west-2
+      # - MATECAT_AWS_PROFILE=default
+      # - MATECAT_AWS_STORAGE_BASE_BUCKET=storage-bucket
+
+      - SSE_QUEUE_HOST=amq
+      - SSE_QUEUE_PORT=61613
+      - SSE_QUEUE_USER=admin
+      - SSE_QUEUE_PASSWORD=admin
+
+      # Needed for init database with MySQL dump.
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_PORT=3306
+    volumes:
+      - ../lib:/var/www/html/lib
+      - ../migrations:/var/www/html/migrations
+      - ../support_scripts:/var/www/html/support_scripts
+      - ../test:/var/www/html/test
+      - ../index.php:/var/www/html/index.php
+
+  redis:
+    image: redis:latest
+
+  mysql:
+    image: mysql:latest
+    command: mysqld --sql_mode="NO_ENGINE_SUBSTITUTION" --default-authentication-plugin=mysql_native_password
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=temp
+      - MYSQL_PASSWORD=temp
+      - MYSQL_DATABASE=temp
+    ports:
+      - 3306:3306
+
+  matecat-filters:
+    build:
+      context: ./matecat-filters
+    ports:
+      - 8732:8732
+
+  amq:
+    build: ./amq
+    ports:
+      - 8161:8161
+
+  # amq_new:
+  #   image: quay.io/artemiscloud/activemq-artemis-broker:latest
+  #   ports:
+  #     - 61614:61613
+  #     - 8162:8161
+  #     # - 8161:8161
+  #   environment:
+  #     - AMQ_EXTRA_ARGS=--nio --host=0.0.0.0 --http-host=0.0.0.0 --relax-jolokia
+  #     - AMQ_USER=admin
+  #     - AMQ_PASSWORD=admin

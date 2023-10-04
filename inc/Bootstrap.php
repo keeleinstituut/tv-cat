@@ -443,9 +443,14 @@ class Bootstrap {
 
             INIT::$PROTOCOL = $localProto;
             ini_set( 'session.name', INIT::$PHP_SESSION_NAME );
-            ini_set( 'session.cookie_domain', '.' . INIT::$COOKIE_DOMAIN );
-            ini_set( 'session.cookie_secure', true );
 
+            if (INIT::$COOKIE_DOMAIN && INIT::$COOKIE_DOMAIN !== 'localhost') {
+                ini_set( 'session.cookie_domain', '.' . INIT::$COOKIE_DOMAIN );
+            }
+
+            if (INIT::$COOKIE_SECURE) {
+                ini_set('session.cookie_secure', true);
+            }
         }
 
         INIT::$HTTPHOST = INIT::$CLI_HTTP_HOST;

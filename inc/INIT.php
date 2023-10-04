@@ -31,7 +31,10 @@ class INIT {
     public static $BASEURL;
     public static $HTTPHOST;
     public static $CLI_HTTP_HOST;
-    public static $COOKIE_DOMAIN;
+
+    public static $COOKIE_DOMAIN = null;
+    public static $COOKIE_SECURE = false;
+    public static $COOKIE_SAMESITE = 'Lex';
     public static $PHP_SESSION_NAME        = 'PHPSESSID';
     public static $AJAX_DOMAINS            = 100;
     public static $PROTOCOL;
@@ -428,7 +431,7 @@ class INIT {
      */
     public static $MAX_FILENAME_LENGTH = 210;
 
-    public static $AUTOLOAD_PLUGINS = [];
+    public static $AUTOLOAD_PLUGINS = '[]';
 
     /**
      * Definitions for the asynchronous task runner
