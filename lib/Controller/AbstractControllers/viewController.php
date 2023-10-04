@@ -168,6 +168,10 @@ abstract class viewController extends controller {
     private function setTemplateFinalVars() {
 
         $MMTLicense = $this->userIsLogged ? $this->featureSet->filter( "MMTLicense", $this->user) : [];
+        if ($this->user === $MMTLicense) {
+            $MMTLicense = [];
+        }
+
         $isAnInternalUser  = $this->userIsLogged ? $this->featureSet->filter( "isAnInternalUser", $this->user->email) : false;
         if ($this->user === $MMTLicense) {
             $MMTLicense = [];

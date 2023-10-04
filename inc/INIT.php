@@ -298,6 +298,10 @@ class INIT {
 
     public static $MTEE_BASE_URL = 'https://tolkevarav.eki.ee/api';
 
+    public static $EKILEX_API_KEY = '';
+    public static $EKILEX_API_BASE_URL = 'https://ekilex.ee/api';
+
+
     public function __construct() {
 
         self::$OAUTH_CLIENT_ID       = @INIT::$OAUTH_CONFIG[ 'OAUTH_CLIENT_ID' ];
