@@ -21,6 +21,7 @@ export const getGlossaryMatch = async ({
   idClient = config.id_client,
   sourceLanguage = config.source_code,
   targetLanguage = config.target_code,
+  dataset = '',
 }) => {
   const dataParams = {
     sentence,
@@ -30,6 +31,7 @@ export const getGlossaryMatch = async ({
     id_client: idClient,
     source_language: sourceLanguage,
     target_language: targetLanguage,
+    dataset: dataset
   }
 
   const response = await fetch(
