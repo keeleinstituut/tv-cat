@@ -1,4 +1,4 @@
-# Default values for tv-cat-service.
+# Default values for tv-cat-activemq-service.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -6,9 +6,10 @@ replicaCount: 1
 
 image:
   registry: ghcr.io
+  repository: "__IMAGE_REPOSITORY__" # Replaced during continuous delivery pipeline
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "__IMAGE_TAG__" # Replaced during continuous delivery pipeline
 
 imagePullSecrets: []
 nameOverride: ""

@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "tv-cat-service.fullname" . }}
+  name: {{ include "tv-cat-activemq-service.fullname" . }}
   labels:
-    {{- include "tv-cat-service.labels" . | nindent 4 }}
+    {{- include "tv-cat-activemq-service.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "tv-cat-service.selectorLabels" . | nindent 6 }}
+      {{- include "tv-cat-activemq-service.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,13 +18,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "tv-cat-service.selectorLabels" . | nindent 8 }}
+        {{- include "tv-cat-activemq-service.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "tv-cat-service.serviceAccountName" . }}
+      serviceAccountName: {{ include "tv-cat-activemq-service.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:

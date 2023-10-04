@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "tv-cat-activemq-service.fullname" . }}
+  labels:
+    {{- include "tv-cat-activemq-service.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "tv-cat-activemq-service.selectorLabels" . | nindent 4 }}
