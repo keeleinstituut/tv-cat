@@ -296,8 +296,11 @@ class INIT {
     public static $REPLACE_HISTORY_DRIVER;
     public static $REPLACE_HISTORY_TTL;
 
+    public static $MTEE_BASE_URL = 'https://tolkevarav.eki.ee/api';
+
     public static $EKILEX_API_KEY = '';
     public static $EKILEX_API_BASE_URL = 'https://ekilex.ee/api';
+
 
     public function __construct() {
 

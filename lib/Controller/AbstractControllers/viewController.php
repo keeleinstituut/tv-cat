@@ -173,6 +173,9 @@ abstract class viewController extends controller {
         }
 
         $isAnInternalUser  = $this->userIsLogged ? $this->featureSet->filter( "isAnInternalUser", $this->user->email) : false;
+        if ($this->user === $MMTLicense) {
+            $MMTLicense = [];
+        }
 
         $this->template->logged_user      = $this->user->shortName();
         $this->template->extended_user    = $this->user->fullName();
