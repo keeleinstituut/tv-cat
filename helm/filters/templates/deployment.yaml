@@ -34,17 +34,19 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: http
-              containerPort: 80
-              protocol: TCP
+            - containerPort: {{ .Values.port}}
           livenessProbe:
-            httpGet:
-              path: /api/app/healthz
-              port: http
+            exec:
+              command:
+                - "/bin/sh"
+                - "-c"
+                - "curl -f '{{ .Values.healthEndpoint }}'"
           readinessProbe:
-            httpGet:
-              path: /api/app/healthz
-              port: http
+            exec:
+              command:
+                - "/bin/sh"
+                - "-c"
+                - "curl -f '{{ .Values.healthEndpoint }}'"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- if .Values.extraEnvVars }}

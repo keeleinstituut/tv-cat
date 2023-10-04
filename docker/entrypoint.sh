@@ -1,4 +1,5 @@
 #!/bin/bash
+set -Eeuo pipefail
 
 MATECAT_ENV=$(env | grep '^MATECAT_' | sed -En "s/^MATECAT_//p")
 
@@ -55,6 +56,7 @@ chown www-data:www-data $APP_ROOT/inc/oauth_config.ini
 chown www-data:www-data $APP_ROOT/inc/oauth-token-key.txt
 chown www-data:www-data $APP_ROOT/inc/login_secret.dat
 chown www-data:www-data $APP_ROOT/nodejs/config.ini
+chown www-data:www-data $STORAGE_PATH
 
 chmod 400 $APP_ROOT/inc/config.ini
 chmod 400 $APP_ROOT/inc/task_manager_config.ini
@@ -85,8 +87,8 @@ cat > /etc/apache2/sites-enabled/000-default.conf <<EOT
     # modules, e.g.
     #LogLevel info ssl:warn
 
-    ErrorLog ${APACHE_LOG_DIR}/error.log
-    CustomLog ${APACHE_LOG_DIR}/access.log combined
+    ErrorLog /var/log/apache2/error.log
+    CustomLog /var/log/apache2/access.log combined
 
     # For most configuration files from conf-available/, which are
     # enabled or disabled at a global level, it is possible to
@@ -103,18 +105,16 @@ cat > /etc/apache2/sites-enabled/000-default.conf <<EOT
 </VirtualHost>
 EOT
 
-MYSQL_PORT=3306
-
 echo "Importing MySQL dump(s)"
-until mysql -h mysql -P $MYSQL_PORT -u root -p$MYSQL_ROOT_PASSWORD -e "SELECT 1" > /dev/null 2>&1; do
+until mysql -h $MATECAT_DB_SERVER -P $MYSQL_PORT -u root -p$MYSQL_ROOT_PASSWORD -e "SELECT 1"; do
   echo "MySQL is unavailable - sleeping"
   sleep 1
 done
 
-if mysql -h mysql -P $MYSQL_PORT -u root -p$MYSQL_ROOT_PASSWORD $MATECAT_DB_DATABASE > /dev/null 2>&1; then
+if mysql -h $MATECAT_DB_SERVER -P $MYSQL_PORT -u root -p$MYSQL_ROOT_PASSWORD $MATECAT_DB_DATABASE; then
   echo "Database dump(s) already imported"
 else
-  mysql -h mysql -P $MYSQL_PORT -u root -p$MYSQL_ROOT_PASSWORD < $APP_ROOT/INSTALL/matecat.sql
+  mysql -h $MATECAT_DB_SERVER -P $MYSQL_PORT -u root -p$MYSQL_ROOT_PASSWORD < $APP_ROOT/INSTALL/matecat.sql
   echo "Dump(s) imported successfully"
 fi
 

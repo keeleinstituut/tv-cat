@@ -19,7 +19,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && apt-get install -y software-properties-common && \
     add-apt-repository -y ppa:openjdk-r/ppa && \
     apt-get update
-RUN apt-get install -y  openjdk-8-jre
+RUN apt-get install -y  openjdk-8-jre jq
 
 RUN cd /tmp/
 RUN wget http://archive.apache.org/dist/activemq/5.15.10/apache-activemq-5.15.10-bin.tar.gz
@@ -35,4 +35,6 @@ RUN ln -sf /opt/activemq/bin/activemq /etc/init.d/
 COPY installActivemq.sh /tmp/installActivemq.sh
 RUN chmod +x /tmp/installActivemq.sh
 
-CMD ["/tmp/installActivemq.sh"]
+RUN ["/tmp/installActivemq.sh"]
+
+CMD /etc/init.d/activemq console > ./logs & tail -f ./logs

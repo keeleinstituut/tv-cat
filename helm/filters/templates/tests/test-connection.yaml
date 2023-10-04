@@ -1,3 +1,5 @@
+{{- $filtersEndpoint := printf "http://%s.%s.svc.cluster.local:%s" (include "tv-cat-filters-service.fullname" .) .Release.Namespace .Values.port -}}
+
 apiVersion: v1
 kind: Pod
 metadata:
@@ -8,8 +10,9 @@ metadata:
     "helm.sh/hook": test
 spec:
   containers:
-    - name: wget
+    - name: query-filters-endpoint
       image: busybox
       command: ['wget']
-      args: ['{{ include "tv-cat-filters-service.fullname" . }}:{{ .Values.service.port }}']
+      args:
+        - '{{ $filtersEndpoint}}'
   restartPolicy: Never
