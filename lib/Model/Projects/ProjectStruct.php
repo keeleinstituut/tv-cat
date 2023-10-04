@@ -267,5 +267,13 @@ class Projects_ProjectStruct extends DataAccess_AbstractDaoSilentStruct implemen
         return in_array( $feature_code, $this->getFeaturesSet()->getCodes() ) ;
     }
 
+    public function isMTEnabled(): bool
+    {
+        $isEnabled = true;
+        foreach ($this->getJobs() as $job) {
+            $isEnabled &= $job->id_mt_engine != Constants_Engines::NO_MT_ENGINE_ID;
+        }
 
+        return $isEnabled;
+    }
 }
