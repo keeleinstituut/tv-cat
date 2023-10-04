@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "tv-cat-activemq-service.fullname" . }}
+  labels:
+    {{- include "tv-cat-activemq-service.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  ports:
+    - name: broker
+      port: {{ .Values.brokerPort }}
+    - name: jmx
+      port: {{ .Values.jmxPort }}
+  selector:
+    {{- include "tv-cat-activemq-service.selectorLabels" . | nindent 4 }}

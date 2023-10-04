@@ -1,16 +1,17 @@
+{{- $pvcName := printf "%s-pvc" (include "tv-cat-activemq-service.name" .) -}}
+{{- $healthEndpointAddress := printf "http://localhost:%s/api/jolokia/exec/org.apache.activemq:type=Broker,brokerName=localhost,service=Health/healthStatus" .Values.jmxPort -}}
+
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: {{ include "tv-cat-service.fullname" . }}
+  name: {{ include "tv-cat-activemq-service.fullname" . }}
   labels:
-    {{- include "tv-cat-service.labels" . | nindent 4 }}
+    {{- include "tv-cat-activemq-service.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
-  {{- end }}
+  serviceName: {{ include "tv-cat-activemq-service.fullname" . }}
   selector:
     matchLabels:
-      {{- include "tv-cat-service.selectorLabels" . | nindent 6 }}
+      {{- include "tv-cat-activemq-service.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,13 +19,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "tv-cat-service.selectorLabels" . | nindent 8 }}
+        {{- include "tv-cat-activemq-service.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "tv-cat-service.serviceAccountName" . }}
+      serviceAccountName: {{ include "tv-cat-activemq-service.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -34,17 +35,20 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: http
-              containerPort: 80
-              protocol: TCP
+            - containerPort: {{ .Values.brokerPort}}
+            - containerPort: {{ .Values.jmxPort}}
           livenessProbe:
-            httpGet:
-              path: /api/app/healthz
-              port: http
+            exec:
+              command:
+                - "/bin/sh"
+                - "-c"
+                - test 'Good' = "$(curl -f -u $ACTIVEMQ_USERNAME:$ACTIVEMQ_PASSWORD -s '{{ $healthEndpointAddress }}' | jq -r .value)"
           readinessProbe:
-            httpGet:
-              path: /api/app/healthz
-              port: http
+            exec:
+              command:
+                - "/bin/sh"
+                - "-c"
+                - test 'Good' = "$(curl -f -u $ACTIVEMQ_USERNAME:$ACTIVEMQ_PASSWORD -s '{{ $healthEndpointAddress }}' | jq -r .value)"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- if .Values.extraEnvVars }}
@@ -60,6 +64,9 @@ spec:
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsSecret "context" $) }}
             {{- end }}
+          volumeMounts:
+          - name: {{ $pvcName }}
+            mountPath: {{ .Values.mountPath }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -72,3 +79,12 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ $pvcName }}
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: {{ .Values.storageClassName }}
+        resources:
+          requests:
+            storage: {{ .Values.volumeSize }}

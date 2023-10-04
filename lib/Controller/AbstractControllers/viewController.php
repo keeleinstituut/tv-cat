@@ -168,6 +168,10 @@ abstract class viewController extends controller {
     private function setTemplateFinalVars() {
 
         $MMTLicense = $this->userIsLogged ? $this->featureSet->filter( "MMTLicense", $this->user) : [];
+        if ($this->user === $MMTLicense) {
+            $MMTLicense = [];
+        }
+
         $isAnInternalUser  = $this->userIsLogged ? $this->featureSet->filter( "isAnInternalUser", $this->user->email) : false;
 
         $this->template->logged_user      = $this->user->shortName();
@@ -324,6 +328,9 @@ abstract class viewController extends controller {
 
         if($isAnInternalUser){
             $MMTLicense = $this->userIsLogged ? $this->featureSet->filter( "MMTLicense", $this->user) : [];
+            if ($this->user === $MMTLicense) {
+                $MMTLicense = [];
+            }
 
             if(!empty($MMTLicense) and isset($MMTLicense['id'])){
                 foreach ($engines as $index => $engine){

@@ -4,11 +4,14 @@ import {SegmentedControl} from '../../common/SegmentedControl'
 import IconClose from '../../icons/IconClose'
 import IconSearch from '../../icons/IconSearch'
 import {TabGlossaryContext} from './TabGlossaryContext'
+import {DatasetSelect} from "./DatasetSelect";
 
 export const SearchTerms = () => {
   const {
     searchTerm,
     setSearchTerm,
+    searchDataset,
+    setSearchDataset,
     segment,
     previousSearchTermRef,
     openForm,
@@ -38,6 +41,7 @@ export const SearchTerms = () => {
             searchingIn === 'Source' ? config.source_code : config.target_code,
           targetLanguage:
             searchingIn === 'Source' ? config.target_code : config.source_code,
+          dataset: searchDataset?.id,
         }
         SegmentActions.searchGlossary({
           ...data,
@@ -62,6 +66,7 @@ export const SearchTerms = () => {
     searchTypes,
     previousSearchTermRef,
     notifyLoadingStatusToParent,
+    searchDataset,
   ])
 
   return (
@@ -100,14 +105,10 @@ export const SearchTerms = () => {
           }}
         />
       </div>
+      <div className="glossary_search-container">
+        <DatasetSelect />
+      </div>
       <div className="glossary__button-add-container">
-        <button
-          className="glossary__button-add"
-          onClick={openForm}
-          disabled={isLoading}
-        >
-          + Add Term
-        </button>
       </div>
     </div>
   )
