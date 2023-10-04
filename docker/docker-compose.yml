@@ -58,6 +58,13 @@ services:
       - SSE_QUEUE_PORT=61613
       - SSE_QUEUE_USER=admin
       - SSE_QUEUE_PASSWORD=admin
+    volumes:
+      - ../lib:/var/www/html/lib
+      - ../migrations:/var/www/html/migrations
+      - ../support_scripts:/var/www/html/support_scripts
+      - ../test:/var/www/html/test
+      - ../index.php:/var/www/html/index.php
+      - ../public/js/cat_source:/var/www/html/public/js/cat_source
 
       # Needed for init database with MySQL dump.
       - MYSQL_ROOT_PASSWORD=root

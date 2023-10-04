@@ -522,6 +522,12 @@
       }
     }
   }
+  .glossary-dataset-select {
+    width: 300px;
+    border-radius: 4px;
+    padding: 4px 8px;
+    outline: none;
+  }
 
   .no_keys_glossary {
     padding: 40px;
@@ -568,6 +574,18 @@
     visibility: hidden;
   }
   .search_term_reset_button--visible {
+    visibility: visible;
+  }
+  .search_dataset_reset_button {
+    display: flex;
+    cursor: pointer;
+    margin-left: 6px;
+    margin-right: 14px;
+  }
+  .search_dataset_reset_button--hidden {
+    visibility: hidden;
+  }
+  .search_dataset_reset_button--visible {
     visibility: visible;
   }
 
