@@ -5,7 +5,10 @@ namespace API\V2;
 use API\V2\Json\Project;
 use API\V2\Json\ProjectAnonymous;
 use API\V2\Validators\ProjectPasswordValidator;
+use Constants_Engines;
+use Engines_MTee;
 use Jobs_JobDao;
+use Projects_ProjectDao;
 use Translations_SegmentTranslationDao;
 use Utils;
 
@@ -59,7 +62,7 @@ class ProjectsController extends KleinController {
         ) {
 
             $due_date    = \Utils::mysqlTimestamp( $this->params[ 'due_date' ] );
-            $project_dao = new \Projects_ProjectDao;
+            $project_dao = new Projects_ProjectDao;
             $project_dao->updateField( $this->project, "due_date", $due_date );
         }
         if ( empty( $this->user ) ) {
@@ -73,7 +76,7 @@ class ProjectsController extends KleinController {
     }
 
     public function deleteDueDate() {
-        $project_dao = new \Projects_ProjectDao;
+        $project_dao = new Projects_ProjectDao;
         $project_dao->updateField( $this->project, "due_date", null );
 
         if ( empty( $this->user ) ) {
@@ -82,6 +85,24 @@ class ProjectsController extends KleinController {
             $formatted = new Project();
         }
         $this->response->json( [ 'project' => $formatted->renderItem( $this->project ) ] );
+    }
+
+    public function toggleMTEnabled()
+    {
+        $project = $this->project;
+        $enableMT = boolval($this->getPutParams()['enabled'] ?? true);
+
+        if ($enableMT === $project->isMTEnabled()) {
+            return $this->response->json([]);
+        }
+
+        if ($enableMT) {
+            Jobs_JobDao::updateAllJobsMTByProjectId($project->id, Engines_MTee::getMTeeID());
+            return $this->response->json([]);
+        }
+
+        Jobs_JobDao::updateAllJobsMTByProjectId($project->id, Constants_Engines::NO_MT_ENGINE_ID);
+        return $this->response->json([]);
     }
 
     public function cancel() {

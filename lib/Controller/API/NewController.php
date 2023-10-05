@@ -316,10 +316,21 @@ class NewController extends ajaxController {
      * @see NewController::__appendFeaturesToProject()
      */
     private function __generateTargetEngineAssociation() {
-        if ( !isset( $this->postInput[ 'target_language_mt_engine_id' ] ) ) { // this could be already set by MMT engine if enabled ( so check and do not override )
-            foreach ( explode( ",", $this->postInput[ 'target_lang' ] ) as $_matecatTarget ) {
-                $this->postInput[ 'target_language_mt_engine_id' ][ $_matecatTarget ] = $this->postInput[ 'mt_engine' ];
+        if ( isset( $this->postInput[ 'target_language_mt_engine_id' ] ) ) { // this could be already set by MMT engine if enabled ( so check and do not override )
+            return;
+        }
+
+        $isMTee = $this->postInput[ 'mt_engine' ] == Engines_MTee::getMTeeID();
+        $targetLanguages = explode( ',', $this->postInput[ 'target_lang' ] );
+        $sourceLanguage = $this->postInput[ 'source_lang' ];
+
+        foreach ( $targetLanguages as $_matecatTarget ) {
+            if ($isMTee && !Engines_MTee::isSupportedLanguageDirection($sourceLanguage, $_matecatTarget)) {
+                $this->postInput[ 'target_language_mt_engine_id' ][ $_matecatTarget ] = 0;
+                continue;
             }
+
+            $this->postInput[ 'target_language_mt_engine_id' ][ $_matecatTarget ] = $this->postInput[ 'mt_engine' ];
         }
     }
 
@@ -329,18 +340,18 @@ class NewController extends ajaxController {
     private function __validateEngines() {
 
         if ( !isset( $this->postInput[ 'tms_engine' ] ) ) {
-            $this->postInput[ 'tms_engine' ] = 1;
+            $this->postInput[ 'tms_engine' ] = 0;
         }
 
         if ( !isset( $this->postInput[ 'mt_engine' ] ) ) {
-            $this->postInput[ 'mt_engine' ] = 1;
+            $this->postInput[ 'mt_engine' ] = Engines_MTee::getMTeeID();
         }
 
         if ( $this->postInput[ 'tms_engine' ] != 0 ) {
             Engine::getInstance( $this->postInput[ 'tms_engine' ] );
         }
 
-        if ( $this->postInput[ 'mt_engine' ] != 0 && $this->postInput[ 'mt_engine' ] != 1 ) {
+        if ( $this->postInput[ 'mt_engine' ] != 0 && $this->postInput[ 'mt_engine' ] != 1  && $this->postInput[ 'mt_engine' ] != Engines_MTee::getMTeeID()) {
             if ( !$this->userIsLogged ) {
                 throw new Exception( "Invalid MT Engine.", -2 );
             } else {

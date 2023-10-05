@@ -299,6 +299,12 @@ class INIT {
     public static $REPLACE_HISTORY_DRIVER;
     public static $REPLACE_HISTORY_TTL;
 
+    public static $MTEE_BASE_URL = 'https://tolkevarav.eki.ee/api';
+
+    public static $EKILEX_API_KEY = '';
+    public static $EKILEX_API_BASE_URL = 'https://ekilex.ee/api';
+
+
     public static $NECTM_KEYCLOAK_BASE_URL;
     public static $NECTM_KEYCLOAK_REALM;
     public static $NECTM_KEYCLOAK_CLIENT_ID;

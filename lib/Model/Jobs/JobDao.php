@@ -680,7 +680,11 @@ class Jobs_JobDao extends DataAccess_AbstractDao {
     public static function updateAllJobsStatusesByProjectId( $id_project, $new_status ) {
         self::updateFields( [ 'status_owner' => $new_status ], [ 'id_project' => $id_project ] );
         ( new Jobs_JobDao )->destroyCacheByProjectId( $id_project );
+    }
 
+    public static function updateAllJobsMTByProjectId( $id_project, $id_mt_engine ) {
+        self::updateFields( [ 'id_mt_engine' => $id_mt_engine ], [ 'id_project' => $id_project ] );
+        ( new Jobs_JobDao )->destroyCacheByProjectId( $id_project );
     }
 
     /**
