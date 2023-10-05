@@ -20,7 +20,7 @@ class JobAnonymous extends Job {
      *
      * @return $this
      */
-    public function setUser( Users_UserStruct $user ) {
+    public function setUser( Users_UserStruct $user = null ) {
         return $this;
     }
 

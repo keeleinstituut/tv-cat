@@ -9,7 +9,7 @@
         "google/apiclient": "^2.4.1",
         "google/apiclient-services": "^0.128",
         "klein/klein": "^2.1",
-        "matecat/simple-s3": "^1.5",
+        "matecat/simple-s3": "0.0.1",
         "matecat/whole-text-finder": "^1.0",
         "matecat/xliff-parser": "^v1.0.104",
         "monolog/monolog": "1.17.*",
@@ -35,5 +35,13 @@
         "ext-mbstring": "*",
         "ext-zlib": "*",
         "firebase/php-jwt": "^5.5"
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/keeleinstituut/tv-cat-simple-s3"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

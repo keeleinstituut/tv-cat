@@ -84,6 +84,14 @@ class S3FilesStorage extends AbstractFilesStorage {
                     'region'  => $awsRegion,
             ];
 
+            if (!empty(INIT::$AWS_ENDPOINT)) {
+                $config['endpoint'] = INIT::$AWS_ENDPOINT;
+            }
+
+            if (INIT::$AWS_USE_PATH_STYLE_ENDPOINTS) {
+                $config['use_path_style_endpoint'] = true;
+            }
+
             if ( null !== \INIT::$AWS_ACCESS_KEY_ID and null !== \INIT::$AWS_SECRET_KEY ) {
                 $config[ 'credentials' ] = [
                         'key'    => \INIT::$AWS_ACCESS_KEY_ID,
@@ -94,13 +102,13 @@ class S3FilesStorage extends AbstractFilesStorage {
             self::$CLIENT = new Client( $config );
 
             // add caching
-            if ( INIT::$AWS_CACHING == true ) {
+            if (INIT::$AWS_CACHING) {
                 $redis = new RedisHandler();
                 self::$CLIENT->addCache( new RedisCache( $redis->getConnection() ) );
             }
 
             // disable SSL verify from configuration
-            if ( false === INIT::$AWS_SSL_VERIFY ) {
+            if (!INIT::$AWS_SSL_VERIFY) {
                 self::$CLIENT->disableSslVerify();
             }
         }

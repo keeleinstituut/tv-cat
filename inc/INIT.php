@@ -151,7 +151,7 @@ class INIT {
      * Time zone string that should match the one set in the database.
      * @var string
      */
-    public static $TIME_ZONE = 'Europe/Rome';
+    public static $TIME_ZONE = 'Europe/Tallinn';
 
     /**
      * Use this settings to indicate the upperbuond memory limit you want to
@@ -186,7 +186,7 @@ class INIT {
      * In short: please turn it off only if strictly necessary :)
      * @var bool
      */
-    public static $ENABLE_OUTSOURCE = true;
+    public static $ENABLE_OUTSOURCE = false;
 
     /**
      * MateCat Filters configuration
@@ -289,8 +289,11 @@ class INIT {
     public static $AWS_SECRET_KEY;
     public static $AWS_VERSION;
     public static $AWS_REGION;
+    public static $AWS_ENDPOINT;
+    public static $AWS_USE_PATH_STYLE_ENDPOINTS;
     public static $AWS_SSL_VERIFY;
     public static $AWS_CACHING = false;
+
     public static $AWS_STORAGE_BASE_BUCKET;
 
     public static $REPLACE_HISTORY_DRIVER;
