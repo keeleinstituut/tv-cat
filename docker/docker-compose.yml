@@ -48,47 +48,27 @@ services:
       - MATECAT_LXQ_LICENSE=false
       - MATECAT_LXQ_PARTNERID=false
 
-      - MATECAT_FILE_STORAGE_METHOD=s3
-      - MATECAT_AWS_ACCESS_KEY_ID=zMu8NdnPesP0BBoLAs6h
-      - MATECAT_AWS_SECRET_KEY=pMD24Jf84nd2CF4UNWJxA1nKja7ytMwitkh2DjLp
-      - MATECAT_AWS_STORAGE_BASE_BUCKET=storage
-      - MATECAT_AWS_VERSION=latest
-      - MATECAT_AWS_REGION=us-east-1
-      - MATECAT_AWS_SSL_VERIFY=false
-      - MATECAT_AWS_ENDPOINT=http://minio:9000
-      - MATECAT_AWS_USE_PATH_STYLE_ENDPOINTS=true
+      - MATECAT_FILE_STORAGE_METHOD=fs
+#      - MATECAT_AWS_ACCESS_KEY_ID=zMu8NdnPesP0BBoLAs6h
+#      - MATECAT_AWS_SECRET_KEY=pMD24Jf84nd2CF4UNWJxA1nKja7ytMwitkh2DjLp
+#      - MATECAT_AWS_STORAGE_BASE_BUCKET=storage
+#      - MATECAT_AWS_VERSION=latest
+#      - MATECAT_AWS_REGION=us-east-1
+#      - MATECAT_AWS_SSL_VERIFY=false
+#      - MATECAT_AWS_ENDPOINT=http://minio:9000
+#      - MATECAT_AWS_USE_PATH_STYLE_ENDPOINTS=true
 
       - MATECAT_AUTOLOAD_PLUGINS=["review_extended"]
 
-      # - MATECAT_AWS_ACCESS_KEY_ID=xxxxxxx
-      # - MATECAT_AWS_SECRET_KEY=xxxxxxxxxxxx
-      # - MATECAT_AWS_VERSION=latest
-      # - MATECAT_AWS_REGION=us-west-2
-      # - MATECAT_AWS_PROFILE=default
-      # - MATECAT_AWS_STORAGE_BASE_BUCKET=storage-bucket
+      # Needed for init database with MySQL dump.
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_PORT=3306
 
       - SSE_QUEUE_HOST=amq
       - SSE_QUEUE_PORT=61613
       - SSE_QUEUE_USER=admin
       - SSE_QUEUE_PASSWORD=admin
-    volumes:
-      - ../lib:/var/www/html/lib
-      - ../migrations:/var/www/html/migrations
-      - ../support_scripts:/var/www/html/support_scripts
-      - ../test:/var/www/html/test
-      - ../index.php:/var/www/html/index.php
-      - ../public/js/cat_source:/var/www/html/public/js/cat_source
 
-      # Needed for init database with MySQL dump.
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_PORT=3306
-    volumes:
-      - app_storage:/var/www/html/storage
-      - ../lib:/var/www/html/lib
-      - ../migrations:/var/www/html/migrations
-      - ../support_scripts:/var/www/html/support_scripts
-      - ../test:/var/www/html/test
-      - ../index.php:/var/www/html/index.php
 
   redis:
     image: redis:latest
