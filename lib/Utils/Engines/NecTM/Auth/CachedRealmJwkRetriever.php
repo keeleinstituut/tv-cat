@@ -33,10 +33,7 @@ class CachedRealmJwkRetriever implements RealmJwkRetrieverInterface
         $cacheClient = $this->getCacheClient();
         if ($cacheClient->exists($this->getCacheKey($kid))) {
             $jwks = $cacheClient->get($this->getCacheKey($kid));
-            echo "JWK from cache", PHP_EOL;
             return JWK::parseKeySet(json_decode($jwks, true));
-        } else {
-            echo "No JWK cache for $kid", PHP_EOL;
         }
 
         $jwks = $this->apiRetriever->getJwksAsArray();

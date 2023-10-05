@@ -32,7 +32,6 @@ class CachedKeycloakServiceAccountJwtRetriever implements ServiceAccountJwtRetri
     {
         $cacheClient = $this->getCacheClient();
         if ($cacheClient->exists($this->getCacheKey())) {
-            echo "JWT from cache", PHP_EOL;
             return $cacheClient->get($this->getCacheKey());
         }
 
