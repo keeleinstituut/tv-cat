@@ -1,0 +1,1 @@
+INSERT INTO matecat.engines (id, name, type, description, base_url, translate_relative_url, contribute_relative_url, update_relative_url, delete_relative_url, others, class_load, extra_parameters, google_api_compliant_version, penalty, active, uid) VALUES (12, 'MTee', 'MT', 'MTee', '', 'translate/text', null, null, null, '{}', 'MTee', '[]', '2', 14, 1, null);

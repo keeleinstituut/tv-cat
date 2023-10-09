@@ -15,11 +15,3 @@ chmod 600 /etc/default/activemq
 sed -i 's/managementContext createConnector="false"/managementContext createConnector="true"/g' /opt/activemq/conf/activemq.xml
 
 ln -s /etc/init.d/activemq /usr/bin/activemq
-
-/etc/init.d/activemq start
-
-RET=1
-while [[ RET -ne 0 ]]; do
-    # echo "=> Waiting an infinite loop ..."
-    sleep 5
-done

@@ -747,6 +747,7 @@ const SegmentActions = {
     sourceLanguage,
     targetLanguage,
     isSearchingInTarget,
+    dataset,
   }) {
     SegmentStore.isSearchingGlossaryInTarget = isSearchingInTarget
     getGlossaryMatch({
@@ -754,6 +755,7 @@ const SegmentActions = {
       sentence,
       sourceLanguage,
       targetLanguage,
+      dataset,
     }).catch(() => {
       OfflineUtils.failedConnection(0, 'glossary')
       SegmentStore.isSearchingGlossaryInTarget = false

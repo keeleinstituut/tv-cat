@@ -324,7 +324,7 @@ class Mmt extends BaseFeature {
                         if ( in_array( $mTargetCode, $availableTargets ) ) {
                             $controller->postInput[ 'target_language_mt_engine_id' ][ $_matecatTarget ] = $controller->postInput[ 'mt_engine' ];
                         } else {
-                            $controller->postInput[ 'target_language_mt_engine_id' ][ $_matecatTarget ] = 1; // MyMemory
+                            $controller->postInput[ 'target_language_mt_engine_id' ][ $_matecatTarget ] = 0; // NONE
                         }
                     }
                 }
