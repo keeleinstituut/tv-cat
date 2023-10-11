@@ -816,39 +816,39 @@ class Segment extends React.Component {
 
           {/*//!-- TODO: place this element here only if it's not a split --*/}
           <div className="segment-side-buttons">
-            {config.comments_enabled &&
-            (!this.props.segment.openComments || !this.props.segment.opened) ? (
-              <SegmentsCommentsIcon />
-            ) : null}
+            {/*{config.comments_enabled &&*/}
+            {/*(!this.props.segment.openComments || !this.props.segment.opened) ? (*/}
+            {/*  <SegmentsCommentsIcon />*/}
+            {/*) : null}*/}
 
-            {this.props.isReview && (
-              <div
-                data-mount="translation-issues-button"
-                className="translation-issues-button"
-                data-sid={this.props.segment.sid}
-              >
-                {translationIssues}
-              </div>
-            )}
+            {/*{this.props.isReview && (*/}
+            {/*  <div*/}
+            {/*    data-mount="translation-issues-button"*/}
+            {/*    className="translation-issues-button"*/}
+            {/*    data-sid={this.props.segment.sid}*/}
+            {/*  >*/}
+            {/*    {translationIssues}*/}
+            {/*  </div>*/}
+            {/*)}*/}
           </div>
           <div className="segment-side-container">
-            {config.comments_enabled && this.props.segment.openComments ? (
-              <SegmentCommentsContainer />
-            ) : null}
-            {this.props.isReviewExtended &&
-            this.props.segment.openIssues &&
-            this.props.segment.opened &&
-            (config.isReview || (!config.isReview && segmentHasIssues)) ? (
-              <div className="review-balloon-container">
-                {!this.props.segment.versions ? null : (
-                  <ReviewExtendedPanel
-                    segment={this.props.segment}
-                    isReview={config.isReview}
-                    selectionObj={this.state.selectedTextObj}
-                  />
-                )}
-              </div>
-            ) : null}
+            {/*{config.comments_enabled && this.props.segment.openComments ? (*/}
+            {/*  <SegmentCommentsContainer />*/}
+            {/*) : null}*/}
+            {/*{this.props.isReviewExtended &&*/}
+            {/*this.props.segment.openIssues &&*/}
+            {/*this.props.segment.opened &&*/}
+            {/*(config.isReview || (!config.isReview && segmentHasIssues)) ? (*/}
+            {/*  <div className="review-balloon-container">*/}
+            {/*    {!this.props.segment.versions ? null : (*/}
+            {/*      <ReviewExtendedPanel*/}
+            {/*        segment={this.props.segment}*/}
+            {/*        isReview={config.isReview}*/}
+            {/*        selectionObj={this.state.selectedTextObj}*/}
+            {/*      />*/}
+            {/*    )}*/}
+            {/*  </div>*/}
+            {/*) : null}*/}
           </div>
         </section>
       </SegmentContext.Provider>

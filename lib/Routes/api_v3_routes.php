@@ -23,7 +23,7 @@ $klein->with( '/api/v3/jobs/[:id_job]/[:password]', function () {
     route( '/files', 'GET', '\API\V3\FileInfoController', 'getInfo' );
     route( '/file/[:id_file]/instructions', 'GET', '\API\V3\FileInfoController', 'getInstructions' );
     route( '/file/[:id_file]/[:id_file_parts]/instructions', 'GET', '\API\V3\FileInfoController', 'getInstructionsByFilePartsId' );
-    route( '/file/[:id_file]/instructions', 'POST', '\API\V3\FileInfoController', 'setInstructions' );
+    //route( '/file/[:id_file]/instructions', 'POST', '\API\V3\FileInfoController', 'setInstructions' );
     route( '/metadata', 'GET', '\API\V3\MetaDataController', 'index' );
 
     route( '/delete', 'POST', 'API\V3\ChangeJobStatusController', 'delete' );
@@ -38,23 +38,23 @@ $klein->with( '/api/v3/teams', function () {
 
 route( '/api/v3/word-count/raw', 'POST', '\API\V3\CountWordController', 'rawWords' );
 route( '/api/v3/jobs/[:id_job]/[:password]/[:source_page]/issue-report/segments', 'GET', '\API\V3\IssueCheckController', 'segments' );
-route( '/api/v3/feedback', 'POST', '\API\V3\RevisionFeedbackController', 'feedback' );
-route( '/api/v3/qr/download', 'POST', '\API\V3\DownloadQRController', 'download' );
+//route( '/api/v3/feedback', 'POST', '\API\V3\RevisionFeedbackController', 'feedback' );
+//route( '/api/v3/qr/download', 'POST', '\API\V3\DownloadQRController', 'download' );
 
 $klein->with( '/api/v3/glossary', function () {
-    route( '/blacklist/upload', 'POST', '\API\V3\BlacklistController', 'upload' );
-    route( '/blacklist/delete/[:id_file]', 'DELETE', '\API\V3\BlacklistController', 'delete' );
+//    route( '/blacklist/upload', 'POST', '\API\V3\BlacklistController', 'upload' );
+//    route( '/blacklist/delete/[:id_file]', 'DELETE', '\API\V3\BlacklistController', 'delete' );
     route( '/blacklist/get/[:id_file]', 'GET', '\API\V3\BlacklistController', 'get' );
 } );
 
 $klein->with( '/api/v3/qa_model_template', function () {
     route( '/schema', 'GET', '\API\V3\QAModelTemplateController', 'schema' );
-    route( '/validate', 'POST', '\API\V3\QAModelTemplateController', 'validate' );
+    //route( '/validate', 'POST', '\API\V3\QAModelTemplateController', 'validate' );
     route( '', 'GET', '\API\V3\QAModelTemplateController', 'index' );
-    route( '', 'POST', '\API\V3\QAModelTemplateController', 'create' );
+    //route( '', 'POST', '\API\V3\QAModelTemplateController', 'create' );
     route( '/[:id]', 'GET', '\API\V3\QAModelTemplateController', 'view' );
-    route( '/[:id]', 'DELETE', '\API\V3\QAModelTemplateController', 'delete' );
-    route( '/[:id]', 'PUT', '\API\V3\QAModelTemplateController', 'edit' );
+    //route( '/[:id]', 'DELETE', '\API\V3\QAModelTemplateController', 'delete' );
+    //route( '/[:id]', 'PUT', '\API\V3\QAModelTemplateController', 'edit' );
 } );
 
 // TM Keys

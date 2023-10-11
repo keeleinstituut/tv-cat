@@ -58,9 +58,7 @@ export const Header = ({
   return (
     <header>
       <div className="wrapper">
-        <div className="logo-menu">
-          <a href="/" className="logo" />
-        </div>
+        <div className="logo-menu"></div>
 
         {/*Revision number  */}
 
@@ -98,28 +96,28 @@ export const Header = ({
           />
 
           {/*Quality Report*/}
-          <QualityReportButton
-            isReview={isReview}
-            revisionNumber={revisionNumber}
-            overallQualityClass={overallQualityClass}
-            qualityReportHref={qualityReportHref}
-            secondRevisionsCount={secondRevisionsCount}
-          />
+          {/*<QualityReportButton*/}
+          {/*  isReview={isReview}*/}
+          {/*  revisionNumber={revisionNumber}*/}
+          {/*  overallQualityClass={overallQualityClass}*/}
+          {/*  qualityReportHref={qualityReportHref}*/}
+          {/*  secondRevisionsCount={secondRevisionsCount}*/}
+          {/*/>*/}
 
           {/*Segments Issues*/}
-          <SegmentsQAButton />
+          {/*<SegmentsQAButton />*/}
 
           {/*Search*/}
           <SearchButton />
 
           {/*Comments*/}
-          <CommentsButton />
+          {/*<CommentsButton />*/}
 
           {/*Segments filter*/}
           <SegmentsFilterButton />
 
           {/*Settings Icon*/}
-          <SettingsButton />
+          {/*<SettingsButton />*/}
 
           {/*Dropdown menu*/}
           <ActionMenu
@@ -139,7 +137,7 @@ export const Header = ({
         </div>
 
         {/*Profile menu*/}
-        <UserMenu user={user} userLogged={userLogged} />
+        {/*<UserMenu user={user} userLogged={userLogged} />*/}
       </div>
       <div id="header-bars-wrapper">
         <SubHeaderContainer filtersEnabled={SegmentFilter.enabled()} />

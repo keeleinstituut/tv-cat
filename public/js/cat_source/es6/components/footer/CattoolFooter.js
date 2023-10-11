@@ -212,28 +212,10 @@ export const CattolFooter = ({
         <div className="item">
           <div className="statistics-core">
             <div id="stat-eqwords">
-              {config.allow_link_to_analysis ? (
-                <a
-                  target="_blank"
-                  rel="noreferrer"
-                  href={
-                    '/jobanalysis/' + idProject + '-' + idJob + '-' + password
-                  }
-                >
-                  {!isCJK ? (
-                    <span>Weighted words</span>
-                  ) : (
-                    <span>Characters</span>
-                  )}
-                </a>
+              {!isCJK ? (
+                  <span>Weighted words</span>
               ) : (
-                <a target="_blank">
-                  {!isCJK ? (
-                    <span>Weighted words</span>
-                  ) : (
-                    <span>Characters</span>
-                  )}
-                </a>
+                  <span>Characters</span>
               )}
               :
               <strong id="total-payable">
