@@ -146,6 +146,7 @@ class ProjectsController extends KleinController {
     {
         $project = $this->project;
         $newKeys = TMKeysUtils::parse($this->getPutParams()['tm_keys'] ?? '');
+
         foreach ($project->getJobs() as $job) {
             $jobKeys = !empty($job['tm_keys']) ? json_decode($job['tm_keys']) : [];
             $jobKeys = array_combine(array_column($jobKeys, 'key'), $jobKeys);
