@@ -338,7 +338,7 @@ class NewController extends ajaxController {
     private function __validateEngines() {
 
         if ( !isset( $this->postInput[ 'tms_engine' ] ) ) {
-            $this->postInput[ 'tms_engine' ] = 0;
+            $this->postInput[ 'tms_engine' ] = Engines_NecTM::getID();
         }
 
         if ( !isset( $this->postInput[ 'mt_engine' ] ) ) {
@@ -348,18 +348,6 @@ class NewController extends ajaxController {
         if ( $this->postInput[ 'tms_engine' ] != 0 ) {
             Engine::getInstance( $this->postInput[ 'tms_engine' ] );
         }
-
-        if ( $this->postInput[ 'mt_engine' ] != 0 && $this->postInput[ 'mt_engine' ] != 1  && $this->postInput[ 'mt_engine' ] != Engines_MTee::getMTeeID()) {
-            if ( !$this->userIsLogged ) {
-                throw new Exception( "Invalid MT Engine.", -2 );
-            } else {
-                $testEngine = Engine::getInstance( $this->postInput[ 'mt_engine' ] );
-                if ( $testEngine->getEngineRow()->uid != $this->getUser()->uid ) {
-                    throw new Exception( "Invalid MT Engine.", -21 );
-                }
-            }
-        }
-
     }
 
     public function finalize() {
@@ -906,6 +894,17 @@ class NewController extends ajaxController {
     protected function __validateTmAndKeys() {
 
         $this->private_tm_key = TMKeysUtils::parse($this->postInput[ 'private_tm_key' ]);
+        if (empty($this->postInput[ 'private_tm_key' ])) {
+            throw new Exception("Project should have at least one TM key");
+        }
+
+        if ($this->postInput[ 'tms_engine' ] == Engines_NecTM::getID()) {
+            /** @var Engines_NecTM $engine */
+            $engine = Engine::getInstance($this->postInput[ 'tms_engine' ]);
+            if (!empty($engine->validateTmKeys($this->private_tm_key))) {
+                throw new Exception("Invalid TM key(s)");
+            }
+        }
     }
 
     /**

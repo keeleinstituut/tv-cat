@@ -17,12 +17,12 @@ $klein->with('/api/v2/projects/[:id_project]/[:password]', function() {
     //route( '/due_date', 'PUT', 'API\V2\ProjectsController', 'updateDueDate' );
     //route( '/due_date', 'POST', 'API\V2\ProjectsController', 'setDueDate' );
     //route( '/due_date', 'DELETE', 'API\V2\ProjectsController', 'deleteDueDate' );
-    route( '/toggle-mt-enabled', 'PUT', 'API\V2\ProjectsController', 'toggleMTEnabled' );
     route( '/cancel', 'POST', 'API\V2\ProjectsController', 'cancel' );
     route( '/archive', 'POST', 'API\V2\ProjectsController', 'archive' );
     route( '/active', 'POST', 'API\V2\ProjectsController', 'active' );
-    route( '/add-tm-keys', 'PUT', '\API\V2\ProjectsController', 'addTMKeys' );
-    route( '/remove-tm-keys', 'PUT', '\API\V2\ProjectsController', 'removeTMKeys' );
+
+    route( '/toggle-mt-enabled', 'PUT', 'API\V2\ProjectsController', 'toggleMTEnabled' );
+    route( '/sync-tm-keys', 'PUT', '\API\V2\ProjectsController', 'syncTMKeys' );
 });
 
 route( '/api/v2/project-completion-status/[i:id_project]', 'GET', '\API\V2\ProjectCompletionStatus', 'status' );

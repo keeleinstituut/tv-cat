@@ -1,6 +1,13 @@
 <?php
 
 
+use Engines\NecTM\Auth\ApiRealmJwkRetriever;
+use Engines\NecTM\Auth\CachedKeycloakServiceAccountJwtRetriever;
+use Engines\NecTM\Auth\CachedRealmJwkRetriever;
+use Engines\NecTM\Auth\JwtTokenDecoder;
+use Engines\NecTM\Auth\KeycloakServiceAccountJwtRetriever;
+use Engines\NecTM\Auth\ServiceAccountJwtRetrieverInterface;
+
 class Engines_NecTM extends Engines_AbstractEngine
 {
     /**
@@ -53,7 +60,7 @@ class Engines_NecTM extends Engines_AbstractEngine
         }
 
         $results = [];
-        if (isset($decoded['results']) && !empty($decoded['results'])) {
+        if (!empty($decoded['results'])) {
             $matches = array_values(
                 array_filter($decoded['results'], function ($result) {
                     return !empty(trim($result['tu']['target_text'] ?? '')) &&
@@ -95,13 +102,13 @@ class Engines_NecTM extends Engines_AbstractEngine
             'concordance' => boolval($_config['isConcordance'] ?? false)
         ];
 
-        if (!empty($_config['id_user'])) {
-            if (!is_array($_config['id_user'])) {
-                $_config['id_user'] = [$_config['id_user']];
-            }
-
-            $parameters['tag'] = implode(",", $_config['id_user']);
+        if (!empty($tags = $this->getTagsAsString($_config))) {
+            $parameters['tag'] = $tags;
         }
+
+        $this->_setAdditionalCurlParams([
+            CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . $this->getServiceAccountJwtRetriever()->getJwt()]
+        ]);
 
         $this->call('translate_relative_url', $parameters);
 
@@ -113,16 +120,17 @@ class Engines_NecTM extends Engines_AbstractEngine
         $parameters = [
             'stext' => preg_replace("/^(-?@-?)/", "", $_config['segment']),
             'ttext' => preg_replace("/^(-?@-?)/", "", $_config['translation']),
-            'slang' => $this->_fixLangCode($_config[ 'source' ]),
-            'tlang' => $this->_fixLangCode($_config[ 'target' ]),
+            'slang' => $this->_fixLangCode($_config['source']),
+            'tlang' => $this->_fixLangCode($_config['target']),
         ];
 
-        if (!empty($_config['id_user'])) {
-            if (!is_array($_config['id_user'])) {
-                $_config['id_user'] = [$_config['id_user']];
-            }
-            $parameters['tag'] = implode(",", $_config['id_user']);
+        if (!empty($tags = $this->getTagsAsString($_config))) {
+            $parameters['tag'] = $tags;
         }
+
+        $this->_setAdditionalCurlParams([
+            CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . $this->getServiceAccountJwtRetriever()->getJwt()]
+        ]);
 
         $this->call("update_relative_url", $parameters, true);
 
@@ -141,5 +149,73 @@ class Engines_NecTM extends Engines_AbstractEngine
     {
         $l = explode("-", strtolower(trim($lang)));
         return $l[0];
+    }
+
+    public function validateTmKeys($tmKeys): array
+    {
+        $errors = [];
+        $tagsData = $this->retrieveTags(array_column($tmKeys, 'key'));
+        $tagsMap = array_combine(
+            array_column($tagsData, 'key'),
+            $tagsData
+        );
+
+        foreach ($tmKeys as $tmKey) {
+            $key = $tmKey['key'];
+            if (!isset($tagsMap[$key])) {
+                $errors[] = "TM key $key not found";
+            }
+        }
+
+        return $errors;
+    }
+
+    private function retrieveTags($ids)
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . $this->getServiceAccountJwtRetriever()->getJwt()
+        ]);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_URL, $this->engineRecord['base_url'] . "/tags?id=" . join('&id=', $ids));
+
+        $response = curl_exec($curl);
+        $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        if ($httpCode !== 200) {
+            throw new RuntimeException("Retrieving of the tags failed", $httpCode);
+        }
+
+        return json_decode($response, true)['data'] ?? [];
+    }
+
+    private function getServiceAccountJwtRetriever(): ServiceAccountJwtRetrieverInterface
+    {
+        return new CachedKeycloakServiceAccountJwtRetriever(
+            new KeycloakServiceAccountJwtRetriever(),
+            new JwtTokenDecoder(
+                new CachedRealmJwkRetriever(
+                    new ApiRealmJwkRetriever()
+                )
+            )
+        );
+    }
+
+    private function getTagsAsString($config): ?string
+    {
+        if (!empty($config['id_user'])) {
+            if (!is_array($config['id_user'])) {
+                $config['id_user'] = [$config['id_user']];
+            }
+            return implode(",", $config['id_user']);
+        }
+
+        return null;
+    }
+
+    public static function getID(): int
+    {
+        return 13;
     }
 }
