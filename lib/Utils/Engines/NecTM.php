@@ -1,6 +1,5 @@
 <?php
 
-
 use Engines\NecTM\Auth\ApiRealmJwkRetriever;
 use Engines\NecTM\Auth\CachedKeycloakServiceAccountJwtRetriever;
 use Engines\NecTM\Auth\CachedRealmJwkRetriever;
@@ -41,7 +40,7 @@ class Engines_NecTM extends Engines_AbstractEngine
             throw new Exception("Engine {$this->engineRecord->id} is not a TMS engine, found {$this->engineRecord->type} -> {$this->engineRecord->class_load}");
         }
 
-        $this->engineRecord['base_url'] = INIT::$NEC_TM_BASE_URL;
+        $this->engineRecord['base_url'] = rtrim(INIT::$NEC_TM_BASE_URL, '/');
     }
 
     protected function _decode($rawValue)
@@ -106,11 +105,19 @@ class Engines_NecTM extends Engines_AbstractEngine
             $parameters['tag'] = $tags;
         }
 
+        $jwt = $this->getServiceAccountJwtRetriever()->getJwt();
         $this->_setAdditionalCurlParams([
             CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . $this->getServiceAccountJwtRetriever()->getJwt()]
         ]);
 
         $this->call('translate_relative_url', $parameters);
+
+        Log::doJsonLog([
+            'action' => 'get',
+            'params' => $parameters,
+            'jwt' => $jwt,
+            'result' => $this->result
+        ], 'nectm.log');
 
         return $this->result;
     }
@@ -128,11 +135,19 @@ class Engines_NecTM extends Engines_AbstractEngine
             $parameters['tag'] = $tags;
         }
 
+        $jwt = $this->getServiceAccountJwtRetriever()->getJwt();
         $this->_setAdditionalCurlParams([
-            CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . $this->getServiceAccountJwtRetriever()->getJwt()]
+            CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . $jwt]
         ]);
 
         $this->call("update_relative_url", $parameters, true);
+
+        Log::doJsonLog([
+            'action' => 'update',
+            'params' => $parameters,
+            'jwt' => $jwt,
+            'result' => $this->result
+        ], 'nectm.log');
 
         return $this->result;
     }
@@ -151,19 +166,27 @@ class Engines_NecTM extends Engines_AbstractEngine
         return $l[0];
     }
 
+    /**
+     * @param $tmKeys
+     * @return array|array[] list of errors
+     */
     public function validateTmKeys($tmKeys): array
     {
         $errors = [];
         $tagsData = $this->retrieveTags(array_column($tmKeys, 'key'));
+
         $tagsMap = array_combine(
-            array_column($tagsData, 'key'),
+            array_column($tagsData, 'id'),
             $tagsData
         );
 
         foreach ($tmKeys as $tmKey) {
             $key = $tmKey['key'];
             if (!isset($tagsMap[$key])) {
-                $errors[] = "TM key $key not found";
+                $errors[][] = [
+                    'message' => "TM key $key not found",
+                    'tm_key' => $key,
+                ];
             }
         }
 
@@ -172,22 +195,36 @@ class Engines_NecTM extends Engines_AbstractEngine
 
     private function retrieveTags($ids)
     {
+        $url = join('/', [
+            $this->engineRecord['base_url'],
+            "tags?id=" . join('&id=', $ids)
+        ]);
+        $jwt = $this->getServiceAccountJwtRetriever()->getJwt();
+
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_HTTPHEADER, [
             'Content-Type: application/json',
-            'Authorization: Bearer ' . $this->getServiceAccountJwtRetriever()->getJwt()
+            'Authorization: Bearer ' . $jwt
         ]);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_URL, $this->engineRecord['base_url'] . "/tags?id=" . join('&id=', $ids));
+        curl_setopt($curl, CURLOPT_URL, $url);
 
         $response = curl_exec($curl);
         $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
+        Log::doJsonLog([
+            'action' => 'retrieveTags',
+            'url' => $url,
+            'jwt' => $jwt,
+            'httpCode' => $httpCode,
+            'response' => $response
+        ], 'nectm.log');
+
         if ($httpCode !== 200) {
-            throw new RuntimeException("Retrieving of the tags failed", $httpCode);
+            throw new RuntimeException("Translation memory service is not available please try again later", $httpCode);
         }
 
-        return json_decode($response, true)['data'] ?? [];
+        return json_decode($response, true)['tags'] ?? [];
     }
 
     private function getServiceAccountJwtRetriever(): ServiceAccountJwtRetrieverInterface

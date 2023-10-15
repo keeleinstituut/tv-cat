@@ -5,11 +5,11 @@ namespace API\V2;
 use API\V2\Json\Project;
 use API\V2\Json\ProjectAnonymous;
 use API\V2\Validators\ProjectPasswordValidator;
+use Constants_Engines;
 use Engine;
+use Engines_MTee;
 use Engines_NecTM;
 use Exception;
-use Constants_Engines;
-use Engines_MTee;
 use Jobs_JobDao;
 use Projects_ProjectDao;
 use TMKeysUtils;
@@ -22,7 +22,8 @@ use Utils;
  * Class ProjectsController
  * @package API\V2
  */
-class ProjectsController extends KleinController {
+class ProjectsController extends KleinController
+{
 
     /**
      * @var \Projects_ProjectStruct
@@ -34,61 +35,65 @@ class ProjectsController extends KleinController {
      */
     private $projectValidator;
 
-    public function get() {
+    public function get()
+    {
 
-        if ( empty( $this->user ) ) {
+        if (empty($this->user)) {
             $formatted = new ProjectAnonymous();
         } else {
             $formatted = new Project();
-            $formatted->setUser( $this->user );
-            if ( !empty( $this->api_key ) ) {
-                $formatted->setCalledFromApi( true );
+            $formatted->setUser($this->user);
+            if (!empty($this->api_key)) {
+                $formatted->setCalledFromApi(true);
             }
         }
 
-        $this->featureSet->loadForProject( $this->project );
-        $projectOutputFields = $formatted->renderItem( $this->project );
-        $this->response->json( [ 'project' => $projectOutputFields ] );
+        $this->featureSet->loadForProject($this->project);
+        $projectOutputFields = $formatted->renderItem($this->project);
+        $this->response->json(['project' => $projectOutputFields]);
 
     }
 
-    public function setDueDate() {
+    public function setDueDate()
+    {
         $this->updateDueDate();
     }
 
-    public function updateDueDate() {
+    public function updateDueDate()
+    {
         if (
-                array_key_exists( "due_date", $this->params )
-                &&
-                is_numeric( $this->params[ 'due_date' ] )
-                &&
-                $this->params[ 'due_date' ] > time()
+            array_key_exists("due_date", $this->params)
+            &&
+            is_numeric($this->params['due_date'])
+            &&
+            $this->params['due_date'] > time()
         ) {
 
-            $due_date    = \Utils::mysqlTimestamp( $this->params[ 'due_date' ] );
+            $due_date = \Utils::mysqlTimestamp($this->params['due_date']);
             $project_dao = new Projects_ProjectDao;
-            $project_dao->updateField( $this->project, "due_date", $due_date );
+            $project_dao->updateField($this->project, "due_date", $due_date);
         }
-        if ( empty( $this->user ) ) {
+        if (empty($this->user)) {
             $formatted = new ProjectAnonymous();
         } else {
             $formatted = new Project();
         }
 
         //$this->response->json( $this->project->toArray() );
-        $this->response->json( [ 'project' => $formatted->renderItem( $this->project ) ] );
+        $this->response->json(['project' => $formatted->renderItem($this->project)]);
     }
 
-    public function deleteDueDate() {
+    public function deleteDueDate()
+    {
         $project_dao = new Projects_ProjectDao;
-        $project_dao->updateField( $this->project, "due_date", null );
+        $project_dao->updateField($this->project, "due_date", null);
 
-        if ( empty( $this->user ) ) {
+        if (empty($this->user)) {
             $formatted = new ProjectAnonymous();
         } else {
             $formatted = new Project();
         }
-        $this->response->json( [ 'project' => $formatted->renderItem( $this->project ) ] );
+        $this->response->json(['project' => $formatted->renderItem($this->project)]);
     }
 
     public function toggleMTEnabled()
@@ -109,34 +114,38 @@ class ProjectsController extends KleinController {
         return $this->response->json([]);
     }
 
-    public function cancel() {
-        return $this->changeStatus(\Constants_JobStatus::STATUS_CANCELLED );
+    public function cancel()
+    {
+        return $this->changeStatus(\Constants_JobStatus::STATUS_CANCELLED);
     }
 
-    public function archive() {
-        return $this->changeStatus(\Constants_JobStatus::STATUS_ARCHIVED );
+    public function archive()
+    {
+        return $this->changeStatus(\Constants_JobStatus::STATUS_ARCHIVED);
     }
 
-    public function active() {
-        return $this->changeStatus(\Constants_JobStatus::STATUS_ACTIVE );
+    public function active()
+    {
+        return $this->changeStatus(\Constants_JobStatus::STATUS_ACTIVE);
     }
 
-    protected function changeStatus($status){
+    protected function changeStatus($status)
+    {
 
         $chunks = $this->project->getJobs();
 
-        foreach( $chunks as $chunk ){
+        foreach ($chunks as $chunk) {
 
             // update a job only if it is NOT deleted
-            if(!$chunk->wasDeleted()){
+            if (!$chunk->wasDeleted()) {
                 Jobs_JobDao::updateJobStatus($chunk, $status);
 
-                $lastSegmentsList = Translations_SegmentTranslationDao::getMaxSegmentIdsFromJob( $chunk );
-                Translations_SegmentTranslationDao::updateLastTranslationDateByIdList( $lastSegmentsList, Utils::mysqlTimestamp( time() ) );
+                $lastSegmentsList = Translations_SegmentTranslationDao::getMaxSegmentIdsFromJob($chunk);
+                Translations_SegmentTranslationDao::updateLastTranslationDateByIdList($lastSegmentsList, Utils::mysqlTimestamp(time()));
             }
         }
 
-        $this->response->json( [ 'code' => 1, 'data' => "OK", 'status' => $status ] );
+        $this->response->json(['code' => 1, 'data' => "OK", 'status' => $status]);
 
     }
 
@@ -144,22 +153,24 @@ class ProjectsController extends KleinController {
      * @return void
      * @throws Exception
      */
-    public function syncTMKeys()
+    public function setTMKeys()
     {
         $project = $this->project;
         $newKeys = TMKeysUtils::parse($this->getPutParams()['tm_keys'] ?? '');
 
         if (empty($newKeys)) {
             $this->response->json(['data' => []]);
+            return;
         }
 
         /** @var Engines_NecTM $engine */
-        $engine = Engine::getInstance( Engines_NecTM::getID() );
-        $errors = $engine->validateTmKeys($newKeys);
+        $engine = Engine::getInstance(Engines_NecTM::getID());
 
+        $errors = $engine->validateTmKeys($newKeys);
         if (!empty($errors)) {
             $this->response->code(422);
             $this->response->json(['errors' => $errors]);
+            return;
         }
 
         foreach ($project->getJobs() as $job) {
@@ -169,15 +180,16 @@ class ProjectsController extends KleinController {
         $this->response->json(['data' => $newKeys]);
     }
 
-    protected function afterConstruct() {
+    protected function afterConstruct()
+    {
 
-        $projectValidator = ( new ProjectPasswordValidator( $this ) );
+        $projectValidator = (new ProjectPasswordValidator($this));
 
-        $projectValidator->onSuccess( function () use ( $projectValidator ) {
+        $projectValidator->onSuccess(function () use ($projectValidator) {
             $this->project = $projectValidator->getProject();
-        } );
+        });
 
-        $this->appendValidator( $projectValidator );
+        $this->appendValidator($projectValidator);
     }
 
 }

@@ -59,6 +59,13 @@ services:
       - SSE_QUEUE_USER=admin
       - SSE_QUEUE_PASSWORD=admin
 
+      - MATECAT_NECTM_KEYCLOAK_BASE_URL=https://sso.dev.tolkevarav.eki.ee
+      - MATECAT_NECTM_KEYCLOAK_REALM=tolkevarav-dev
+      - MATECAT_NECTM_KEYCLOAK_CLIENT_ID=tv-cat-service
+      - MATECAT_NECTM_KEYCLOAK_CLIENT_SECRET=supersecret
+
+      - MATECAT_NEC_TM_BASE_URL=https://api.dev.tolkevarav.eki.ee/tm/api/v1/
+
       # Needed for init database with MySQL dump.
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_PORT=3306

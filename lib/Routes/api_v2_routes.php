@@ -22,7 +22,7 @@ $klein->with('/api/v2/projects/[:id_project]/[:password]', function() {
     route( '/active', 'POST', 'API\V2\ProjectsController', 'active' );
 
     route( '/toggle-mt-enabled', 'PUT', 'API\V2\ProjectsController', 'toggleMTEnabled' );
-    route( '/sync-tm-keys', 'PUT', '\API\V2\ProjectsController', 'syncTMKeys' );
+    route( '/set-tm-keys', 'PUT', '\API\V2\ProjectsController', 'setTMKeys' );
 });
 
 route( '/api/v2/project-completion-status/[i:id_project]', 'GET', '\API\V2\ProjectCompletionStatus', 'status' );
