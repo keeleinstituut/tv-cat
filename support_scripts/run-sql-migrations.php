@@ -79,7 +79,7 @@ class SQLMigrationsRunner
 
     private function getAppliedMigrationsStoragePath()
     {
-        return $this->rootDir . "/migrations/sql/applied-migrations.json";
+        return $this->rootDir . "/migrations/sql/applied-migrations/applied-migrations.json";
     }
 }
 
