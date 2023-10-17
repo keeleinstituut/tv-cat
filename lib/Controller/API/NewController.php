@@ -350,7 +350,8 @@ class NewController extends ajaxController
     {
 
         if (!isset($this->postInput['tms_engine'])) {
-            $this->postInput['tms_engine'] = Engines_NecTM::getID();
+            // TODO: switch to NecTM
+            $this->postInput['tms_engine'] = 1;//Engines_NecTM::getID();
         }
 
         if (!isset($this->postInput['mt_engine'])) {
@@ -916,7 +917,9 @@ class NewController extends ajaxController
     protected function __validateTmAndKeys()
     {
         if (empty($this->postInput['private_tm_key'])) {
-            throw new Exception("Project should have at least one TM key");
+            // TODO: remove
+            return;
+            //throw new Exception("Project should have at least one TM key");
         }
 
         $this->private_tm_key = TMKeysUtils::parse($this->postInput['private_tm_key']);
