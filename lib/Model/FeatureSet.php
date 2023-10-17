@@ -519,6 +519,11 @@ class FeatureSet implements FeatureSetInterface
 
         if ( !empty( INIT::$AUTOLOAD_PLUGINS ) ) {
             $plugins = json_decode(INIT::$AUTOLOAD_PLUGINS, true);
+            // Spawning a lot of warnings without check
+            if (!is_iterable($plugins)) {
+                return $features;
+            }
+
             foreach ( $plugins as $plugin ) {
                 $features[ $plugin ] = new BasicFeatureStruct( [ 'feature_code' => $plugin ] );
             }

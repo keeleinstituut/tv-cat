@@ -29,6 +29,7 @@ class Constants_Engines {
     const MTHUB            = 'MTHUB';
     const INTENTO          = 'Intento';
     const MTEE              = 'MTee';
+    const NECTM              = 'NecTM';
 
     protected static $ENGINES_LIST = [
             self::MY_MEMORY        => self::MY_MEMORY,
@@ -46,6 +47,7 @@ class Constants_Engines {
             self::INTENTO          => self::INTENTO,
             self::MMT              => self::MMT,
             self::MTEE             => self::MTEE,
+            self::NECTM             => self::NECTM,
     ];
 
     /**

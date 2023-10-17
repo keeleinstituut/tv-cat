@@ -14,23 +14,23 @@ $klein->with('/api/v2/projects/[:id_project]/[:password]', function() {
     route( '/jobs/[:id_job]/[:job_password]/split/[:num_split]/apply', 'POST', 'API\V2\JobSplitController', 'apply' );
     route( '/creation_status', 'GET', 'API\V2\ProjectCreationStatusController', 'get' );
     route( '/completion_status', 'GET', 'API\V2\ProjectCompletionStatus', 'status' );
-    route( '/due_date', 'PUT', 'API\V2\ProjectsController', 'updateDueDate' );
-    route( '/due_date', 'POST', 'API\V2\ProjectsController', 'setDueDate' );
-    route( '/due_date', 'DELETE', 'API\V2\ProjectsController', 'deleteDueDate' );
-    route( '/toggle-mt-enabled', 'PUT', 'API\V2\ProjectsController', 'toggleMTEnabled' );
+    //route( '/due_date', 'PUT', 'API\V2\ProjectsController', 'updateDueDate' );
+    //route( '/due_date', 'POST', 'API\V2\ProjectsController', 'setDueDate' );
+    //route( '/due_date', 'DELETE', 'API\V2\ProjectsController', 'deleteDueDate' );
     route( '/cancel', 'POST', 'API\V2\ProjectsController', 'cancel' );
     route( '/archive', 'POST', 'API\V2\ProjectsController', 'archive' );
     route( '/active', 'POST', 'API\V2\ProjectsController', 'active' );
+
+    route( '/toggle-mt-enabled', 'PUT', 'API\V2\ProjectsController', 'toggleMTEnabled' );
+    route( '/set-tm-keys', 'PUT', '\API\V2\ProjectsController', 'setTMKeys' );
 });
 
 route( '/api/v2/project-completion-status/[i:id_project]', 'GET', '\API\V2\ProjectCompletionStatus', 'status' );
 
 
 $klein->with('/api/v2/activity', function() {
-
     route( '/project/[:id_project]/[:password]/last', 'GET', '\API\V2\ActivityLogController', 'lastOnProject' );
     route( '/job/[:id_job]/[:password]/last', 'GET', 'API\V2\ActivityLogController', 'lastOnJob' );
-
 });
 
 $klein->with('/api/v2/jobs/[:id_job]/[:password]', function() {
@@ -39,13 +39,11 @@ $klein->with('/api/v2/jobs/[:id_job]/[:password]', function() {
     route( '/comments',     'GET', 'API\V2\CommentsController', 'index' );
 
     route( '/quality-report', 'GET', 'Features\ReviewExtended\Controller\API\QualityReportController', 'show' );
-
     route( '/quality-report/general',          'GET', 'Features\ReviewExtended\Controller\API\QualityReportController', 'general' );
-
     route( '/quality-report/versions', 'GET', 'Features\ReviewExtended\Controller\API\QualityReportController', 'versions' );
 
     route( '/translator', 'GET',  '\API\V2\JobsTranslatorsController', 'get' ) ;
-    route( '/translator', 'POST',  '\API\V2\JobsTranslatorsController', 'add' ) ;
+    //route( '/translator', 'POST',  '\API\V2\JobsTranslatorsController', 'add' ) ;
 
     route( '/translation-issues', 'GET', 'API\V2\ChunkTranslationIssueController', 'index' );
     route( '/translation-versions', 'GET', '\API\V2\ChunkTranslationVersionController', 'index' );
@@ -55,10 +53,10 @@ $klein->with('/api/v2/jobs/[:id_job]/[:password]', function() {
     route( '/segments/[:id_segment]/translation-versions', 'GET', '\API\V2\SegmentVersion', 'index' );
     route( '/segments/[:id_segment]/translation-versions/[:version_number]', 'GET', '\API\V2\SegmentVersion', 'detail' );
 
-    route( '/segments/[:id_segment]/translation-issues', 'POST', 'API\V2\SegmentTranslationIssueController', 'create' );
-    route( '/segments/[:id_segment]/translation-issues/[:id_issue]', 'DELETE', 'API\V2\SegmentTranslationIssueController', 'delete' );
-    route( '/segments/[:id_segment]/translation-issues/[:id_issue]', 'POST', 'API\V2\SegmentTranslationIssueController', 'update' );
-    route( '/segments/[:id_segment]/translation-issues/[:id_issue]/comments', 'POST', 'API\V2\SegmentTranslationIssueController', 'createComment' );
+    //route( '/segments/[:id_segment]/translation-issues', 'POST', 'API\V2\SegmentTranslationIssueController', 'create' );
+    //route( '/segments/[:id_segment]/translation-issues/[:id_issue]', 'DELETE', 'API\V2\SegmentTranslationIssueController', 'delete' );
+    //route( '/segments/[:id_segment]/translation-issues/[:id_issue]', 'POST', 'API\V2\SegmentTranslationIssueController', 'update' );
+    //route( '/segments/[:id_segment]/translation-issues/[:id_issue]/comments', 'POST', 'API\V2\SegmentTranslationIssueController', 'createComment' );
     route( '/segments/[:id_segment]/translation-issues/[:id_issue]/comments', 'GET', 'API\V2\SegmentTranslationIssueController', 'getComments' );
 
     route( '/segments/status', 'POST', '\API\V2\JobStatusController', 'changeSegmentsStatus'  );
@@ -77,9 +75,9 @@ $klein->with('/api/v2/jobs/[:id_job]/[:password]', function() {
 
 $klein->with('/api/v2/glossaries', function() {
 
-    route( '/import/', 'POST', '\API\V2\GlossariesController', 'import' );
+    //route( '/import/', 'POST', '\API\V2\GlossariesController', 'import' );
     route( '/import/status/[:uuid]', 'GET', '\API\V2\GlossariesController', 'uploadStatus' );
-    route( '/export/', 'POST', '\API\V2\GlossariesController', 'download' );
+    //route( '/export/', 'POST', '\API\V2\GlossariesController', 'download' );
 
 });
 
@@ -92,17 +90,17 @@ route( '/api/v2/engines/list',         'GET',  '\API\V2\EnginesController',    '
 $klein->with('/api/v2/teams', function() {
 
     route( '',                                     'GET',  '\API\V2\TeamsController', 'getTeamList') ;
-    route( '',                                     'POST', '\API\V2\TeamsController', 'create') ;
-    route( '/[i:id_team]',                         'PUT',  '\API\V2\TeamsController', 'update' ) ;
-
-    route( '/[i:id_team]/members',                 'POST',    '\API\V2\TeamMembersController', 'update') ;
+//    route( '',                                     'POST', '\API\V2\TeamsController', 'create') ;
+//    route( '/[i:id_team]',                         'PUT',  '\API\V2\TeamsController', 'update' ) ;
+//
+//    route( '/[i:id_team]/members',                 'POST',    '\API\V2\TeamMembersController', 'update') ;
     route( '/[i:id_team]/members',                 'GET',     '\API\V2\TeamMembersController', 'index' ) ;
-    route( '/[i:id_team]/members/[i:uid_member]',  'DELETE' , '\API\V2\TeamMembersController', 'delete' );
-
-    route( '/[i:id_team]/projects/[i:id_project]', 'PUT', 'API\V2\TeamsProjectsController',  'update' ) ;
+//    route( '/[i:id_team]/members/[i:uid_member]',  'DELETE' , '\API\V2\TeamMembersController', 'delete' );
+//
+//    route( '/[i:id_team]/projects/[i:id_project]', 'PUT', 'API\V2\TeamsProjectsController',  'update' ) ;
     route( '/[i:id_team]/projects/[i:id_project]', 'GET', 'API\V2\TeamsProjectsController',  'get' ) ;
     route( '/[i:id_team]/projects/[:project_name]', 'GET', 'API\V2\TeamsProjectsController',  'getByName' ) ;
-    route( '/[i:id_team]/projects',                'GET', '\API\V2\TeamsProjectsController', 'getAll') ;
+//    route( '/[i:id_team]/projects',                'GET', '\API\V2\TeamsProjectsController', 'getAll') ;
 
 }) ;
 

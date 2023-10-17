@@ -168,7 +168,7 @@ abstract class  Engines_AbstractEngine implements Engines_EngineInterface {
 
         if( $this->logging ){
             $log = $mh->getSingleLog( $resourceHash );
-            if( $this->content_type == 'json' ){
+            if( $this->content_type == 'json' && is_string($rawValue)){
                 $log[ 'response' ] = json_decode( $rawValue, true );
             } else {
                 $log[ 'response' ] = $rawValue;
