@@ -205,7 +205,7 @@ class Engines_MyMemory extends Engines_AbstractEngine {
             if ( !is_array( $_config[ 'id_user' ] ) ) {
                 $_config[ 'id_user' ] = [ $_config[ 'id_user' ] ];
             }
-            $parameters[ 'key' ] = implode( ",", $_config[ 'id_user' ] );
+            //$parameters[ 'key' ] = implode( ",", $_config[ 'id_user' ] );
         }
 
         ( !$_config[ 'isGlossary' ] ? $function = "translate_relative_url" : $function = "gloss_get_relative_url" );
@@ -243,7 +243,7 @@ class Engines_MyMemory extends Engines_AbstractEngine {
             if ( !is_array( $_config[ 'id_user' ] ) ) {
                 $_config[ 'id_user' ] = [ $_config[ 'id_user' ] ];
             }
-            $parameters[ 'key' ] = implode( ",", $_config[ 'id_user' ] );
+            //$parameters[ 'key' ] = implode( ",", $_config[ 'id_user' ] );
         }
 
         ( !$_config[ 'isGlossary' ] ? $function = "contribute_relative_url" : $function = "gloss_set_relative_url" );
@@ -278,7 +278,7 @@ class Engines_MyMemory extends Engines_AbstractEngine {
             if ( !is_array( $_config[ 'id_user' ] ) ) {
                 $_config[ 'id_user' ] = [ $_config[ 'id_user' ] ];
             }
-            $parameters[ 'key' ] = implode( ",", $_config[ 'id_user' ] );
+            //$parameters[ 'key' ] = implode( ",", $_config[ 'id_user' ] );
         }
 
         $this->call( "update_relative_url", $parameters, true );
@@ -316,7 +316,7 @@ class Engines_MyMemory extends Engines_AbstractEngine {
             if ( !is_array( $_config[ 'id_user' ] ) ) {
                 $_config[ 'id_user' ] = [ $_config[ 'id_user' ] ];
             }
-            $parameters[ 'key' ] = implode( ",", $_config[ 'id_user' ] );
+            //$parameters[ 'key' ] = implode( ",", $_config[ 'id_user' ] );
         }
 
         ( !$_config[ 'isGlossary' ] ? $function = "delete_relative_url" : $function = "gloss_delete_relative_url" );
@@ -354,7 +354,7 @@ class Engines_MyMemory extends Engines_AbstractEngine {
             if ( !is_array( $_config[ 'id_user' ] ) ) {
                 $_config[ 'id_user' ] = [ $_config[ 'id_user' ] ];
             }
-            $parameters[ 'key' ] = implode( ",", $_config[ 'id_user' ] );
+            //$parameters[ 'key' ] = implode( ",", $_config[ 'id_user' ] );
         }
 
         $this->call( "gloss_update_relative_url", $parameters );
