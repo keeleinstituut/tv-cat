@@ -173,6 +173,9 @@ class Engines_NecTM extends Engines_AbstractEngine
     public function validateTmKeys($tmKeys): array
     {
         $errors = [];
+
+        // TODO: remove when NecTM keycloack service account will get the permission to retrieve tags by ids.
+        return $errors;
         $tagsData = $this->retrieveTags(array_column($tmKeys, 'key'));
 
         $tagsMap = array_combine(
