@@ -165,7 +165,6 @@ class ProjectsController extends KleinController
 
         /** @var Engines_NecTM $engine */
         $engine = Engine::getInstance(Engines_NecTM::getID());
-
         $errors = $engine->validateTmKeys($newKeys);
         if (!empty($errors)) {
             $this->response->code(422);
