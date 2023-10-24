@@ -573,10 +573,6 @@ class FastAnalysis extends AbstractDaemon {
                         $element->params    = $queue_element;
                         $element->classLoad = '\Analysis\Workers\TMAnalysisWorker';
 
-                        Log::doJsonLog([
-                            'Sent message to ' . $queueInfo->queue_name . ' queue for the TMAnalysisWorker'
-                        ], 'FastAnalysis-Debug.log');
-
                         self::$queueHandler->send( $queueInfo->queue_name, $element, [ 'persistent' => self::$queueHandler->persistent ] );
                         self::_TimeStampMsg( "AMQ Set Executed " . ( $k + 1 ) . " Language: $language" );
 
