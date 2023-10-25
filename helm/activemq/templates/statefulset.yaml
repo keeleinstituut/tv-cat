@@ -42,13 +42,13 @@ spec:
               command:
                 - "/bin/sh"
                 - "-c"
-                - test 'Good' = "$(curl -f -u $ACTIVEMQ_USERNAME:$ACTIVEMQ_PASSWORD -s '{{ $healthEndpointAddress }}' | jq -r .value)"
+                - test '200' = "$(curl -f -u $ACTIVEMQ_USERNAME:$ACTIVEMQ_PASSWORD -s '{{ $healthEndpointAddress }}' | jq -r .status)"
           readinessProbe:
             exec:
               command:
                 - "/bin/sh"
                 - "-c"
-                - test 'Good' = "$(curl -f -u $ACTIVEMQ_USERNAME:$ACTIVEMQ_PASSWORD -s '{{ $healthEndpointAddress }}' | jq -r .value)"
+                - test '200' = "$(curl -f -u $ACTIVEMQ_USERNAME:$ACTIVEMQ_PASSWORD -s '{{ $healthEndpointAddress }}' | jq -r .status)"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- if .Values.extraEnvVars }}
