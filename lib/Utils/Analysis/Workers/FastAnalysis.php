@@ -428,7 +428,7 @@ class FastAnalysis extends AbstractDaemon {
                     $this->segments[ $k ][ 'date_insert' ]   = date_create()->format( 'Y-m-d H:i:s' );
                     $this->segments[ $k ][ 'eq_word_count' ] = ( (float)$eq_word > $segment->raw_word_count ) ? $segment->raw_word_count : (float)$eq_word;;
                     $this->segments[ $k ][ 'standard_word_count' ] = ( (float)$standard_words > $segment->raw_word_count ) ? $segment->raw_word_count : (float)$standard_words;
-
+                    $this->segments[ $k ]['match_type'] = $match_type;
                 } else {
                     //In this case the TM analysis is disabled
                     //ALL segments must not be sent to the TM analysis queue
@@ -572,10 +572,6 @@ class FastAnalysis extends AbstractDaemon {
                         $element            = new QueueElement();
                         $element->params    = $queue_element;
                         $element->classLoad = '\Analysis\Workers\TMAnalysisWorker';
-
-                        Log::doJsonLog([
-                            'Sent message to ' . $queueInfo->queue_name . ' queue for the TMAnalysisWorker'
-                        ], 'FastAnalysis-Debug.log');
 
                         self::$queueHandler->send( $queueInfo->queue_name, $element, [ 'persistent' => self::$queueHandler->persistent ] );
                         self::_TimeStampMsg( "AMQ Set Executed " . ( $k + 1 ) . " Language: $language" );

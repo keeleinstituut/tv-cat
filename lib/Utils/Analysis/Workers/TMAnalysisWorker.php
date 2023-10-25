@@ -24,6 +24,7 @@ use Engines_Results_MyMemory_TMS;
 use Exception;
 use FeatureSet;
 use Jobs_JobDao;
+use Log;
 use LQA\QA;
 use PDOException;
 use PostProcess;
@@ -107,6 +108,8 @@ class TMAnalysisWorker extends AbstractWorker {
          * @throws EmptyElementException
          */
         $this->_checkWordCount( $queueElement );
+
+
 
         /**
          * @throws ReQueueException
@@ -363,8 +366,7 @@ class TMAnalysisWorker extends AbstractWorker {
      * @throws Exception
      */
     protected function _getNewMatchType( $tm_match_type, $fast_match_type, &$equivalentWordMapping, $publicTM = false, $isICE = false ) {
-
-        $fast_match_type = strtoupper( $fast_match_type );
+        $fast_match_type = strtoupper( $fast_match_type ) ?: 'NO_MATCH';
         $fast_rate_paid  = $equivalentWordMapping[ $fast_match_type ];
 
         $tm_match_fuzzy_band = "";
