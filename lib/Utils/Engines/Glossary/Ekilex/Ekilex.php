@@ -113,7 +113,7 @@ class Ekilex
                 'Content-Type: application/json',
                 'ekilex-api-key: ' . $this->apiKey
             ],
-            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_CONNECTTIMEOUT => 10
         ]);
 
         $curlHandler->multiExec();
@@ -156,7 +156,7 @@ class Ekilex
                     'Content-Type: application/json',
                     'ekilex-api-key: ' . $this->apiKey
                 ],
-                CURLOPT_CONNECTTIMEOUT => 10,
+                CURLOPT_CONNECTTIMEOUT => 10
             ], $wordId);
         }
         $multiCurl->multiExec();
@@ -186,13 +186,13 @@ class Ekilex
                 'Content-Type: application/json',
                 'ekilex-api-key: ' . $this->apiKey
             ],
-            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_CONNECTTIMEOUT => 10
         ]);
 
         $curlHandler->multiExec();
 
         $response = $curlHandler->getSingleContent($token, function ($response) {
-            return json_decode($response, true);
+            return empty($response) ? [] : json_decode($response, true);
         });
 
         if (!isset($response['words'])) {

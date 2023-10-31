@@ -16,7 +16,7 @@ export const DatasetSelect = () => {
                 placeholder="No dataset"
                 showSearchBar
                 searchPlaceholder="Find a dataset"
-                options={domainsResponse}
+                options={domainsResponse ? domainsResponse : []}
                 activeOption={searchDataset}
                 checkSpaceToReverse={false}
                 onSelect={(option) => {
