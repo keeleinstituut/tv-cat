@@ -483,6 +483,7 @@ class GetContributionWorker extends AbstractWorker {
                 $config[ 'segment' ] = $contributionStruct->getContexts()->segment;
                 $config[ 'source' ]  = $jobStruct->source;
                 $config[ 'target' ]  = $jobStruct->target;
+                $config[ 'email' ]   = INIT::$MYMEMORY_API_KEY;
                 $config[ 'segid' ]   = $contributionStruct->segmentId;
 
                 $mt_result = $mt_engine->get( $config );
