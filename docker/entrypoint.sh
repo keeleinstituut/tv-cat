@@ -3,11 +3,6 @@ set -Eeuo pipefail
 
 MATECAT_ENV=$(env | grep '^MATECAT_' | sed -En "s/^MATECAT_//p")
 
-echo '---------------'
-echo '------env------'
-echo $MATECAT_ENV
-echo ''
-
 cat > $APP_ROOT/inc/config.ini <<EOT
 ENV=production
 CHECK_FS=no
