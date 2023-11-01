@@ -55,14 +55,14 @@ class Engines_MTee extends Engines_AbstractEngine
             $all_args = func_get_args();
             $all_args[1]['text'] = $all_args[1]['text'][0];
 
-            return $this->_composeResponseAsMatch($all_args, [
+            return $this->composeResponseAsMatch($all_args, [
                 'data' => [
                     'translations' => [
                         ['translatedText' => $decoded["translations"][0]["translation"]]
                     ]
                 ]
             ]);
-        } elseif (isset($decoded['error']) && isset($decoded['error']['response'])) {
+        } elseif (isset($decoded['error']['response'])) {
             $response = json_decode($decoded['error']['response'], true);
             $result['error'] = [
                 'code' => $response['error']['code'],
@@ -92,6 +92,9 @@ class Engines_MTee extends Engines_AbstractEngine
             return $this->result;
         }
 
+        $this->_config['target'] = $_config['target'];
+        $this->_config['source'] = $_config['source'];
+
         $parameters = [];
         $parameters['trgLang'] = $this->_fixLangCode($_config['target']);
         $parameters['srcLang'] = $this->_fixLangCode($_config['source']);
@@ -103,7 +106,9 @@ class Engines_MTee extends Engines_AbstractEngine
         $this->_setAdditionalCurlParams([
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json'
-            ]
+            ],
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false
         ]);
 
         $this->call("translate_relative_url", $parameters, true, true);
@@ -154,5 +159,20 @@ class Engines_MTee extends Engines_AbstractEngine
     public function getName()
     {
         return 'MTee';
+    }
+
+    public function composeResponseAsMatch(array $all_args, $decoded)
+    {
+        $match = $this->_composeResponseAsMatch($all_args, $decoded);
+
+        if (empty($match['source']) && !empty($this->_config['source'])) {
+            $match['source'] = $this->_config['source'];
+        }
+
+        if (empty($match['target']) && !empty($this->_config['target'])) {
+            $match['target'] = $this->_config['target'];
+        }
+
+        return $match;
     }
 }

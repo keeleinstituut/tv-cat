@@ -115,7 +115,7 @@ class Engines_Results_MyMemory_Matches {
             $match[ 'prop' ]             = ( isset( $this->_args[ 5 ] ) ? $this->_args[ 5 ] : [] );
         }
 
-        $this->id               = array_key_exists( 'id', $match ) ? $match[ 'id' ] : '0';
+        $this->id               = array_key_exists( 'id', $match ) ? $match[ 'id' ] : mt_rand();
         $this->create_date      = array_key_exists( 'create-date', $match ) ? $match[ 'create-date' ] : '0000-00-00';
         $this->segment          = array_key_exists( 'segment', $match ) ? $match[ 'segment' ] : '';
         $this->raw_segment      = array_key_exists( 'raw_segment', $match ) ? $match[ 'raw_segment' ] : '';
