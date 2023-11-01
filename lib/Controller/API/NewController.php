@@ -350,8 +350,7 @@ class NewController extends ajaxController
     {
 
         if (!isset($this->postInput['tms_engine'])) {
-            // TODO: switch to NecTM
-            $this->postInput['tms_engine'] = 1;//Engines_NecTM::getID();
+            $this->postInput['tms_engine'] = Engines_NecTM::getID();
         }
 
         if (!isset($this->postInput['mt_engine'])) {

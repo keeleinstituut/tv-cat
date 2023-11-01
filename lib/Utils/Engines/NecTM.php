@@ -47,7 +47,7 @@ class Engines_NecTM extends Engines_AbstractEngine
     {
         $function = func_get_args()[2] ?? 'translate_relative_url';
         if ($function !== 'translate_relative_url') {
-            return isset($rawValue['error']);
+            return !isset($rawValue['error']);
         }
 
         $dataRefMap = $this->_config['dataRefMap'] ?? [];
@@ -69,11 +69,12 @@ class Engines_NecTM extends Engines_AbstractEngine
 
             $results['matches'] = array_map(function ($data) {
                 return [
-                    'match' => $data['match'],
+                    'quality' => $data['match'],
+                    'match' => $data['match'] / 100,
                     'last-update-date' => $data['update_date'],
-                    'created-by' => $data['username'],
+                    'created-by' => 'NecTM',
                     'segment' => $data['tu']['source_text'],
-                    'translation' => $data['tu']['target_text'],
+                    'translation' => $data['tu']['target_text']
                 ];
             }, $matches);
 
@@ -83,7 +84,6 @@ class Engines_NecTM extends Engines_AbstractEngine
                 'message' => $decoded['message'],
             ];
         }
-
 
         return Engines_Results_MyMemory_TMS::getInstance($results, $this->featureSet, $dataRefMap);
     }
@@ -97,58 +97,50 @@ class Engines_NecTM extends Engines_AbstractEngine
             'slang' => $this->_fixLangCode($_config['source']),
             'tlang' => $this->_fixLangCode($_config['target']),
             'limit' => $_config['num_result'],
-            'aut_trans' => $_config['get_mt'],
+            'aut_trans' => false,
             'concordance' => boolval($_config['isConcordance'] ?? false)
         ];
 
-        if (!empty($tags = $this->getTagsAsString($_config))) {
-            $parameters['tag'] = $tags;
-        }
+//        if (!empty($tags = $this->getTagsAsString($_config))) {
+//            $parameters['tag'] = $tags;
+//        }
 
         $jwt = $this->getServiceAccountJwtRetriever()->getJwt();
         $this->_setAdditionalCurlParams([
-            CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . $this->getServiceAccountJwtRetriever()->getJwt()]
+            CURLOPT_HTTPHEADER => [
+                'Authorization: Bearer ' . $this->getServiceAccountJwtRetriever()->getJwt(),
+            ]
         ]);
 
         $this->call('translate_relative_url', $parameters);
 
-        Log::doJsonLog([
-            'action' => 'get',
-            'params' => $parameters,
-            'jwt' => $jwt,
-            'result' => $this->result
-        ], 'nectm.log');
-
         return $this->result;
     }
 
-    public function update($_config): bool
+    public function update($_config)
     {
         $parameters = [
             'stext' => preg_replace("/^(-?@-?)/", "", $_config['segment']),
             'ttext' => preg_replace("/^(-?@-?)/", "", $_config['translation']),
             'slang' => $this->_fixLangCode($_config['source']),
-            'tlang' => $this->_fixLangCode($_config['target']),
+            'tlang' => $this->_fixLangCode($_config['target'])
         ];
 
         if (!empty($tags = $this->getTagsAsString($_config))) {
             $parameters['tag'] = $tags;
+        } else {
+            return [];
         }
 
         $jwt = $this->getServiceAccountJwtRetriever()->getJwt();
         $this->_setAdditionalCurlParams([
-            CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . $jwt]
+            CURLOPT_HTTPHEADER => [
+                'Authorization: Bearer ' . $jwt,
+                'Content-Type: application/json'
+            ]
         ]);
 
-        $this->call("update_relative_url", $parameters, true);
-
-        Log::doJsonLog([
-            'action' => 'update',
-            'params' => $parameters,
-            'jwt' => $jwt,
-            'result' => $this->result
-        ], 'nectm.log');
-
+        $this->call("update_relative_url", $parameters, true, true);
         return $this->result;
     }
 
@@ -214,14 +206,6 @@ class Engines_NecTM extends Engines_AbstractEngine
 
         $response = curl_exec($curl);
         $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-        Log::doJsonLog([
-            'action' => 'retrieveTags',
-            'url' => $url,
-            'jwt' => $jwt,
-            'httpCode' => $httpCode,
-            'response' => $response
-        ], 'nectm.log');
 
         if ($httpCode !== 200) {
             throw new RuntimeException("Translation memory service is not available please try again later", $httpCode);

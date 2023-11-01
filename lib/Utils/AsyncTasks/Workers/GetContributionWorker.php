@@ -419,8 +419,7 @@ class GetContributionWorker extends AbstractWorker {
 
             $_TMS = true; /* MyMemory */
 
-        } else {
-            if ( $jobStruct->id_tms == 0 && ($jobStruct->id_mt_engine == 1 || $jobStruct->id_mt_engine == Engines_MTee::getMTeeID())) {
+        } elseif ( $jobStruct->id_tms == 0 && ($jobStruct->id_mt_engine == 1 || $jobStruct->id_mt_engine == Engines_MTee::getMTeeID())) {
 
                 /**
                  * MyMemory disabled but MT Enabled and it is NOT a Custom one
@@ -431,7 +430,8 @@ class GetContributionWorker extends AbstractWorker {
 
                 $_TMS = true; /* MyMemory */
 
-            }
+        } else {
+            $_TMS = $jobStruct->id_tms != 0;
         }
 
         if ( $isCrossLang ) {
