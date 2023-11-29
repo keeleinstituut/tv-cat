@@ -101,14 +101,15 @@ class Engines_NecTM extends Engines_AbstractEngine
             'concordance' => boolval($_config['isConcordance'] ?? false)
         ];
 
-//        if (!empty($tags = $this->getTagsAsString($_config))) {
-//            $parameters['tag'] = $tags;
-//        }
+        $tags = $this->getTagsAsString($_config);
+        if (!empty($tags)) {
+            $parameters['tag'] = $tags;
+        }
 
         $jwt = $this->getServiceAccountJwtRetriever()->getJwt();
         $this->_setAdditionalCurlParams([
             CURLOPT_HTTPHEADER => [
-                'Authorization: Bearer ' . $this->getServiceAccountJwtRetriever()->getJwt(),
+                'Authorization: Bearer ' . $jwt,
             ]
         ]);
 
