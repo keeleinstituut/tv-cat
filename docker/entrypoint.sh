@@ -100,6 +100,54 @@ cat > /etc/apache2/sites-enabled/000-default.conf <<EOT
 </VirtualHost>
 EOT
 
+
+sed -i 's/^\(\[supervisord\]\)$/\1\nnodaemon=true/' /etc/supervisor/supervisord.conf
+cat > /etc/supervisor/conf.d/supervisor.conf <<EOT
+[program:apache]
+command=apache2-foreground
+process_name=%(program_name)s
+numprocs=1
+autostart=true
+autorestart=true
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes = 0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+
+[program:sse]
+command=node $APP_ROOT/nodejs/server.js
+process_name=%(program_name)s
+numprocs=1
+autostart=true
+autorestart=true
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes = 0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+
+[program:fast-analysis]
+command=php $APP_ROOT/lib/Utils/Analysis/FastAnalysis.php $APP_ROOT/inc/task_manager_config.ini
+process_name=%(program_name)s
+numprocs=1
+autostart=true
+autorestart=true
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes = 0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+
+[program:tm-analysis]
+command=php $APP_ROOT/lib/Utils/Analysis/TmAnalysis.php $APP_ROOT/inc/task_manager_config.ini
+process_name=%(program_name)s
+numprocs=1
+autostart=true
+autorestart=true
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes = 0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+EOT
+
 echo "Importing MySQL dump(s)"
 until mysql -h $MATECAT_DB_SERVER -P $MYSQL_PORT -u root -p$MYSQL_ROOT_PASSWORD -e "SELECT 1"; do
   echo "MySQL is unavailable - sleeping"

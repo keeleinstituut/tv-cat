@@ -71,6 +71,9 @@ RUN cd ${APP_ROOT}/nodejs/ \
 # lib/Utils/TaskRunner/TaskManager.php#287
 RUN ln -s /usr/local/bin/php /usr/bin/php
 
+RUN apt-get install -y supervisor
+RUN apt-get clean
+
 COPY ./docker/entrypoint.sh /
 RUN chmod u+x /entrypoint.sh
 
