@@ -101,7 +101,8 @@ class Engines_NecTM extends Engines_AbstractEngine
             'concordance' => boolval($_config['isConcordance'] ?? false)
         ];
 
-        $tags = $this->getTagsAsString($_config);
+        $tags = $this->getTags($_config);
+
         if (!empty($tags)) {
             $parameters['tag'] = $tags;
         }
@@ -127,7 +128,7 @@ class Engines_NecTM extends Engines_AbstractEngine
             'tlang' => $this->_fixLangCode($_config['target'])
         ];
 
-        if (!empty($tags = $this->getTagsAsString($_config))) {
+        if (!empty($tags = $this->getTags($_config))) {
             $parameters['tag'] = $tags;
         } else {
             return [];
@@ -227,13 +228,13 @@ class Engines_NecTM extends Engines_AbstractEngine
         );
     }
 
-    private function getTagsAsString($config): ?string
+    private function getTags($config): ?array
     {
         if (!empty($config['id_user'])) {
             if (!is_array($config['id_user'])) {
                 $config['id_user'] = [$config['id_user']];
             }
-            return implode(",", $config['id_user']);
+            return $config['id_user'];
         }
 
         return null;
