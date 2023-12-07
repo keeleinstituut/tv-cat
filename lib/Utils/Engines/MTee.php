@@ -69,10 +69,7 @@ class Engines_MTee extends Engines_AbstractEngine
                 'message' => $response['error']['message'],
             ];
         } else {
-            $result['error'] = [
-                'code' => $decoded['error']['code'],
-                'message' => $decoded['error']['message'],
-            ];
+            return [];
         }
 
         return $result;
