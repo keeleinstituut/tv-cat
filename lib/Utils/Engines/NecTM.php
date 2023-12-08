@@ -45,6 +45,7 @@ class Engines_NecTM extends Engines_AbstractEngine
 
     protected function _decode($rawValue)
     {
+        $parameters = func_get_args()[1];
         $function = func_get_args()[2] ?? 'translate_relative_url';
         if ($function !== 'translate_relative_url') {
             return !isset($rawValue['error']);
@@ -67,12 +68,23 @@ class Engines_NecTM extends Engines_AbstractEngine
                 })
             );
 
-            $results['matches'] = array_map(function ($data) {
+            $requestedTags = array_values(array_filter($decoded['tags'], function ($tag) use ($parameters) {
+                return in_array($tag['id'], $parameters['tag']);
+            }));
+
+            $results['matches'] = array_map(function ($data) use ($requestedTags) {
+
+                $tags = array_filter($requestedTags, function ($tag) use ($data) {
+                    return in_array($tag['id'], $data['tag']);
+                });
+
+                $tag_names = array_map(fn ($tag) => $tag['name'], $tags);
+
                 return [
                     'quality' => $data['match'],
                     'match' => $data['match'] / 100,
                     'last-update-date' => $data['update_date'],
-                    'created-by' => 'NecTM',
+                    'created-by' => implode(', ', $tag_names),
                     'segment' => $data['tu']['source_text'],
                     'translation' => $data['tu']['target_text']
                 ];
