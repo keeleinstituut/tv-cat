@@ -126,7 +126,9 @@ class Engines_NecTM extends Engines_AbstractEngine
             ]
         ]);
 
-        $this->call('translate_relative_url', $parameters);
+        $this->call('translate_relative_url', $parameters, false, false, function ($parameters) {
+            return preg_replace('/(%5B)(.*)(%5D=)/i', '=', http_build_query($parameters));
+        });
 
         return $this->result;
     }
@@ -135,7 +137,7 @@ class Engines_NecTM extends Engines_AbstractEngine
     {
         $parameters = [
             'stext' => preg_replace("/^(-?@-?)/", "", $_config['segment']),
-            'ttext' => preg_replace("/^(-?@-?)/", "", $_config['translation']),
+            'ttext' => preg_replace("/^(-?@-?)/", "", $_config['newtranslation']),
             'slang' => $this->_fixLangCode($_config['source']),
             'tlang' => $this->_fixLangCode($_config['target'])
         ];

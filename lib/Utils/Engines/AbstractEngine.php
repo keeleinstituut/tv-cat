@@ -180,7 +180,7 @@ abstract class  Engines_AbstractEngine implements Engines_EngineInterface {
 
     }
 
-    public function call( $function, array $parameters = [], $isPostRequest = false, $isJsonRequest = false ) {
+    public function call( $function, array $parameters = [], $isPostRequest = false, $isJsonRequest = false, callable $transformParams = null) {
 
         if ( $this->_isAnalysis && $this->_skipAnalysis ) {
             $this->result = [];
@@ -199,18 +199,22 @@ abstract class  Engines_AbstractEngine implements Engines_EngineInterface {
             return;
         }
 
+
         if ( $isPostRequest ) {
+            $curlParams = $transformParams ? $transformParams($parameters) : $parameters;
             $function = strtolower( trim( $function ) );
             $url      = "{$this->engineRecord['base_url']}/" . $this->$function;
             $curl_opt = array(
-                    CURLOPT_POSTFIELDS => ( !$isJsonRequest ? $parameters : json_encode( $parameters ) ),
+                    CURLOPT_POSTFIELDS => ( !$isJsonRequest ? $curlParams : json_encode( $curlParams ) ),
                     CURLINFO_HEADER_OUT => true,
                     CURLOPT_TIMEOUT    => 120
             );
         } else {
+            $curlParams = $transformParams ? $transformParams($parameters) : http_build_query($parameters);
+            Log::doJsonLog(['curlParams' => $curlParams], 'kek2.log');
             $function = strtolower( trim( $function ) );
             $url      = "{$this->engineRecord['base_url']}/" . $this->$function . "?";
-            $url .= http_build_query( $parameters );
+            $url .= $curlParams;
             $curl_opt = array(
                     CURLOPT_HTTPGET => true,
                     CURLOPT_TIMEOUT => static::GET_REQUEST_TIMEOUT
