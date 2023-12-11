@@ -1235,6 +1235,16 @@
     ,
         {
             "localized":[{
+                "en":"Kurdish-Badini"
+            }],
+            "isocode":"ku",
+            "enabled":true,
+            "rtl":false,
+            "rfc3066code":"ku-SDH"
+        }
+    ,
+        {
+            "localized":[{
                 "en":"Kurdish Sorani"
             }],
             "isocode":"ku",
@@ -2578,6 +2588,16 @@
             "enabled":true,
             "rtl":false,
             "rfc3066code":"zu-ZA"
+        }
+    ,
+        {
+            "localized":[{
+                "en":"Persian (Farsi)"
+            }],
+            "isocode":"pes",
+            "enabled":true,
+            "rtl":false,
+            "rfc3066code":"pes-IR"
         }
     ]
 }
