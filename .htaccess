@@ -221,3 +221,5 @@ php_value display_errors 0
 php_value log_errors 1
 php_value error_log storage/log_archive/php_errors.txt
 php_value short_open_tag on
+php_value post_max_size 2048M
+php_value upload_max_filesize 2048M

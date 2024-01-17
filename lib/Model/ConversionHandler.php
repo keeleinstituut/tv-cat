@@ -116,10 +116,10 @@ class ConversionHandler {
 
                 return false; //break project creation
             }
-            if ( $ocrCheck->thereIsWarning( $file_path ) ) {
-                $this->result->changeCode(ConversionHandlerStatus::OCR_WARNING);
-                $this->result->addError("File uploaded successfully. Before translating, download the Preview to check the conversion. OCR support for non-latin scripts is experimental.");
-            }
+//            if ( $ocrCheck->thereIsWarning( $file_path ) ) {
+//                $this->result->changeCode(ConversionHandlerStatus::OCR_WARNING);
+//                $this->result->addError("File uploaded successfully. Before translating, download the Preview to check the conversion. OCR support for non-latin scripts is experimental.");
+//            }
 
             if ( strpos( $this->target_lang, ',' ) !== false ) {
                 $single_language = explode( ',', $this->target_lang );

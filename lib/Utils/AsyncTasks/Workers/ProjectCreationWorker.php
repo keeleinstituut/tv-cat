@@ -32,6 +32,7 @@ class ProjectCreationWorker extends AbstractWorker {
      * @throws EndQueueException
      */
     public function process( AbstractElement $queueElement ) {
+        ini_set('memory_limit', '2048M');
 
         /**
          * @var $queueElement QueueElement
