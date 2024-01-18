@@ -104,7 +104,7 @@ class Ekilex
         return $matches;
     }
 
-    public function getDatasets()
+    public function getDatasets(): array
     {
         $curlHandler = new MultiCurlHandler();
         $token = $curlHandler->createResource($this->apiBaseUrl . '/datasets', [
@@ -123,7 +123,7 @@ class Ekilex
             return json_decode($response, true);
         });
 
-        return array_map(function ($dataset) {
+        $notSortedDatasets = array_map(function ($dataset) {
             return [
                 'id' => $dataset['code'],
                 'name' => $dataset['name']
@@ -134,6 +134,21 @@ class Ekilex
                 })
             )
         );
+
+        $notSortedDatasetsRuntimeMap = [];
+        foreach ($notSortedDatasets as $dataset) {
+            $notSortedDatasetsRuntimeMap[mb_strtolower(trim($dataset['name']))] = $dataset;
+        }
+
+        $sortedDatasets = [];
+        foreach ($this->getDatasetsOrder() as $datasetName) {
+            if (isset($notSortedDatasetsRuntimeMap[$datasetName])) {
+                $sortedDatasets[] = $notSortedDatasetsRuntimeMap[$datasetName];
+                unset($notSortedDatasetsRuntimeMap[$datasetName]);
+            }
+        }
+
+        return array_merge($sortedDatasets, array_values($notSortedDatasetsRuntimeMap));
     }
 
     private function getWordsDetailsResponses($wordsIds, $dataset): array
@@ -210,5 +225,135 @@ class Ekilex
         }
 
         return $wordsIds;
+    }
+
+    private function getDatasetsOrder(): array
+    {
+        return [
+            'eki ühendsõnastik 2024',
+            'eki terminibaas esterm',
+            'eki ühendterminibaas esterm 2',
+            'riigi teataja terminisõnastik',
+            'andmeanalüüsi ja statistika oskussõnastik',
+            'eesti-vene töötervishoiu ja -ohutuse terminibaas',
+            'eesti-vene-eesti õigusterminoloogiabaas',
+            'inglise vasted',
+            'keemiaterminite baas',
+            'militerm | sõjanduse, julgeoleku- ja kaitsepoliitika terminibaas',
+            'poliitika ja valitsemise sõnastik',
+            'tervise arengu instituudi tervisesõnastik',
+            'tollialased terminid',
+            'akadeemilise väljendusoskuse terminibaas',
+            'arhitektuuri oskussõnastik',
+            'biokeemiasõnastik',
+            'botaanika terminibaas',
+            'e-õppe terminid / e-learning terms',
+            'eesti e-tervise sa terminibaas',
+            'eesti keele morfoloogia andmebaas',
+            'euroopa keeleõppe raamdokumendi terminid',
+            'geneetika terminibaas',
+            'kognitiivse keeleteaduse terminibaas',
+            'koolisõnastikud 2005–2010',
+            'kriisinõustamise terminibaas',
+            'küberfüüsikalise süsteemitehnika terminibaas',
+            'linguae,  maailma keeled, kirjad  ja rahvad',
+            'materjalitehnika',
+            'meditsiinifüüsika terminibaas',
+            'metalliaabits',
+            'montessori pedagoogika terminisõnastik',
+            'raamatukogusõnastik',
+            'robootika terminibaas',
+            'tallinna linnavalitsuse terminibaas',
+            'teenuste valdkonna terminibaas',
+            'tekstiilmaterjalide terminibaas',
+            'tervishoiu terminibaas',
+            'ususõnastik',
+            'vene keel eestis',
+            'õendus- ja ämmaemandusterminite kogu',
+            'logopeedia terminibaas',
+            'sisekaitse terminibaas',
+            '17.-18. sajandi ametite ja tegevusalade esindajate sõnavara',
+            'aianduse terminibaas',
+            'arheoloogia terminibaas',
+            'betoonkonstruktsioonide terminibaas',
+            'eesti rahvatantsu oskussõnastik',
+            'eesti viipekeele it terminid',
+            'eesti viipekeele meditsiiniterminid',
+            'eesti-vene-inglise spaaterminid',
+            'ehitiste projekteerimise terminibaas',
+            'elektrotehnika',
+            'entomoloogia terminibaas',
+            'etenduskunstide terminibaas',
+            'etümoloogia',
+            'filmikunsti terminibaas filmterm',
+            'filosoofia terminibaas',
+            'folkloorsete uskumusolendite sõnastik',
+            'foneetika sõnastik',
+            'galeegi-eesti sõnaraamat',
+            'geoloogia terminibaas',
+            'geomorfoloogia terminibaas',
+            'geriaatria terminibaas',
+            'hambatehnika terminibaas',
+            'hümnoloogia terminibaas',
+            'ida mõtteloo leksikon',
+            'ihtüoloogia terminibaas',
+            'immunoloogia terminibaas',
+            'katsebaas',
+            'kaugseire terminibaas',
+            'kokanduse terminibaas',
+            'kooliinformaatika terminibaas',
+            'kosmosetehnoloogia',
+            'kriisijuhtimise terminibaas',
+            'käsitööteaduse oskussõnad',
+            'köite ja konserveerimise terminibaas',
+            'limnoloogia sõnastik',
+            'loomakasvatuse terminibaas',
+            'loomanimetuste terminibaas',
+            'loomaparasiitide nimistu',
+            'loomaparasiitide terminibaas',
+            'loomi kaasavate organisatsioonide terminibaas',
+            'läti-eesti sõnastik 2015',
+            'mesindusleksikon',
+            'meteoroloogia ja klimatoloogia terminibaas',
+            'metroloogia terminibaas',
+            'muuseumitöö terminibaas',
+            'muusikateraapia seletav sõnastik',
+            'nahkhiirte terminibaas',
+            'neurofüsioloogia terminibaas',
+            'norra-eesti meditsiinisõnastik',
+            'norra-eesti/eesti-norra sõnaraamat',
+            'nüüdismuusika terminibaas',
+            'onomastika oskussõnastik',
+            'organisatsioonikäitumise terminibaas',
+            'parasitoloogia terminibaas',
+            'patsiendiohutuse terminibaas',
+            'projektijuhtimise terminibaas',
+            'purjetamise terminibaas',
+            'põllumajandusloomade tõugude terminibaas',
+            'rahvatervishoiu sõnastik',
+            'rakubioloogia terminibaas',
+            'ruumilise keskkonna planeerimise terminibaas',
+            'semiootika terminibaas',
+            'sisearhitektuuri terminibaas',
+            'skeemiteraapia terminisõnastik',
+            'supervisiooni terminibaas',
+            'teatriterminite baas',
+            'teehoolde terminibaas',
+            'tegevusteraapia terminibaas',
+            'terminivõrgustik',
+            'toiduohutuse, loomatervise ja loomade heaolu terminibaas',
+            'toiduteadus ja -tehnoloogia',
+            'tootmistehnika ja -süsteemide terminibaas',
+            'tsöliaakia ja gluteenivaba toitumise terminid',
+            'turismi terminibaas',
+            'tuumaenergia ja kiirguskaitse terminibaas',
+            'tänapäevafolkloori terminibaas',
+            'usundiloo terminibaas',
+            'vaikimisi sõnakogu',
+            'valgustehnika terminibaas',
+            'veterinaarmeditsiini ja loomakasvatuse terminibaas',
+            'vibulaskmise terminibaas',
+            'p3m_vana',
+        ];
     }
 }
