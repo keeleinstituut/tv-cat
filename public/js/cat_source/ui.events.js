@@ -31,16 +31,16 @@ $.extend(window.UI, {
           SegmentActions.copySourceToTarget()
         },
       )
-      .on(
-        'keydown.shortcuts',
-        null,
-        Shortcuts.cattol.events.openSettings.keystrokes[
-          Shortcuts.shortCutsKeyType
-        ],
-        function () {
-          UI.openLanguageResourcesPanel()
-        },
-      )
+      // .on(
+      //   'keydown.shortcuts',
+      //   null,
+      //   Shortcuts.cattol.events.openSettings.keystrokes[
+      //     Shortcuts.shortCutsKeyType
+      //   ],
+      //   function () {
+      //     UI.openLanguageResourcesPanel()
+      //   },
+      // )
       .on(
         'keydown.shortcuts',
         null,

@@ -104,10 +104,10 @@ RewriteRule ^activityLog/([^/]*)/([^/]*)[/]?(download)?$ - [F,L]
 RewriteCond %{QUERY_STRING} action=activityLog
 RewriteRule ^ - [F,L]
 
-#RewriteRule ^utils/xliff-to-target$ index.php?action=xliffToTargetView [L]
-RewriteRule ^utils/xliff-to-target$ - [F,L]
-RewriteCond %{QUERY_STRING} action=xliffToTargetView
-RewriteRule ^ - [F,L]
+RewriteRule ^utils/xliff-to-target$ index.php?action=xliffToTargetView [L]
+#RewriteRule ^utils/xliff-to-target$ - [F,L]
+#RewriteCond %{QUERY_STRING} action=xliffToTargetView
+#RewriteRule ^ - [F,L]
 
 
 RewriteCond %{QUERY_STRING} action=changePassword

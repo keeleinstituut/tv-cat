@@ -113,14 +113,14 @@ const Shortcuts = {
           mac: 'meta+k',
         },
       },
-      openSettings: {
-        label: 'Open Settings panel',
-        equivalent: '',
-        keystrokes: {
-          standard: 'ctrl+shift+s',
-          mac: 'meta+shift+s',
-        },
-      },
+      // openSettings: {
+      //   label: 'Open Settings panel',
+      //   equivalent: '',
+      //   keystrokes: {
+      //     standard: 'ctrl+shift+s',
+      //     mac: 'meta+shift+s',
+      //   },
+      // },
       openComments: {
         label: 'Open comments in current segment',
         equivalent: '',
