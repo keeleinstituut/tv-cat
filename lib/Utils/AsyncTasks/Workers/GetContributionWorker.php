@@ -486,6 +486,11 @@ class GetContributionWorker extends AbstractWorker {
                 $config[ 'email' ]   = INIT::$MYMEMORY_API_KEY;
                 $config[ 'segid' ]   = $contributionStruct->segmentId;
 
+                if (!empty($contributionStruct->getProjectStruct())) {
+                    $config[ 'tv_domain' ] = $contributionStruct->getProjectStruct()->getMetadataValue('tv_domain') ?? null;
+                }
+
+
                 $mt_result = $mt_engine->get( $config );
             }
         }
