@@ -95,7 +95,7 @@ class Engines_MTee extends Engines_AbstractEngine
         $parameters = [];
         $parameters['trgLang'] = $this->_fixLangCode($_config['target']);
         $parameters['srcLang'] = $this->_fixLangCode($_config['source']);
-        $parameters['domain'] = null;
+        $parameters['domain'] = $this->_getDomain($_config['tv_domain'] ?? '');
         $parameters['text'] = [$this->_preserveSpecialStrings($_config['segment'])];
         $parameters['textType'] = self::TRANSLATION_TYPE_PLAIN_TEXT;
 
@@ -171,5 +171,33 @@ class Engines_MTee extends Engines_AbstractEngine
         }
 
         return $match;
+    }
+
+    private function _getDomain($tvDomain): ?string
+    {
+        //legal;general;crisis;military
+        $tvDomain2MteeDomain = [
+            'HAR' => 'general', // Haridus
+            'TEA' => 'general', // Teadus
+            'ARH' => 'general', // Arhiivindus
+            'NKP' => 'legal', // Noorte- ja keelepoliitika
+            'ÕIP' => 'legal', // Õiguspoliitika
+            'KRP' => 'legal', // Kriminaalpoliitika
+            'SET' => 'legal', // Seadusetõlked
+            'JHP' => 'legal', // Justiitshalduspoliitika
+            'EAP' => 'legal', // Eelarvepoliitika
+            'MTP' => 'legal', // Maksu- ja tollipoliitika
+            'RST' => 'general', // Riiklik statistika
+            'RRP' => 'general', // Riigiraamatupidamine
+            'FKP' => 'legal', // Finants- ja kindlustuspoliitika
+            'KOP' => 'legal', // Kinnisvara- ja osaluspoliitika
+            'ASP' => 'military', // Avalik kord ja sisejulgeolek
+            'KPT' => 'crisis', // Kriisireguleerimine ja päästetööd
+            'PRV' => 'military', // Piirivalve
+            'KRI' => 'legal', // Kodakondsuse, rände ja identiteedihaldus
+            'RPP' => 'legal', // Rahvastiku- ja perepoliitika
+        ];
+
+        return $tvDomain2MteeDomain[$tvDomain] ?? null;
     }
 }
