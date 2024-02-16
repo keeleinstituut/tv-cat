@@ -63,35 +63,35 @@ export const ActionMenu = ({
   const getCattoolMenu = () => {
     return (
       <ul className="menu">
-        {!isReview && showReviseLink && (
-          <li className="item" title="Revise" data-value="revise">
-            <a
-              href={`/revise/${projectName}/${source_code}-${target_code}/${jid}-${reviewPassword}`}
-            >
-              Revise
-            </a>
-          </li>
-        )}
-        {isReview && (
-          <li className="item" title="Translate" data-value="translate">
-            <a
-              href={`/translate/${projectName}/${source_code}-${target_code}/${jid}-${password}`}
-            >
-              Translate
-            </a>
-          </li>
-        )}
-        {allowLinkToAnalysis && analysisEnabled && (
-          <li className="item" title="Analysis" data-value="analisys">
-            <a
-              rel="noreferrer"
-              target="_blank"
-              href={`/jobanalysis/${pid}-${jid}-${password}`}
-            >
-              Volume analysis
-            </a>
-          </li>
-        )}
+        {/*{!isReview && showReviseLink && (*/}
+        {/*  <li className="item" title="Revise" data-value="revise">*/}
+        {/*    <a*/}
+        {/*      href={`/revise/${projectName}/${source_code}-${target_code}/${jid}-${reviewPassword}`}*/}
+        {/*    >*/}
+        {/*      Revise*/}
+        {/*    </a>*/}
+        {/*  </li>*/}
+        {/*)}*/}
+        {/*{isReview && (*/}
+        {/*  <li className="item" title="Translate" data-value="translate">*/}
+        {/*    <a*/}
+        {/*      href={`/translate/${projectName}/${source_code}-${target_code}/${jid}-${password}`}*/}
+        {/*    >*/}
+        {/*      Translate*/}
+        {/*    </a>*/}
+        {/*  </li>*/}
+        {/*)}*/}
+        {/*{allowLinkToAnalysis && analysisEnabled && (*/}
+        {/*  <li className="item" title="Analysis" data-value="analisys">*/}
+        {/*    <a*/}
+        {/*      rel="noreferrer"*/}
+        {/*      target="_blank"*/}
+        {/*      href={`/jobanalysis/${pid}-${jid}-${password}`}*/}
+        {/*    >*/}
+        {/*      Volume analysis*/}
+        {/*    </a>*/}
+        {/*  </li>*/}
+        {/*)}*/}
 
         <li
           className="item"

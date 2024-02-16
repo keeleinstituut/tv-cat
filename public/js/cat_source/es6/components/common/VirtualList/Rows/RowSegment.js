@@ -96,13 +96,13 @@ function RowSegment({
               </span>
             </div>
           ) : null}
-          {file && file.weighted_words > 0 ? (
-            <div className="projectbar-wordcounter">
-              <span>
-                Payable Words: <strong>{file.weighted_words}</strong>
-              </span>
-            </div>
-          ) : null}
+          {/*{file && file.weighted_words > 0 ? (*/}
+          {/*  <div className="projectbar-wordcounter">*/}
+          {/*    <span>*/}
+          {/*      Payable Words: <strong>{file.weighted_words}</strong>*/}
+          {/*    </span>*/}
+          {/*  </div>*/}
+          {/*) : null}*/}
           {file && file.metadata && file.metadata.instructions ? (
             <div
               className={'button-notes'}
