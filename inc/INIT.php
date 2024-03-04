@@ -113,8 +113,8 @@ class INIT {
     public static $SUPPORT_MAIL                 = 'the owner of this MateCat instance.';//default string is 'the owner of this Matecat instance'
     public static $ANALYSIS_WORDS_PER_DAYS      = 3000;
     public static $AUTHCOOKIEDURATION           = 5184000;            // 86400 * 60;         // seconds
-    public static $MAX_UPLOAD_FILE_SIZE         = 62914560;         // 60 * 1024 * 1024;  // bytes
-    public static $MAX_UPLOAD_TMX_FILE_SIZE     = 314572800;    // 300 * 1024 * 1024; // bytes
+    public static $MAX_UPLOAD_FILE_SIZE         = 256000000;         // 256M
+    public static $MAX_UPLOAD_TMX_FILE_SIZE     = 314572800;    // NOTE: not used as we store TMs in a translation memory service.
     public static $MAX_NUM_FILES                = 100;
     public static $MAX_SOURCE_WORDS             = 250000;
 
@@ -159,7 +159,7 @@ class INIT {
      * big files.
      * @var string memory limit. Example "2048M"
      */
-    public static $FAST_ANALYSIS_MEMORY_LIMIT;
+    public static $FAST_ANALYSIS_MEMORY_LIMIT = '2G';
 
     public static $CONFIG_VERSION_ERR_MESSAGE = "Your config.ini file is not up-to-date.";
 
