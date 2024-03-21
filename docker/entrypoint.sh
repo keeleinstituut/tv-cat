@@ -76,6 +76,7 @@ cat > /etc/apache2/sites-enabled/000-default.conf <<EOT
     ServerAdmin webmaster@localhost
     DocumentRoot /var/www/html
 
+    LimitRequestFieldSize 16000
 
 
     # It is also possible to configure the loglevel for particular

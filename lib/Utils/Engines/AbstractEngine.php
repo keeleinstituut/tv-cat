@@ -211,7 +211,6 @@ abstract class  Engines_AbstractEngine implements Engines_EngineInterface {
             );
         } else {
             $curlParams = $transformParams ? $transformParams($parameters) : http_build_query($parameters);
-            Log::doJsonLog(['curlParams' => $curlParams], 'kek2.log');
             $function = strtolower( trim( $function ) );
             $url      = "{$this->engineRecord['base_url']}/" . $this->$function . "?";
             $url .= $curlParams;

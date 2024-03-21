@@ -80,6 +80,38 @@ RUN chmod u+x /entrypoint.sh
 COPY ./docker/run.sh /
 RUN chmod u+x /run.sh
 
+RUN ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/API.log \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/TaskManager.log \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/activity_log.log \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/align_job_big.log \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/align_job_medium.log \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/align_job_small.log \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/aligner_segment_create.log \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/api_calls_time.log \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/dqf.log \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/fastAnalysis.log \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/fatal_errors.txt \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/get_contribution.log \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/glossary_read.log \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/glossary_write.log \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/jobs.log \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/log.txt \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/mail_queue.log \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/php_errors.txt \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/project_queue.log \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/qa_checks.log \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/query_cache.log \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/set_contribution.log \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/set_contribution_mt.log \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/tm_analysis_P1.log \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/tm_analysis_P2.log \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/tm_analysis_P3.log \
+  && ln -sf /proc/1/fd/1 /var/www/html/storage/log_archive/ui_calls_time.log
+
+RUN chown -R www-data:www-data /var/www/html/storage/log_archive
+
+
+
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 
