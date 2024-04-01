@@ -113,7 +113,7 @@ class JobContainer extends React.Component {
     switch (revision_number) {
       case undefined: {
         this.oldPassword = this.props.job.get('password')
-        label = 'Translate'
+        label = 'Tõlgi'
         break
       }
       case 1: {
@@ -121,7 +121,7 @@ class JobContainer extends React.Component {
           .get('revise_passwords')
           .get(0)
           .get('password')
-        label = 'Revise'
+        label = 'Revideerida'
         break
       }
       case 2: {
@@ -129,7 +129,7 @@ class JobContainer extends React.Component {
           .get('revise_passwords')
           .get(1)
           .get('password')
-        label = '2nd Revise'
+        label = '2 Revideerida'
         break
       }
     }
@@ -140,11 +140,10 @@ class JobContainer extends React.Component {
     ).then(function (data) {
       const notification = {
         uid: 'change-password',
-        title: 'Change job ' + label + ' password',
+        title: 'Muutke töö ' + label + ' parooli',
         text:
-          'The ' +
           label +
-          ' password has been changed. <a class="undo-password">Undo</a>',
+          ' parool on muudetud. <a class="undo-password">Tühistada</a>',
         type: 'warning',
         position: 'bl',
         allowHtml: true,
@@ -171,8 +170,8 @@ class JobContainer extends React.Component {
             self.oldPassword,
           ).then(function (data) {
             const restoreNotification = {
-              title: 'Change job password',
-              text: 'The previous password has been restored.',
+              title: 'Muutke töö parooli',
+              text: 'Eelmine parool on taastatud.',
               type: 'warning',
               position: 'bl',
               timer: 7000,
@@ -200,8 +199,8 @@ class JobContainer extends React.Component {
     ) {
       const notification = {
         uid: 'remove-translator',
-        title: 'Job unassigned',
-        text: 'The translator has been removed and the password changed. <a class="undo-password">Undo</a>',
+        title: 'Töö määramata',
+        text: 'Tõlkija on eemaldatud ja parool muudetud. <a class="undo-password">Tühistada</a>',
         type: 'warning',
         position: 'bl',
         allowHtml: true,
@@ -229,8 +228,8 @@ class JobContainer extends React.Component {
           ).then(function (data) {
             const passwordNotification = {
               uid: 'change-password',
-              title: 'Change job password',
-              text: 'The previous password has been restored.',
+              title: 'Muutke töö parooli',
+              text: 'Eelmine parool on taastatud.',
               type: 'warning',
               position: 'bl',
               timer: 7000,
@@ -265,9 +264,9 @@ class JobContainer extends React.Component {
   deleteJob() {
     const props = {
       text:
-        'You are about to delete this job permanently. This action cannot be undone.</br>' +
-        ' Are you sure you want to proceed?',
-      successText: 'Yes, delete it',
+        'Olete kustutamas selle töö jäädavalt. Seda toimingut ei saa tagasi võtta.</br>' +
+        ' Kas olete kindel, et soovite jätkata?',
+      successText: 'Jah, kustutage see',
       successCallback: () => {
         ManageActions.changeJobStatus(
           this.props.project,
@@ -280,7 +279,7 @@ class JobContainer extends React.Component {
     ModalsActions.showModalComponent(
       ConfirmMessageModal,
       props,
-      'Confirmation required',
+      'Kinnitus vajalik',
     )
   }
 
@@ -338,7 +337,7 @@ class JobContainer extends React.Component {
         onClick={this.downloadTranslation}
         ref={(downloadMenu) => (this.downloadMenu = downloadMenu)}
       >
-        <i className="icon-eye icon" /> Draft
+        <i className="icon-eye icon" /> Mustand
       </a>
     )
     if (
@@ -351,7 +350,7 @@ class JobContainer extends React.Component {
           onClick={this.downloadTranslation}
           ref={(downloadMenu) => (this.downloadMenu = downloadMenu)}
         >
-          <i className="icon-download icon" /> Download Translation
+          <i className="icon-download icon" /> Laadi tõlge alla
         </a>
       )
     } else if (
@@ -492,7 +491,7 @@ class JobContainer extends React.Component {
     if (openThreads > 0) {
       let tooltipText = ''
       if (this.props.job.get('open_threads_count') === 1) {
-        tooltipText = 'There is an open thread'
+        tooltipText = 'Seal on avatud niit'
       } else {
         tooltipText =
           'There are <span style="font-weight: bold">' +
@@ -524,7 +523,7 @@ class JobContainer extends React.Component {
     var quality = this.props.job.get('quality_summary').get('quality_overall')
     if (quality === 'poor' || quality === 'fail') {
       var url = this.getQAReport()
-      let tooltipText = 'Overall quality: ' + quality.toUpperCase()
+      let tooltipText = 'Üldine kvaliteet: ' + quality.toUpperCase()
       var classQuality = quality === 'poor' ? 'yellow' : 'red'
       icon = (
         <div className="qreport-icon-container activity-icon-single">
@@ -551,7 +550,7 @@ class JobContainer extends React.Component {
     var warnings = this.props.job.get('warnings_count')
     if (warnings > 0) {
       var url = this.getTranslateUrl() + '?action=warnings'
-      let tooltipText = 'Click to see issues'
+      let tooltipText = 'Klõpsake probleemide vaatamiseks'
       icon = (
         <div className="warnings-icon-container activity-icon-single">
           <a
@@ -577,7 +576,7 @@ class JobContainer extends React.Component {
     var warnings = this.props.job.get('warnings_count')
     if (warnings > 0) {
       var url = this.getTranslateUrl() + '?action=warnings'
-      let tooltipText = 'Click to see issues'
+      let tooltipText = 'Klõpsake probleemide vaatamiseks'
       icon = (
         <a
           className="ui icon basic button "
@@ -608,7 +607,7 @@ class JobContainer extends React.Component {
             rel="noreferrer"
           >
             <i className="icon-uniE96B icon" />
-            There is an open thread
+            Seal on avatud niit
           </a>
         )
       } else {
@@ -620,10 +619,10 @@ class JobContainer extends React.Component {
             rel="noreferrer"
           >
             <i className="icon-uniE96B icon" />
-            There are <span style={{fontWeight: 'bold'}}>
+            Avatud on <span style={{fontWeight: 'bold'}}>
               {openThreads}
             </span>{' '}
-            open threads
+            lõime
           </a>
         )
       }
@@ -636,7 +635,7 @@ class JobContainer extends React.Component {
     var quality = this.props.job.get('quality_summary').get('quality_overall')
     if (quality === 'poor' || quality === 'fail') {
       var url = this.getQAReport()
-      let tooltipText = 'Overall quality: ' + quality.toUpperCase()
+      let tooltipText = 'Üldine kvaliteet: ' + quality.toUpperCase()
       var classQuality = quality === 'poor' ? 'yellow' : 'red'
       icon = (
         <a

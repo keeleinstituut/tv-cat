@@ -544,7 +544,7 @@ class SegmentSource extends React.Component {
           </div>
           {!!this.splitPoint && (
             <div className="splitNum pull-right">
-              Split in <span className="num">{this.splitPoint}</span> segment
+              Jagatud <span className="num">{this.splitPoint}</span> segmendiks
               <span className="plural" />
             </div>
           )}

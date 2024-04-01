@@ -287,7 +287,7 @@ APP.checkForSpeechToText = function () {
           AlertModal,
           {
             text: 'This options is only available on your browser.',
-            buttonText: 'Continue',
+            buttonText: 'Jätka',
           },
           'Option not available',
         )
@@ -351,7 +351,7 @@ $.extend(UI.UPLOAD_PAGE, {
             text: 'Source language changed. The files must be reimported.',
             successCallback: () => UI.confirmRestartConversions(),
           },
-          'Confirmation required',
+          'Kinnitus vajalik',
         )
       }
     } else if ($('.template-gdrive').length) {
@@ -361,7 +361,7 @@ $.extend(UI.UPLOAD_PAGE, {
           text: 'Source language changed. The files must be reimported.',
           successCallback: () => UI.confirmGDriveRestartConversions(),
         },
-        'Confirmation required',
+        'Kinnitus vajalik',
       )
     }
   },
@@ -393,7 +393,7 @@ APP.sourceLangChangedCallback = function () {
           text: 'Source language changed. The files must be reimported.',
           successCallback: () => UI.confirmRestartConversions(),
         },
-        'Confirmation required',
+        'Kinnitus vajalik',
       )
     }
   } else if ($('.template-gdrive').length) {
@@ -403,7 +403,7 @@ APP.sourceLangChangedCallback = function () {
         text: 'Source language changed. The files must be reimported.',
         successCallback: () => UI.confirmGDriveRestartConversions(),
       },
-      'Confirmation required',
+      'Kinnitus vajalik',
     )
   }
 }
@@ -497,7 +497,7 @@ APP.postProjectCreation = function (d) {
           AlertModal,
           {
             text: 'No text to translate in the file(s).<br />Perhaps it is a scanned file or an image?',
-            buttonText: 'Continue',
+            buttonText: 'Jätka',
           },
           'No text to translate',
         )

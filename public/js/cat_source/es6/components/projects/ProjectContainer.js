@@ -163,7 +163,7 @@ class ProjectContainer extends React.Component {
     ModalsActions.showModalComponent(
       ConfirmMessageModal,
       props,
-      'Confirmation required',
+      'Kinnitus vajalik',
     )
   }
 

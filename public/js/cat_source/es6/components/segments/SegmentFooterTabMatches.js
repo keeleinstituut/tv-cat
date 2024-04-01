@@ -183,7 +183,7 @@ class SegmentFooterTabMatches extends React.Component {
           </span>
         </li>
         <li className="graydesc">
-          Source:
+          Lähtekeel:
           <span className="bold" style={{fontSize: '14px'}}>
             {' '}
             {match.cb}

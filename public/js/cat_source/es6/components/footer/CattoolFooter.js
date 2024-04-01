@@ -145,7 +145,7 @@ export const CattolFooter = ({
       <div className="footer-body">
         <div className="item">
           <p id="job_id">
-            Job ID: <span>{idJob}</span>
+            CAT ID: <span>{idJob}</span>
           </p>
         </div>
 
@@ -174,27 +174,27 @@ export const CattolFooter = ({
                 <a
                   className="approved-bar"
                   style={{width: stats.a_perc + '%'}}
-                  title={'Approved ' + stats.a_perc_formatted}
+                  title={'Kinnitatud ' + stats.a_perc_formatted}
                 />
                 <a
                   className="approved-bar-2nd-pass"
                   style={{width: stats.a_perc_2nd + '%'}}
-                  title={'2nd Approved ' + stats.a_perc_2nd_formatted}
+                  title={'2 Kinnitatud ' + stats.a_perc_2nd_formatted}
                 />
                 <a
                   className="translated-bar"
                   style={{width: stats.t_perc + '%'}}
-                  title={'Translated ' + stats.t_perc_formatted}
+                  title={'Tõlgitud ' + stats.t_perc_formatted}
                 />
                 <a
                   className="rejected-bar"
                   style={{width: stats.r_perc + '%'}}
-                  title={'Rejected ' + stats.r_perc_formatted}
+                  title={'Tagasi lükatud ' + stats.r_perc_formatted}
                 />
                 <a
                   className="draft-bar"
                   style={{width: stats.d_perc + '%'}}
-                  title={'Draft ' + stats.d_perc_formatted}
+                  title={'Mustand ' + stats.d_perc_formatted}
                 />
               </>
             )}
@@ -213,9 +213,9 @@ export const CattolFooter = ({
           <div className="statistics-core">
             <div id="stat-eqwords">
               {!isCJK ? (
-                  <span>Weighted words</span>
+                  <span>Sõnu</span>
               ) : (
-                  <span>Characters</span>
+                  <span>Tegelased</span>
               )}
               :
               <strong id="total-payable">
@@ -233,12 +233,12 @@ export const CattolFooter = ({
         >
           {isReview ? (
             <div id="stat-todo">
-              <span>To-do</span> :{' '}
+              <span>Teha</span> :{' '}
               <strong>{stats?.revise_todo_formatted || '-'}</strong>
             </div>
           ) : (
             <div id="stat-todo">
-              <span>To-do</span> :{' '}
+              <span>Teha</span> :{' '}
               <strong>{stats?.TODO_FORMATTED || '-'}</strong>
             </div>
           )}
@@ -248,15 +248,15 @@ export const CattolFooter = ({
         {!!stats && stats?.ANALYSIS_COMPLETE && (
           <div className="statistics-details">
             {!!stats?.WORDS_PER_HOUR && (
-              <div id="stat-wph" title="Based on last 10 segments performance">
-                Speed:
-                <strong>{stats.WORDS_PER_HOUR}</strong> Words/h
+              <div id="stat-wph" title="Põhineb viimase 10 segmendi toimivusel">
+                Kiirus:
+                <strong>{stats.WORDS_PER_HOUR}</strong> sõna/t
               </div>
             )}
 
             {!!stats?.ESTIMATED_COMPLETION && (
               <div id="stat-completion">
-                Completed in:
+                Lõpetatud:
                 <strong>{stats.ESTIMATED_COMPLETION}</strong>
               </div>
             )}
@@ -265,7 +265,7 @@ export const CattolFooter = ({
 
         {!stats?.ANALYSIS_COMPLETE && (
           <div id="analyzing">
-            <p className="progress">Calculating word count...</p>
+            <p className="progress">Sõnade arvu arvutamine...</p>
           </div>
         )}
       </div>

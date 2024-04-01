@@ -312,7 +312,7 @@ class SegmentFooterTabConcordance extends React.Component {
     if (this.state.noResults) {
       results = (
         <ul className={'graysmall message prime'}>
-          <li>Can&apos;t find any matches. Check the language combination.</li>
+          <li>Ei leitud ühtegi vastet. Kontrollida keelekombinatsiooni.</li>
         </ul>
       )
     }

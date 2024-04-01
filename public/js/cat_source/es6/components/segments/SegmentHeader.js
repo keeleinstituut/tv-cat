@@ -119,9 +119,9 @@ class SegmentHeader extends React.PureComponent {
     const {autopropagated, visible, percentage, createdBy, classname} =
       this.state
     if (autopropagated && !splitted) {
-      autopropagatedHtml = <span className="repetition">Autopropagated</span>
+      autopropagatedHtml = <span className="repetition">EELTÕLGITUD KORDUS</span>
     } else if (repetition && !splitted) {
-      autopropagatedHtml = <span className="repetition">Repetition</span>
+      autopropagatedHtml = <span className="repetition">KORDUS</span>
     }
     if (visible && percentage != '') {
       percentageHtml = (
@@ -136,7 +136,7 @@ class SegmentHeader extends React.PureComponent {
     const savingHtml = (
       <div className={'header-segment-saving'}>
         <div className={'header-segment-saving-loader'} />
-        <span>Saving</span>
+        <span>Salvestamine</span>
       </div>
     )
     const {isActiveCharactersCounter, charactersCounter} = this.state

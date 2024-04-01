@@ -158,7 +158,7 @@ class PreferencesModal extends React.Component {
                   Delete
                 </a>
                 <a onClick={(e) => this.undoDelete(e)} className={'btn-cancel'}>
-                  Cancel
+                  Tühista
                 </a>
               </div>
             </div>

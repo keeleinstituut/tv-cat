@@ -85,7 +85,7 @@ export const FilesMenu = ({projectName}) => {
   return (
     <div
       className="breadcrumbs file-list"
-      title="File list"
+      title="Fail"
       onClick={toggleMenu}
       ref={containerRef}
     >
@@ -112,7 +112,7 @@ export const FilesMenu = ({projectName}) => {
             disabled={!currentSegment}
           >
             <div className="icon-iconmoon" />
-            <span>Go to current segment</span>
+            <span>Liigu praegusele segmendile</span>
             <span className={'current-shortcut'}>
               {Shortcuts.cattol.events.gotoCurrent.keystrokes[
                 Shortcuts.shortCutsKeyType
@@ -131,7 +131,7 @@ export const FilesMenu = ({projectName}) => {
                   className={`file-list-item ${
                     currentFile === file.id ? 'current' : ''
                   }`}
-                  title={'Click to go to the first segment'}
+                  title={'Klõpsake selleks liigu algusesse'}
                 >
                   <span
                     className={

@@ -96,7 +96,7 @@ class SegmentBody extends React.Component {
               title="set draft as status"
               onClick={this.changeStatus.bind(this, 'draft')}
             >
-              DRAFT
+              MUSTAND
             </a>
           </li>
           <li>
@@ -106,7 +106,7 @@ class SegmentBody extends React.Component {
               title="set translated as status"
               onClick={this.changeStatus.bind(this, 'translated')}
             >
-              TRANSLATED
+              TÕLGITUD
             </a>
           </li>
           <li>
@@ -116,7 +116,7 @@ class SegmentBody extends React.Component {
               title="set approved as status"
               onClick={this.changeStatus.bind(this, 'approved')}
             >
-              APPROVED
+              KINNITATUD
             </a>
           </li>
 
@@ -127,7 +127,7 @@ class SegmentBody extends React.Component {
               title="set rejected as status"
               onClick={this.changeStatus.bind(this, 'rejected')}
             >
-              REJECTED
+              TAGASI LÜKATUD
             </a>
           </li>
         </ul>

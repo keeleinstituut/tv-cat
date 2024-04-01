@@ -76,7 +76,7 @@ export const SearchTerms = () => {
         <input
           name="search_term"
           className="glossary_search-input"
-          placeholder="Search term"
+          placeholder="Otsingu termin"
           value={searchTerm}
           onChange={(event) => setSearchTerm(event.target.value)}
         />

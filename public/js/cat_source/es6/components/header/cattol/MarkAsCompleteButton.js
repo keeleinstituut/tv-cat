@@ -41,7 +41,7 @@ export const MarkAsCompleteButton = ({featureEnabled, isReview}) => {
         cancelText: 'Fix errors',
         successCallback: () => clickMarkAsCompleteModal(),
       },
-      'Confirmation required',
+      'Kinnitus vajalik',
     )
   }
 
@@ -50,11 +50,11 @@ export const MarkAsCompleteButton = ({featureEnabled, isReview}) => {
       ConfirmMessageModal,
       {
         text: isReview ? reviewMessage : translateMessage,
-        successText: 'Continue',
-        cancelText: 'Cancel',
+        successText: 'Jätka',
+        cancelText: 'Tühista',
         successCallback: () => markAsCompleteSubmit(),
       },
-      'Confirmation required',
+      'Kinnitus vajalik',
     )
   }
 

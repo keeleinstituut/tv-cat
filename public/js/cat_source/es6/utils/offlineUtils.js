@@ -19,11 +19,11 @@ const OfflineUtils = {
       const notification = {
         uid: 'offline-counter',
         title:
-          '<div class="message-offline-icons"><span class="icon-power-cord"/><span class="icon-power-cord2"/></div>No connection available',
+          '<div class="message-offline-icons"><span class="icon-power-cord"/><span class="icon-power-cord2"/></div>Ühendus puudub',
         text:
-          'You can still translate <span class="remainingSegments">' +
+          'Võrguühenduseta režiimis saab tõlkida <span class="remainingSegments">' +
           this.offlineCacheSize +
-          '</span> segments in offline mode. Do not refresh or you lose the segments!',
+          '</span> segmenti. Ära värskenda veebilehte, muidu kaotad nende segmentide tõlked.',
         type: 'warning',
         position: 'bl',
         autoDismiss: false,
@@ -43,8 +43,8 @@ const OfflineUtils = {
       this.offline = false
       var notification = {
         uid: 'offline-back',
-        title: 'Connection is back',
-        text: 'We are saving translated segments in the database.',
+        title: 'Ühendus on tagasi',
+        text: 'Salvestame tõlgitud segmendid andmebaasi.',
         type: 'success',
         position: 'bl',
         autoDismiss: true,
@@ -62,7 +62,7 @@ const OfflineUtils = {
       UI.body.removeAttr('data-offline-mode')
 
       $('.noConnectionMsg').text(
-        'The connection is back. Your last, interrupted operation has now been done.',
+        'Ühendus on tagasi. Teie viimane katkestatud toiming on nüüd tehtud.',
       )
 
       setTimeout(function () {
@@ -101,7 +101,7 @@ const OfflineUtils = {
       '<div class="noConnectionMsg">' +
         message +
         '<br />' +
-        '<span class="reconnect">Trying to reconnect in <span class="countdown">30 seconds</span>.</span><br /><br />' +
+        '<span class="reconnect">Proovin uuesti ühendust luua <span class="countdown">30 sekundit</span>.</span><br /><br />' +
         '<input type="button" id="checkConnection" value="Try to reconnect now" /></div>',
     )
 
@@ -198,11 +198,11 @@ const OfflineUtils = {
     var notification = {
       uid: 'offline-counter',
       title:
-        '<div class="message-offline-icons"><span class="icon-power-cord"></span><span class="icon-power-cord2"></span></div>No connection available',
+        '<div class="message-offline-icons"><span class="icon-power-cord"></span><span class="icon-power-cord2"></span></div>Ühendus puudub',
       text:
-        'You can still translate <span class="remainingSegments">' +
+        'Võrguühenduseta režiimis saab tõlkida <span class="remainingSegments">' +
         --this.offlineCacheRemaining +
-        '</span> segments in offline mode. Do not refresh or you lose the segments!',
+        '</span> segmenti. Ära värskenda veebilehte, muidu kaotad nende segmentide tõlked.',
       type: 'warning',
       position: 'bl',
       autoDismiss: false,

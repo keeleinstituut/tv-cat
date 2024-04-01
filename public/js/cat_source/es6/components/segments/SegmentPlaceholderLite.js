@@ -177,7 +177,7 @@ class SegmentPlaceholderLite extends React.Component {
                       <a
                         href="#"
                         className="autofillTag"
-                        title="Copy missing tags from source to target"
+                        title="Kopeeri puuduvad vormingu sildid lähtekeelest sihtkeelde"
                       >
                         {' '}
                       </a>

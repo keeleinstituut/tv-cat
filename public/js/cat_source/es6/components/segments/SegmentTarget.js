@@ -218,8 +218,8 @@ class SegmentTarget extends React.Component {
         tagCopyButton = (
           <a
             className="autofillTag"
-            alt="Copy missing tags from source to target"
-            title="Copy missing tags from source to target"
+            alt="Kopeeri puuduvad vormingu sildid lähtekeelest sihtkeelde"
+            title="Kopeeri puuduvad vormingu sildid lähtekeelest sihtkeelde"
             onClick={this.editArea.addMissingSourceTagsToTarget}
           />
         )
@@ -279,17 +279,17 @@ class SegmentTarget extends React.Component {
             >
               <li
                 className="uppercase"
-                title="Upper Case"
+                title="ÜLAREGISTER"
                 onMouseDown={() => this.editArea.formatSelection('uppercase')}
               />
               <li
                 className="lowercase"
-                title="Lower Case"
+                title="alaregister"
                 onMouseDown={() => this.editArea.formatSelection('lowercase')}
               />
               <li
                 className="capitalize"
-                title="Capitalize"
+                title="Suurtähesta"
                 onMouseDown={() => this.editArea.formatSelection('capitalize')}
               />
             </ul>

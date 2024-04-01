@@ -1056,8 +1056,8 @@ const SegmentActions = {
   },
   showTranslateAllModalWarnirng: function () {
     var props = {
-      text: 'It was not possible to translate all segments.',
-      successText: 'Ok',
+      text: 'Kõiki segmente polnud võimalik tõlkida.',
+      successText: 'OK',
       successCallback: function () {
         ModalsActions.onCloseModal()
       },

@@ -21,12 +21,12 @@ let SegmentFilterUtils = {
   },
 
   callbackForSegmentNotInSample: (segmentId) => {
-    var title = 'Segment not in sample'
+    var title = 'Segmenti pole filtreeritud valikus'
     var text =
-      'Sample is trying to focus on segment #' +
+      'Prooviti kuvada segmenti #' +
       segmentId +
-      ', but ' +
-      'segment is no longer in the sample'
+      ', kuid ' +
+      'seda pole filtreeritud valikus'
 
     return (function () {
       CatToolActions.addNotification({

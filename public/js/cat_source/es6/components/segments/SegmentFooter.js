@@ -21,13 +21,13 @@ import SegmentUtils from '../../utils/segmentUtils'
 
 const TAB_ITEMS = {
   matches: {
-    label: 'Translation Matches',
+    label: 'Tõlkevasted',
     code: 'tm',
     tabClass: 'matches',
     isLoading: false,
   },
   concordances: {
-    label: 'TM Search',
+    label: 'TM otsing',
     code: 'cc',
     tabClass: 'concordances',
     isLoading: false,

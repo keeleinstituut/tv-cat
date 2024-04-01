@@ -149,11 +149,11 @@ class BulkSelectionBar extends React.Component {
           </div>
           {this.state.count === 1 ? (
             <div className="bulk-info">
-              <b>{this.state.count} Segment selected</b>
+              <b>Valitud segment: {this.state.count}</b>
             </div>
           ) : (
             <div className="bulk-info">
-              <b>{this.state.count} Segments selected</b>
+              <b>Valitud segmendid {this.state.count}</b>
             </div>
           )}
         </div>
@@ -161,7 +161,7 @@ class BulkSelectionBar extends React.Component {
         {this.state.changingStatus ? (
           <div className="bulk-activity-icons">
             <div className="label-filters labl">
-              Applying changes
+              Muudatuste rakendamine
               <div className="loader" />
             </div>
           </div>
@@ -169,7 +169,7 @@ class BulkSelectionBar extends React.Component {
           <div className="bulk-activity-icons">
             <button className={buttonClass} onClick={this.onClickBulk}>
               <i className="icon-checkmark5 icon" />{' '}
-              {this.props.isReview ? 'MARK AS APPROVED' : 'MARK AS TRANSLATED'}
+              {this.props.isReview ? 'MÄRGI KINNITATUKS' : 'MÄRGI TÕLGITUKS'}
             </button>
           </div>
         )}

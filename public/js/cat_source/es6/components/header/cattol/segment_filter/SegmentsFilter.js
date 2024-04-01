@@ -10,17 +10,17 @@ class SegmentsFilter extends React.Component {
   constructor(props) {
     super(props)
     this.moreFilters = [
-      {value: 'ice', label: 'ICE'},
-      {value: 'unlocked', label: 'Not ICE'},
-      {value: 'modified_ice', label: 'Modified ICE'},
-      {value: 'repetitions', label: 'Repetitions'},
+      {value: 'ice', label: '101% kattuvad'},
+      {value: 'unlocked', label: 'Mitte 101% kattuvad'},
+      {value: 'modified_ice', label: 'Muudetud 101% vaste'},
+      {value: 'repetitions', label: 'Kordused'},
       {value: 'mt', label: 'MT'},
-      {value: 'matches', label: '100% Matches'},
+      {value: 'matches', label: '100% kattuvad'},
       // {value: 'fuzzies_50_74', label: 'fuzzies_50_74'},
-      {value: 'fuzzies_75_84', label: 'Fuzzies 75-84'},
-      {value: 'fuzzies_85_94', label: 'Fuzzies 85-94'},
-      {value: 'fuzzies_95_99', label: 'Fuzzies 95-99'},
-      {value: 'todo', label: 'Todo'},
+      {value: 'fuzzies_75_84', label: '75%-84% kattuvad'},
+      {value: 'fuzzies_85_94', label: '85%-94% kattuvad'},
+      {value: 'fuzzies_95_99', label: '95%-99% kattuvad'},
+      {value: 'todo', label: 'Teha'},
     ]
     this.state = this.defaultState()
     this.setFilter = this.setFilter.bind(this)
@@ -415,7 +415,7 @@ class SegmentsFilter extends React.Component {
                     ref={(dropdown) => (this.statusDropdown = dropdown)}
                   >
                     <div className="text">
-                      <div>Segment Status</div>
+                      <div>Segmendi saatus</div>
                     </div>
                     <div className="ui cancel label">
                       <i
@@ -433,7 +433,7 @@ class SegmentsFilter extends React.Component {
                     className="ui top left pointing dropdown basic tiny button"
                     ref={(dropdown) => (this.filtersDropdown = dropdown)}
                   >
-                    <div className="text">Others</div>
+                    <div className="text">Muu</div>
                     <div className="ui cancel label">
                       <i
                         className="icon-cancel3"
@@ -531,7 +531,7 @@ class SegmentsFilter extends React.Component {
                 <div className="clear-filter-element">
                   <div className="clear-filter">
                     <button href="#" onClick={this.clearClick.bind(this)}>
-                      Clear all filters
+                      Tühjenda kõik filtrid
                     </button>
                   </div>
                   {this.state.filteredCount > 0 ? (
@@ -541,7 +541,7 @@ class SegmentsFilter extends React.Component {
                         ref={(button) => (this.selectAllButton = button)}
                         onClick={(event) => this.selectAllSegments(event)}
                       >
-                        Select all filtered segments
+                        Vali kõik filtreeritud segmendid
                       </button>
                     </div>
                   ) : null}
@@ -571,7 +571,7 @@ class SegmentsFilter extends React.Component {
                     }
                   >
                     <div className="label-filters labl">
-                      <b>{this.state.filteredCount}</b> Filtered segments
+                      <b>{this.state.filteredCount}</b> Filtreeritud segmendid
                     </div>
                     <button
                       className="filter-move-up ui basic button"

@@ -95,20 +95,20 @@ export const ActionMenu = ({
 
         <li
           className="item"
-          title="XLIFF-to-target converter"
+          title="XLIFFist-sihtfaili konvertimine"
           data-value="target"
         >
           <a rel="noreferrer" target="_blank" href={`/utils/xliff-to-target`}>
-            XLIFF-to-target converter
+              XLIFFist-sihtfaili konvertimine
           </a>
         </li>
         <li
           className="item shortcuts"
-          title="Shortcuts"
+          title="Kiirklahvid"
           data-value="shortcuts"
           onClick={openShortcutsModal}
         >
-          <a>Shortcuts</a>
+          <a>Kiirklahvid</a>
         </li>
         {/*<li class="item" title="Edit log" data-value="editlog" >*/}
         {/*    <a id="edit_log_link" target="_blank" href={`editlog/${jid}-${password}`}>Editing Log</a>*/}
@@ -133,7 +133,7 @@ export const ActionMenu = ({
       .catch((errors) => {
         const notification = {
           title: 'Error',
-          text: `Downloading CSV error status code: ${errors.status}`,
+          text: `CSV vea olekukoodi allalaadimine: ${errors.status}`,
           type: 'error',
         }
         CatToolActions.addNotification(notification)

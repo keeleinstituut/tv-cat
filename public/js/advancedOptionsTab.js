@@ -26,10 +26,10 @@ import CreateProjectStore from './cat_source/es6/stores/CreateProjectStore'
         ModalsActions.showModalComponent(
           AlertModal,
           {
-            text: 'Segment rules settings can only be edited when creating the project.',
-            buttonText: 'Continue',
+            text: 'Segmendireeglite sätteid saab muuta ainult projekti loomisel.',
+            buttonText: 'Jätka',
           },
-          'Option not editable',
+          'Valik ei ole redigeeritav',
         )
       })
       //Check Lexiqa check
@@ -109,10 +109,10 @@ import CreateProjectStore from './cat_source/es6/stores/CreateProjectStore'
           ModalsActions.showModalComponent(
             AlertModal,
             {
-              text: 'This options is only available on your browser.',
-              buttonText: 'Continue',
+              text: 'Need valikud on saadaval ainult teie brauseris.',
+              buttonText: 'Jätka',
             },
-            'Option not available',
+            'Valik pole saadaval',
           )
         })
         speech2textCheck.addClass('option-unavailable')

@@ -1,10 +1,10 @@
 const Shortcuts = {
   shortCutsKeyType: navigator.platform === 'MacIntel' ? 'mac' : 'standard',
   cattol_formatting_characters: {
-    label: 'Formatting characters',
+    label: 'Vormindamine',
     events: {
       nonBreakingSpace: {
-        label: 'Non-breaking space',
+        label: 'Püsitühik',
         equivalent: '',
         keystrokes: {
           standard: 'ctrl+shift+space',
@@ -12,7 +12,7 @@ const Shortcuts = {
         },
       },
       wordJoiner: {
-        label: 'Word joiner',
+        label: 'Sõnade ühendaja',
         equivalent: '',
         keystrokes: {
           standard: 'ctrl+alt+space',
@@ -22,10 +22,10 @@ const Shortcuts = {
     },
   },
   cattol: {
-    label: 'Edit page operations',
+    label: 'Funktsionaalsus',
     events: {
       openShortcutsModal: {
-        label: 'Open shortcuts window',
+        label: 'Ava otseteede aken',
         equivalent: 'Open shortcuts window',
         keystrokes: {
           standard: 'alt+h',
@@ -33,7 +33,7 @@ const Shortcuts = {
         },
       },
       translate: {
-        label: 'Confirm translation',
+        label: 'Kinnita tõlge',
         equivalent: 'click on Translated',
         keystrokes: {
           standard: 'ctrl+return',
@@ -41,7 +41,7 @@ const Shortcuts = {
         },
       },
       translate_nextUntranslated: {
-        label: 'Confirm translation and go to Next untranslated segment',
+        label: 'Kinnita tõlge ja liigu järgmise tõlkimata segmendi juurde',
         equivalent: 'click on [T+>>]',
         keystrokes: {
           standard: 'ctrl+shift+return',
@@ -49,7 +49,7 @@ const Shortcuts = {
         },
       },
       openNext: {
-        label: 'Go to next segment',
+        label: 'Liigu järgmisele segmendile',
         equivalent: '',
         keystrokes: {
           standard: 'ctrl+down',
@@ -57,7 +57,7 @@ const Shortcuts = {
         },
       },
       openPrevious: {
-        label: 'Go to previous segment',
+        label: 'Liigu eelmisele segmendile',
         equivalent: '',
         keystrokes: {
           standard: 'ctrl+up',
@@ -65,7 +65,7 @@ const Shortcuts = {
         },
       },
       gotoCurrent: {
-        label: 'Go to current segment',
+        label: 'Liigu praegusele segmendile',
         equivalent: '',
         keystrokes: {
           standard: 'ctrl+shift+f',
@@ -73,7 +73,7 @@ const Shortcuts = {
         },
       },
       copySource: {
-        label: 'Copy source to target',
+        label: 'Kopeeri sihtkeel lähtekeelde',
         equivalent: 'click on > between source and target',
         keystrokes: {
           standard: 'ctrl+i',
@@ -81,7 +81,7 @@ const Shortcuts = {
         },
       },
       undoInSegment: {
-        label: 'Undo in segment',
+        label: 'Muudatuse tagasivõtmine segmendis',
         equivalent: '',
         keystrokes: {
           standard: 'ctrl+z',
@@ -89,7 +89,7 @@ const Shortcuts = {
         },
       },
       redoInSegment: {
-        label: 'Redo in segment',
+        label: 'Muudatuse uuesti tegemine segmendis',
         equivalent: '',
         keystrokes: {
           standard: 'ctrl+y',
@@ -97,7 +97,7 @@ const Shortcuts = {
         },
       },
       openSearch: {
-        label: 'Open search panel',
+        label: 'Ava otsingupaneel',
         equivalent: '',
         keystrokes: {
           standard: 'ctrl+f',
@@ -106,7 +106,7 @@ const Shortcuts = {
       },
       searchInConcordance: {
         label:
-          'Perform TM Search search on word(s) selected in the source segment',
+          'TM otsing lähtesegmendis valitud sõna(de)le',
         equivalent: '',
         keystrokes: {
           standard: 'alt+k',
@@ -114,7 +114,7 @@ const Shortcuts = {
         },
       },
       // openSettings: {
-      //   label: 'Open Settings panel',
+      //   label: 'Ava seadete paneel',
       //   equivalent: '',
       //   keystrokes: {
       //     standard: 'ctrl+shift+s',
@@ -122,7 +122,7 @@ const Shortcuts = {
       //   },
       // },
       openComments: {
-        label: 'Open comments in current segment',
+        label: 'Ava kommentaarid praeguses segmendis',
         equivalent: '',
         keystrokes: {
           standard: 'ctrl+shift+c',
@@ -130,7 +130,7 @@ const Shortcuts = {
         },
       },
       openIssuesPanel: {
-        label: 'Open issues panel',
+        label: 'Ava tähelepanekute paneel',
         equivalent: '',
         keystrokes: {
           standard: 'ctrl+shift+a',
@@ -138,7 +138,7 @@ const Shortcuts = {
         },
       },
       navigateIssues: {
-        label: 'Navigate issues panel / Add issue',
+        label: 'Navigeeri tähelepanekute paneelile / lisa tähelepanek',
         equivalent: {
           standard: 'Ctrl + Alt + Arrows/Enter',
           mac: 'Ctrl + Option + Arrows/Enter',
@@ -149,7 +149,7 @@ const Shortcuts = {
         },
       },
       copyContribution1: {
-        label: 'Copy first translation match in Target',
+        label: 'Kopeeri esimene tõlkevaste sihtkeelde',
         equivalent: '',
         keystrokes: {
           standard: 'ctrl+1',
@@ -157,7 +157,7 @@ const Shortcuts = {
         },
       },
       copyContribution2: {
-        label: 'Copy second translation match in Target',
+        label: 'Kopeeri teine tõlkevaste sihtkeelde',
         equivalent: '',
         keystrokes: {
           standard: 'ctrl+2',
@@ -165,7 +165,7 @@ const Shortcuts = {
         },
       },
       copyContribution3: {
-        label: 'Copy third translation match in Target',
+        label: 'Kopeeri kolmas tõlkevaste sihtkeelde',
         equivalent: '',
         keystrokes: {
           standard: 'ctrl+3',
@@ -173,7 +173,7 @@ const Shortcuts = {
         },
       },
       splitSegment: {
-        label: 'Split Segment',
+        label: 'Poolita segment',
         equivalent: '',
         keystrokes: {
           standard: 'ctrl+s',
@@ -181,7 +181,7 @@ const Shortcuts = {
         },
       },
       addNextTag: {
-        label: 'Open tags menu',
+        label: 'Ava vormingu siltide menüü',
         equivalent: '',
         keystrokes: {
           standard: 'alt+t',
@@ -189,7 +189,7 @@ const Shortcuts = {
         },
       },
       navigateTabs: {
-        label: 'Navigate segment tabs',
+        label: 'Navigeeri segmendi vahekaartidel',
         equivalent: '',
         keystrokes: {
           standard: 'alt+s',

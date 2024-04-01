@@ -224,7 +224,7 @@ class ModifyTeam extends React.Component {
     })
 
     if (!filteredMembers.size)
-      return <span className="no-result">No results!</span>
+      return <span className="no-result">Ei leitud!</span>
 
     return filteredMembers.map(function (member, i) {
       let user = member.get('user')

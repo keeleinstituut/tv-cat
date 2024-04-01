@@ -717,7 +717,7 @@ function SegmentsContainer({
       {scrollTopVisible && (
         <div
           className={'pointer-first-segment'}
-          title="Go to first segment"
+          title="Liigu algusesse"
           onClick={goToFirstSegment}
         ></div>
       )}
@@ -822,7 +822,7 @@ const getSegmentStructure = (segment, sideOpen) => {
                     <a
                       href="#"
                       className="autofillTag"
-                      title="Copy missing tags from source to target"
+                      title="Kopeeri puuduvad vormingu sildid lähtekeelest sihtkeelde"
                     >
                       {' '}
                     </a>

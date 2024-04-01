@@ -325,7 +325,7 @@ class QA {
             1    => 'Tag count mismatch',
             2    => 'bad source xml',
             3    => 'bad target xml',
-            4    => 'Tag ID mismatch: Check and edit tags with differing IDs.',
+            4    => 'Vormingu sildi mittevastavus: Vormingu siltide tüübid ei klapi.',
             5    => 'Heading whitespaces mismatch',
             6    => 'Tail whitespaces mismatch',
             7    => 'Heading tab mismatch',
@@ -349,7 +349,7 @@ class QA {
             25   => 'Star sign mismatch',
             26   => 'Glossary mismatch',
             27   => 'Special char entity mismatch',
-            29   => 'File-breaking tag issue',
+            29   => 'Vormingu sildi probleem rikub faili küljenduse',
 
         /*
          * grouping
@@ -357,7 +357,7 @@ class QA {
          *  2 =>  'bad source xml',
          *  3 =>  'bad target xml',
          */
-            1000 => 'Tag mismatch.',
+            1000 => 'Vormingu sildi mittevastavus.',
 
         /*
          * grouping
@@ -372,12 +372,12 @@ class QA {
          */
             1100 => 'More/fewer whitespaces found next to the tags.',
 
-            1101 => 'More/fewer whitespaces found in the text.',
+            1101 => 'Üleliigsed/puuduvad tühikud tekstis.',
 
             1102 => 'Leading space in target not corresponding to source.',
-            1103 => 'Trailing space in target not corresponding to source.',
-            1104 => 'Whitespace(s) mismatch AFTER a tag.',
-            1105 => 'Whitespace(s) mismatch BEFORE a tag.',
+            1103 => 'Tühikute arv sihtkeeles ei klapi lähteteksti omaga.',
+            1104 => 'Tühik(ute) mittevastavus PÄRAST vormingu silti.',
+            1105 => 'Tühiku(te) mittevastavus ENNE vormingu silti.',
         /*
          * grouping
          * 17 => 'Dollar sign mismatch',
@@ -390,18 +390,18 @@ class QA {
          * 24 => 'Tab sign mismatch',
          * 25 => 'Star sign mismatch',
          */
-            1200 => 'Symbol mismatch',
+            1200 => 'Sümboli mittevastavus',
 
             1300 => 'Found nested <ex> and/or <bx> tag(s) inside a <g> tag',
             1301 => 'Wrong <ex> and/or <bx> placement',
-            1302 => '<ex>, <bx> and/or <g> total count mismatch',
+            1302 => '<ex>, <bx> ja/või <g> koguarv ei klapi',
 
             2000 => 'Smart count plural forms mismatch',
             2001 => '%smartcount tag count mismatch',
 
-            3000 => 'Characters limit exceeded',
+            3000 => 'Tähemärkide limiit on ületatud',
 
-            4000 => 'Glossary blacklist match detected',
+            4000 => 'Tuvastati sõnastiku musta nimekirja vaste',
     ];
 
     protected $_tipMap = [
@@ -411,10 +411,10 @@ class QA {
          *  2 =>  'bad source xml',
          *  3 =>  'bad target xml',
          */
-            29   => "Should be < g ... > ... < /g >",
-            1000 => "Press 'alt + t' shortcut to add tags or delete extra tags.",
-            3000 => 'Maximum characters limit exceeded.',
-            4000 => 'Glossary blacklist match detected',
+            29   => "Peaks olema < g ... > ... < /g >",
+            1000 => "Klahvidega „alt + t“ saab lisada/kustutada vormingu silte.",
+            3000 => 'Maksimaalne tähemärkide limiit on ületatud.',
+            4000 => 'Tuvastati sõnastiku musta nimekirja vaste',
 
     ];
 

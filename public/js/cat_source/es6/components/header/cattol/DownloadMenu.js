@@ -40,16 +40,16 @@ export const DownloadMenu = ({password, jid, isGDriveProject}) => {
       >
         {downloadTranslationAvailable ? (
           <li className="item downloadTranslation" data-value="translation">
-            <a title="Translation" alt="Translation" href="#">
+            <a title="Tõlge" alt="Tõlge" href="#">
               {isGDriveProject
                 ? 'Open in Google Drive'
-                : 'Download Translation'}
+                : 'Laadi tõlge alla'}
             </a>
           </li>
         ) : (
           <li className="item previewLink" data-value="draft">
-            <a title="Draft" alt="Draft" href="#">
-              {isGDriveProject ? 'Preview in Google Drive' : 'Draft'}
+            <a title="Mustand" alt="Mustand" href="#">
+              {isGDriveProject ? 'Preview in Google Drive' : 'Mustand'}
             </a>
           </li>
         )}
@@ -57,12 +57,12 @@ export const DownloadMenu = ({password, jid, isGDriveProject}) => {
           <li className="item" data-value="original">
             <a
               className="originalDownload"
-              title="Original"
-              alt="Original"
+              title="Originaal"
+              alt="Originaal"
               data-href={`/?action=downloadOriginal&id_job=${jid}&password=${password}&download_type=all`}
               target="_blank"
             >
-              Original
+              Originaal
             </a>
           </li>
         )}
@@ -82,12 +82,12 @@ export const DownloadMenu = ({password, jid, isGDriveProject}) => {
         <li className="item" data-value="xlif">
           <a
             className="sdlxliff"
-            title="Export XLIFF"
-            alt="Export XLIFF"
+            title="Ekspordi XLIFF"
+            alt="Ekspordi XLIFF"
             data-href={`/SDLXLIFF/${jid}/${password}/${jid}.zip`}
             target="_blank"
           >
-            Export XLIFF
+            Ekspordi XLIFF
           </a>
         </li>
 
@@ -95,12 +95,12 @@ export const DownloadMenu = ({password, jid, isGDriveProject}) => {
           <a
             rel="noreferrer"
             className="tmx"
-            title="Export job TMX for QA"
-            alt="Export job TMX for QA"
+            title="Ekspordi TMX"
+            alt="Ekspordi TMX"
             href={`/TMX/${jid}/${password}`}
             target="_blank"
           >
-            Export Job TMX
+            Ekspordi TMX
           </a>
         </li>
       </ul>
