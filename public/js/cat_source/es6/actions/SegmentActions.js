@@ -1046,8 +1046,8 @@ const SegmentActions = {
 
   showApproveAllModalWarnirng: function () {
     var props = {
-      text: 'It was not possible to approve all segments. There are some segments that have not been translated.',
-      successText: 'Ok',
+      text: 'Kõiki segmente pole võimalik kinnitada. Mõned lõigud on tõlkimata.',
+      successText: 'OK',
       successCallback: function () {
         ModalsActions.onCloseModal()
       },

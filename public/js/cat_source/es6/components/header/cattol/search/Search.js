@@ -290,9 +290,9 @@ class Search extends React.Component {
       ModalsActions.showModalComponent(
         AlertModal,
         {
-          text: 'Attention: you are replacing the same text!',
+          text: 'Tähelepanu: asendate sama teksti!',
         },
-        'Replace Alert',
+        'Asenda hoiatus',
       )
       return false
     }
@@ -849,7 +849,7 @@ class Search extends React.Component {
                           'entireJob',
                         )}
                       />
-                      <label> Search all chunks</label>
+                      <label> Otsige läbi kõik osad</label>
                     </div>
                   )}
                 </div>

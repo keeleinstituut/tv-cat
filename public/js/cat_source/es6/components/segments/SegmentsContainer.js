@@ -770,7 +770,7 @@ const getSegmentStructure = (segment, sideOpen) => {
           <input type="checkbox" />
         </div>
         <div className="actions">
-          <button className="split" title="Click to split segment">
+          <button className="split" title="Poolita segment">
             <i className="icon-split"> </i>
           </button>
           <p className="split-shortcut">CTRL + S</p>

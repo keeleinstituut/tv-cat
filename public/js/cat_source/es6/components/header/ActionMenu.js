@@ -132,7 +132,7 @@ export const ActionMenu = ({
       })
       .catch((errors) => {
         const notification = {
-          title: 'Error',
+          title: 'Viga',
           text: `CSV vea olekukoodi allalaadimine: ${errors.status}`,
           type: 'error',
         }

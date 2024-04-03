@@ -473,7 +473,7 @@ class SegmentsFilter extends React.Component {
                         <div className="head-dropdown">
                           <div className="ui mini input">
                             <label>
-                              Sample size <b>(%)</b>
+                              Näidissuurus <b>(%)</b>
                             </label>
                             <input
                               type="number"
@@ -489,32 +489,32 @@ class SegmentsFilter extends React.Component {
                           className="item"
                           data-value="edit_distance_high_to_low"
                         >
-                          <div className="type-item">Edit distance </div>
+                          <div className="type-item">Redigeeri kaugust </div>
                           <div className="order-item"> (A - Z)</div>
                         </div>
                         <div
                           className="item"
                           data-value="edit_distance_low_to_high"
                         >
-                          <div className="type-item">Edit distance</div>
+                          <div className="type-item">Redigeeri kaugust</div>
                           <div className="order-item"> (Z - A)</div>
                         </div>
                         <div
                           className="item"
                           data-value="segment_length_high_to_low"
                         >
-                          <div className="type-item">Segment length</div>
+                          <div className="type-item">Segmendi pikkus</div>
                           <div className="order-item"> (A - Z)</div>
                         </div>
                         <div
                           className="item"
                           data-value="segment_length_low_to_high"
                         >
-                          <div className="type-item">Segment length</div>
+                          <div className="type-item">Segmendi pikkus</div>
                           <div className="order-item"> (Z - A)</div>
                         </div>
                         <div className="item" data-value="regular_intervals">
-                          Regular interval
+                          Regulaarne intervall
                         </div>
                       </div>
                     </div>
@@ -553,7 +553,7 @@ class SegmentsFilter extends React.Component {
                         ref={(button) => (this.unlockIce = button)}
                         onClick={(event) => this.unlockAllSegments(event)}
                       >
-                        Unlock all filtered segments
+                        Avage kõik filtreeritud segmendid
                       </button>
                     </div>
                   ) : null}
@@ -600,7 +600,7 @@ class SegmentsFilter extends React.Component {
                 ) : null}
                 {this.state.filterSubmitted ? (
                   <div className="label-filters labl">
-                    Applying filter
+                    Filtri rakendamine
                     <div className="loader"></div>
                   </div>
                 ) : null}

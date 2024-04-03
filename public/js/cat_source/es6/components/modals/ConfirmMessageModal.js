@@ -49,7 +49,7 @@ class ConfirmMessageModal extends React.Component {
                     this.props.successCallback?.()
                   }}
                 >
-                  {this.props.successText ? this.props.successText : 'Confirm'}
+                  {this.props.successText ? this.props.successText : 'Kinnita'}
                 </div>
               ) : (
                 ''

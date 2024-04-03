@@ -327,16 +327,15 @@ class SegmentFooterTabMatches extends React.Component {
         matchesHtml.push(
           <ul key={0} className="graysmall message">
             <li>
-              No matches could be found for this segment. Please, contact{' '}
-              <a href="mailto:support@matecat.com">support@matecat.com</a> if
-              you think this is an error.
+              Selle segmendi jaoks ei leitud vasteid.
+              Kui arvate, et tegemist on veaga, võtke ühendust klienditoega.
             </li>
           </ul>,
         )
       } else {
         matchesHtml.push(
           <ul key={0} className="graysmall message">
-            <li>No match found for this segment</li>
+            <li>Selle segmendi jaoks ei leitud vastet</li>
           </ul>,
         )
       }
@@ -359,13 +358,13 @@ class SegmentFooterTabMatches extends React.Component {
             toAdd = true
             messageClass = 'error'
             imgClass = 'error-img'
-            messageTypeText = 'Error: '
+            messageTypeText = 'Viga: '
             break
           case '-2002':
             toAdd = true
             messageClass = 'warning'
             imgClass = 'warning-img'
-            messageTypeText = 'Warning: '
+            messageTypeText = 'Hoiatus: '
             break
         }
         if (toAdd) {

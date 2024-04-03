@@ -26,7 +26,7 @@ class SegmentBody extends React.Component {
   statusHandleTitleAttr(status) {
     status = status.toUpperCase()
     return (
-      status.charAt(0) + status.slice(1).toLowerCase() + ', click to change it'
+      status.charAt(0) + status.slice(1).toLowerCase() + ', klõpsake selle muutmiseks'
     )
   }
 
@@ -156,7 +156,7 @@ class SegmentBody extends React.Component {
         this.context.segment.status,
       )
     } else {
-      status_change_title = 'Change segment status'
+      status_change_title = 'Muutke segmendi saatus'
     }
     let copySourceShortcuts = UI.isMac
       ? Shortcuts.cattol.events.copySource.keystrokes.mac

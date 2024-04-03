@@ -46,8 +46,8 @@ let ModalsActions = {
   openMergeModal: function (project, job, successCallback) {
     const props = {
       text:
-        'This will cause the merging of all chunks in only one job. ' +
-        'This operation cannot be canceled.',
+        'See põhjustab kõigi osade ühendamise ainult ühes töös. ' +
+          'Seda toimingut ei saa tühistada. ',
       successText: 'Jätka',
       successCallback: () => {
         mergeJobChunks(project, job).then(function () {
