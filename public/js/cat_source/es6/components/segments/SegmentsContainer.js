@@ -790,7 +790,7 @@ const getSegmentStructure = (segment, sideOpen) => {
                 tabIndex="0"
                 dangerouslySetInnerHTML={{__html: source}}
               />
-              <div className="copy" title="Copy source to target">
+              <div className="copy" title="Kopeeri sihtkeel lähtekeelde">
                 <a href="#"> </a>
                 <p>CTRL+I</p>
               </div>
@@ -804,7 +804,7 @@ const getSegmentStructure = (segment, sideOpen) => {
                   <div className="toolbar">
                     <a
                       className="revise-qr-link"
-                      title="Segment Quality Report."
+                      title="Segmendi kvaliteediaruanne."
                       target="_blank"
                       href="#"
                     >
@@ -813,7 +813,7 @@ const getSegmentStructure = (segment, sideOpen) => {
                     <a
                       href="#"
                       className="tagModeToggle "
-                      title="Display full/short tags"
+                      title="Kuva täielikud/lühikesed sildid"
                     >
                       <span className="icon-chevron-left"> </span>
                       <span className="icon-tag-expand"> </span>
@@ -844,7 +844,7 @@ const getSegmentStructure = (segment, sideOpen) => {
                   <li>
                     <a href="#" className="translated">
                       {' '}
-                      Translated{' '}
+                      Tõlgitud{' '}
                     </a>
                     <p>CTRL ENTER</p>
                   </li>
@@ -861,7 +861,7 @@ const getSegmentStructure = (segment, sideOpen) => {
         <div className="timetoedit" data-raw-time-to-edit="0">
           {' '}
         </div>
-        <div className="edit-distance">Edit Distance:</div>
+        <div className="edit-distance">Muuda vahemaad:</div>
       </div>
       <div className="segment-side-buttons">
         <div

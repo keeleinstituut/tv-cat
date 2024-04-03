@@ -530,7 +530,7 @@ class SegmentSource extends React.Component {
               className="ui button cancel-button cancel btn-cancel"
               onClick={() => SegmentActions.closeSplitSegment()}
             >
-              Cancel
+              Tühista
             </a>
             <a
               className={`ui primary button done btn-ok pull-right ${
@@ -539,7 +539,7 @@ class SegmentSource extends React.Component {
               onClick={() => splitSegmentNew()}
             >
               {' '}
-              Confirm{' '}
+              Kinnita{' '}
             </a>
           </div>
           {!!this.splitPoint && (

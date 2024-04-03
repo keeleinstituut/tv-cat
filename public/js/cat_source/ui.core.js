@@ -715,8 +715,8 @@ window.UI = {
           AlertModal,
           {
             text:
-              'You cannot change the status of an ICE segment to "Translated" without editing it first.</br>' +
-              'Please edit the segment first if you want to change its status to "Translated".',
+              'Te ei saa muuta 101% kattuvad segmendi olekut olekuks "Tõlgitud" ilma seda eelnevalt muutmata.</br>' +
+              'Muutke esmalt segmenti, kui soovite muuta selle olekuks "Tõlgitud".',
           },
           'Error',
         )
@@ -770,7 +770,7 @@ window.UI = {
         return
       }
       var text =
-        'The segment translation has been propagated to the other repetitions.'
+        'Segmendi tõlge on üle viidud teistele kordustele.'
       if (
         propagationData.segments_for_propagation.not_propagated &&
         propagationData.segments_for_propagation.not_propagated.ice.id &&

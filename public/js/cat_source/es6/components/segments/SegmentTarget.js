@@ -125,7 +125,7 @@ class SegmentTarget extends React.Component {
                 href="#"
                 className="revise-lock-editArea active"
                 onClick={this.lockEditArea.bind(this)}
-                title="Highlight text and assign an issue to the selected text."
+                title="Tõstke tekst esile ja määrake valitud tekstile probleem."
               />
             ) : null}
           </div>
@@ -143,13 +143,13 @@ class SegmentTarget extends React.Component {
         tagLockCustomizable = UI.tagLockEnabled ? (
           <a
             className="tagLockCustomize icon-lock"
-            title="Toggle Tag Lock"
+            title="Lülitage Sildi lukustus sisse"
             onClick={() => SegmentActions.disableTagLock()}
           />
         ) : (
           <a
             className="tagLockCustomize icon-unlocked3"
-            title="Toggle Tag Lock"
+            title="Lülitage Sildi lukustus sisse"
             onClick={() => SegmentActions.enableTagLock()}
           />
         )
@@ -199,9 +199,9 @@ class SegmentTarget extends React.Component {
         tagModeButton = (
           <a
             className={'tagModeToggle ' + buttonClass}
-            alt="Display full/short tags"
+            alt="Kuva täielikud/lühikesed sildid"
             onClick={() => Customizations.toggleTagsMode()}
-            title="Display full/short tags"
+            title="Kuva täielikud/lühikesed sildid"
           >
             <span className="icon-chevron-left" />
             <span className="icon-tag-expand" />
@@ -242,14 +242,14 @@ class SegmentTarget extends React.Component {
                 href="#"
                 className="revise-lock-editArea"
                 onClick={this.lockEditArea.bind(this)}
-                title="Highlight text and assign an issue to the selected text."
+                title="Tõstke tekst esile ja määrake valitud tekstile probleem."
               />
             ) : null}
             {ReviewExtended.enabled() &&
             (issues.length > 0 || config.isReview) ? (
               <a
                 className="revise-qr-link"
-                title="Segment Quality Report."
+                title="Segmendi kvaliteediaruanne."
                 target="_blank"
                 rel="noreferrer"
                 href={
