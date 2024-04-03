@@ -115,7 +115,7 @@ class CatDecorator extends \AbstractDecorator {
         );
 
         return array_map( function ( $item ) {
-            return (object)array( 'value' => $item, 'label' => $item );
+            return (object)array( 'value' => $item, 'label' => $this->getStatusLabels()[$item] ?? $item );
         }, $statuses );
     }
 
