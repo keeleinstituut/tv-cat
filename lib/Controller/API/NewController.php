@@ -201,7 +201,7 @@ class NewController extends ajaxController
          * in order to avoid mispelling errors
          *
          */
-        $this->postInput['private_tm_key'] = preg_replace("/\s+/", "", $this->postInput['private_tm_key']);
+        $this->postInput['private_tm_key'] = preg_replace("/\s+/", "", $this->postInput['private_tm_key'] ?? '');
 
         //NOTE: This is for debug purpose only,
         //NOTE: Global $_POST Overriding from CLI
@@ -623,7 +623,7 @@ class NewController extends ajaxController
         $projectStructure['sanitize_project_options'] = false;
 
         $projectStructure['project_name'] = $this->postInput['project_name'];
-        $projectStructure['job_subject'] = $this->postInput['subject'];
+        $projectStructure['job_subject'] = $this->postInput['subject'] ?? null;
 
         $projectStructure['private_tm_key'] = $this->private_tm_key;
         $projectStructure['private_tm_user'] = $this->private_tm_user;
@@ -633,22 +633,22 @@ class NewController extends ajaxController
         $projectStructure['array_files_meta'] = $arMeta; //list of file metadata
         $projectStructure['source_language'] = $this->postInput['source_lang'];
         $projectStructure['target_language'] = explode(',', $this->postInput['target_lang']);
-        $projectStructure['mt_engine'] = $this->postInput['mt_engine'];
-        $projectStructure['tms_engine'] = $this->postInput['tms_engine'];
+        $projectStructure['mt_engine'] = $this->postInput['mt_engine'] ?? null;
+        $projectStructure['tms_engine'] = $this->postInput['tms_engine'] ?? null;
         $projectStructure['status'] = Constants_ProjectStatus::STATUS_NOT_READY_FOR_ANALYSIS;
         $projectStructure['skip_lang_validation'] = true;
-        $projectStructure['owner'] = $this->postInput['owner_email'];
+        $projectStructure['owner'] = $this->postInput['owner_email'] ?? null;
         $projectStructure['metadata'] = $this->metadata;
         $projectStructure['pretranslate_100'] = (int)!!$this->postInput['pretranslate_100']; // Force pretranslate_100 to be 0 or 1
 
         //default get all public matches from TM
-        $projectStructure['only_private'] = (!isset($this->postInput['get_public_matches']) ? false : !$this->postInput['get_public_matches']);
+        $projectStructure['only_private'] = (isset($this->postInput['get_public_matches']) && !$this->postInput['get_public_matches']);
 
         $projectStructure['user_ip'] = Utils::getRealIpAddr();
         $projectStructure['HTTP_HOST'] = INIT::$HTTPHOST;
         $projectStructure['due_date'] = (!isset($this->postInput['due_date']) ? null : Utils::mysqlTimestamp($this->postInput['due_date']));
-        $projectStructure['target_language_mt_engine_id'] = $this->postInput['target_language_mt_engine_id'];
-        $projectStructure['instructions'] = $this->postInput['instructions'];
+        $projectStructure['target_language_mt_engine_id'] = $this->postInput['target_language_mt_engine_id'] ?? null;
+        $projectStructure['instructions'] = $this->postInput['instructions'] ?? null;
 
         if ($this->user) {
             $projectStructure['userIsLogged'] = true;
@@ -699,7 +699,7 @@ class NewController extends ajaxController
     /**
      * @param $filename
      *
-     * @return ArrayObject
+     * @return array
      * @throws \API\V2\Exceptions\AuthenticationError
      * @throws \Exceptions\NotFoundException
      * @throws \Exceptions\ValidationError
@@ -733,9 +733,9 @@ class NewController extends ajaxController
         $metadata['isGlossary'] = $isGlossary;
         $metadata['isTMX'] = $isTMX;
         $metadata['proprietary'] = [
-            ['proprietary'] => $info['proprietary'],
-            ['proprietary_name'] => $info['proprietary_name'],
-            ['proprietary_short_name'] => $info['proprietary_short_name'],
+            'proprietary' => $info['proprietary'],
+            'proprietary_name' => $info['proprietary_name'],
+            'proprietary_short_name' => $info['proprietary_short_name'],
         ];
 
         return $metadata;
@@ -785,7 +785,7 @@ class NewController extends ajaxController
     private function __validateSourceLang(Langs_Languages $lang_handler)
     {
         try {
-            $lang_handler->validateLanguage($this->postInput['source_lang']);
+            $lang_handler->validateLanguage($this->postInput['source_lang'] ?? '');
         } catch (Exception $e) {
             $this->api_output['message'] = $e->getMessage();
             $this->result['errors'][] = ["code" => -3, "message" => $e->getMessage()];
@@ -794,7 +794,7 @@ class NewController extends ajaxController
 
     private function __validateTargetLangs(Langs_Languages $lang_handler)
     {
-        $targets = explode(',', $this->postInput['target_lang']);
+        $targets = explode(',', $this->postInput['target_lang'] ?? '');
         $targets = array_map('trim', $targets);
         $targets = array_unique($targets);
 

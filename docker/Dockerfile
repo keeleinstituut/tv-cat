@@ -56,6 +56,10 @@ RUN docker-php-ext-configure pcntl --enable-pcntl \
     pdo_mysql \
     zip
 
+# Set custom php.ini settings
+RUN echo 'post_max_size = 512M' >> /usr/local/etc/php/conf.d/app-php.ini && \
+    echo 'upload_max_filesize = 256M' >> /usr/local/etc/php/conf.d/app-php.ini && \
+    echo 'memory_limit = 1G' >> /usr/local/etc/php/conf.d/app-php.ini
 
 USER www-data
 RUN composer install
