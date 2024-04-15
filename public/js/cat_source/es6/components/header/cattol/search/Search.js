@@ -243,8 +243,8 @@ class Search extends React.Component {
     let self = this
     let props = {
       modalName: 'confirmReplace',
-      text: 'Do you really want to replace this text in all search results? <br>(The page will be refreshed after confirm)',
-      successText: 'Continue',
+      text: 'Kas soovid selle teksti asendada kõigis otsingutulemustes? <br>(Pärast kinnitamist värskendatakse lehte)',
+      successText: 'Jätka',
       successCallback: function () {
         SearchUtils.execReplaceAll(self.state.search)
           .then(() => {
@@ -273,7 +273,7 @@ class Search extends React.Component {
           featuredSearchResult: null,
         })
       },
-      cancelText: 'Cancel',
+      cancelText: 'Tühista',
       cancelCallback: function () {
         ModalsActions.onCloseModal()
       },
@@ -281,7 +281,7 @@ class Search extends React.Component {
     ModalsActions.showModalComponent(
       ConfirmMessageModal,
       props,
-      'Confirmation required',
+      'Kinnitus vajalik',
     )
   }
 
@@ -290,9 +290,9 @@ class Search extends React.Component {
       ModalsActions.showModalComponent(
         AlertModal,
         {
-          text: 'Attention: you are replacing the same text!',
+          text: 'Tähelepanu: asendate sama teksti!',
         },
-        'Replace Alert',
+        'Asenda hoiatus',
       )
       return false
     }
@@ -422,7 +422,7 @@ class Search extends React.Component {
     if (!this.state.funcFindButton && !searchReturn) {
       html = (
         <div className="search-display">
-          <p className="searching">Searching ...</p>
+          <p className="searching">Otsimine ...</p>
         </div>
       )
     } else if (!this.state.funcFindButton && searchReturn) {
@@ -431,22 +431,20 @@ class Search extends React.Component {
       if (this.state.search.searchSource)
         query.push(
           <span key="source" className="query">
-            <span className="param">{this.state.search.searchSource}</span>in
-            source{' '}
+            <span className="param">{this.state.search.searchSource}</span>Lähtekeest{' '}
           </span>,
         )
       if (this.state.search.searchTarget)
         query.push(
           <span key="target" className="query">
-            <span className="param">{this.state.search.searchTarget}</span>in
-            target{' '}
+            <span className="param">{this.state.search.searchTarget}</span>Sihtkeelest{' '}
           </span>,
         )
       if (this.state.search.selectStatus !== 'all') {
         let statusLabel = (
           <span key="status">
             {' '}
-            and status{' '}
+            ja staatus{' '}
             <span className="param">{this.state.search.selectStatus}</span>
           </span>
         )
@@ -454,7 +452,7 @@ class Search extends React.Component {
       }
       let caseLabel =
         ' (' +
-        (this.state.search.matchCase ? 'case sensitive' : 'case insensitive') +
+        (this.state.search.matchCase ? 'suur- ja väiketähti arvestatakse' : 'suur- ja väiketähti ei arvestata') +
         ')'
       query.push(caseLabel)
       let searchMode =
@@ -472,7 +470,7 @@ class Search extends React.Component {
         numbers =
           total > 0 ? (
             <span key="numbers" className="numbers">
-              Found{' '}
+              Leitud{' '}
               <span className="segments">
                 {this.state.searchResults.length}
               </span>{' '}
@@ -480,7 +478,7 @@ class Search extends React.Component {
             </span>
           ) : (
             <span key="numbers" className="numbers">
-              No segments found
+              Lähtekeest ei leitud
             </span>
           )
       } else {
@@ -490,9 +488,9 @@ class Search extends React.Component {
         numbers =
           total > 0 ? (
             <span key="numbers" className="numbers">
-              Found
+              Leitud
               <span className="results">{' ' + this.state.total}</span>{' '}
-              <span>{label}</span> in
+              <span>{label}</span> sisse
               <span className="segments">
                 {' ' + this.state.searchResults.length}
               </span>{' '}
@@ -500,14 +498,14 @@ class Search extends React.Component {
             </span>
           ) : (
             <span key="numbers" className="numbers">
-              No segments found
+              Lähtekeest ei leitud
             </span>
           )
       }
       html = (
         <div className="search-display">
           <p className="found">
-            {numbers} having
+            {numbers} millel
             {query}
           </p>
           {this.state.searchResults.length > 0 ? (
@@ -519,14 +517,14 @@ class Search extends React.Component {
                 onClick={this.goToPrev.bind(this)}
               >
                 <i className="icon-chevron-left" />
-                <span> Find Previous (Shift + F3)</span>
+                <span> Leia Eelmine (Shift + F3)</span>
               </button>
               <button
                 className="ui basic tiny button"
                 onClick={this.goToNext.bind(this)}
               >
                 <i className="icon-chevron-right" />
-                <span> Find Next (F3)</span>
+                <span> Leia Järgmisele (F3)</span>
               </button>
             </div>
           ) : null}
@@ -678,7 +676,7 @@ class Search extends React.Component {
                       type="text"
                       tabIndex={1}
                       value={this.state.search.searchSource}
-                      placeholder="Find in source"
+                      placeholder="Leia lähtekeelest"
                       onKeyDown={(e) => this.handleKeyDown(e, 'searchSource')}
                       onChange={this.handleInputChange.bind(
                         this,
@@ -699,7 +697,7 @@ class Search extends React.Component {
                         )}
                         ref={(checkbox) => (this.matchCaseCheck = checkbox)}
                       />
-                      <label> Match Case</label>
+                      <label>Erista suur- ja väiketähti</label>
                     </div>
                     <div className="exact-match">
                       <input
@@ -712,7 +710,7 @@ class Search extends React.Component {
                           'exactMatch',
                         )}
                       />
-                      <label> Whole word</label>
+                      <label>Kogu sõna</label>
                     </div>
                   </div>
                 </div>
@@ -723,7 +721,7 @@ class Search extends React.Component {
                         ref={(ref) => (this.targetInput = ref)}
                         type="text"
                         tabIndex={2}
-                        placeholder="Find in target"
+                        placeholder="Leia sihtkeelest"
                         value={this.state.search.searchTarget}
                         onChange={this.handleInputChange.bind(
                           this,
@@ -753,7 +751,7 @@ class Search extends React.Component {
                             'enableReplace',
                           )}
                         />
-                        <label> Replace with</label>
+                        <label>Asenda järgmisega</label>
                       </div>
                     ) : null}
                   </div>
@@ -763,7 +761,7 @@ class Search extends React.Component {
                       <div className="find-in-replace">
                         <input
                           type="text"
-                          placeholder="Replace in target"
+                          placeholder="Asenda sihtkeeles"
                           value={this.state.search.replaceTarget}
                           onChange={this.handleInputChange.bind(
                             this,
@@ -788,7 +786,7 @@ class Search extends React.Component {
                       ref={(dropdown) => (this.statusDropDown = dropdown)}
                     >
                       <div className="text">
-                        <div>Status Segment</div>
+                        <div>Segmendi staatus</div>
                       </div>
                       <div
                         className="ui cancel label"
@@ -808,7 +806,7 @@ class Search extends React.Component {
                         className=""
                         onClick={this.handleClearClick.bind(this)}
                       >
-                        Clear
+                        Tühjenda väljad
                       </button>
                     </div>
                   ) : null}
@@ -823,13 +821,13 @@ class Search extends React.Component {
                       }
                       onClick={this.handleSubmit.bind(this)}
                     >
-                      FIND
+                      LEIA
                     </button>
                     <button
                       className={'ui basic tiny button ' + replaceButtonsClass}
                       onClick={this.handleReplaceClick.bind(this)}
                     >
-                      REPLACE
+                      ASENDA
                     </button>
                     <button
                       className={
@@ -837,7 +835,7 @@ class Search extends React.Component {
                       }
                       onClick={this.handleReplaceAllClick.bind(this)}
                     >
-                      REPLACE ALL
+                      ASENDA KÕIK
                     </button>
                   </div>
                   {this.jobIsSplitted && (
@@ -851,7 +849,7 @@ class Search extends React.Component {
                           'entireJob',
                         )}
                       />
-                      <label> Search all chunks</label>
+                      <label> Otsige läbi kõik osad</label>
                     </div>
                   )}
                 </div>
@@ -864,7 +862,7 @@ class Search extends React.Component {
                     }
                     onClick={this.handleSubmit.bind(this)}
                   >
-                    FIND
+                    LEIA
                   </button>
                 </div>
               )}

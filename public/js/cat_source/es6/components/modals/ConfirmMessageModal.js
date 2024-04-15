@@ -23,7 +23,7 @@ class ConfirmMessageModal extends React.Component {
                     this.props.cancelCallback?.()
                   }}
                 >
-                  {this.props.cancelText ? this.props.cancelText : 'Cancel'}
+                  {this.props.cancelText ? this.props.cancelText : 'Tühista'}
                 </div>
               ) : (
                 ''
@@ -49,7 +49,7 @@ class ConfirmMessageModal extends React.Component {
                     this.props.successCallback?.()
                   }}
                 >
-                  {this.props.successText ? this.props.successText : 'Confirm'}
+                  {this.props.successText ? this.props.successText : 'Kinnita'}
                 </div>
               ) : (
                 ''

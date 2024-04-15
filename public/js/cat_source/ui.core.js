@@ -79,21 +79,21 @@ window.UI = {
 
     if (this.autopropagateConfirmNeeded(segment, opts.propagation)) {
       var text = !_.isUndefined(segment.alternatives)
-        ? 'The translation you are confirming for this segment is different from the versions confirmed for other identical segments</b>. <br><br>Would you like ' +
-          'to propagate this translation to all other identical segments and replace the other versions or keep it only for this segment?'
-        : 'The translation you are confirming for this segment is different from the version confirmed for other identical segments. <br><br>Would you ' +
-          'like to propagate this translation to all other identical segments and replace the other version or keep it only for this segment?'
+        ? 'Tõlge, mida soovid kinnitada erineb teiste identsete segmentide juba kinnitatud tõlkeversioonist</b>.' +
+          '<br><br>Kas soovid selle tõlkega eelmised tõlked asendada ja üle kirjutada ka kõigis teistes identsetes segmentides või soovid seda tõlget salvestada ainult praeguses segmendis?'
+        : 'Tõlge, mida soovid kinnitada erineb teiste identsete segmentide juba kinnitatud tõlkeversioonist.' +
+          ' <br><br>Kas soovid selle tõlkega eelmised tõlked asendada ja üle kirjutada ka kõigis teistes identsetes segmentides või soovid seda tõlget salvestada ainult praeguses segmendis?'
       // var optionsStr = opts;
       var props = {
         text: text,
-        successText: 'Only this segment',
+        successText: 'Ainult praeguses segmendis',
         successCallback: function () {
           opts.propagation = false
           opts.autoPropagation = false
           UI.preExecChangeStatus(opts)
           ModalsActions.onCloseModal()
         },
-        cancelText: 'Propagate to All',
+        cancelText: 'Kirjuta üle kõikides',
         cancelCallback: function () {
           opts.propagation = true
           opts.autoPropagation = false
@@ -107,7 +107,7 @@ window.UI = {
       ModalsActions.showModalComponent(
         ConfirmMessageModal,
         props,
-        'Confirmation required ',
+        'Kinnitus vajalik',
       )
     } else {
       opts.autoPropagation = true
@@ -260,14 +260,14 @@ window.UI = {
       if (isGDriveFile) {
         label = 'Open in Google Drive'
       } else {
-        label = 'Download Translation'
+        label = 'Laadi tõlge alla'
       }
       $('#action-download').addClass('job-completed')
     } else {
       if (isGDriveFile) {
         label = 'Preview in Google Drive'
       } else {
-        label = 'Draft'
+        label = 'Mustand'
       }
       $('#action-download').removeClass('job-completed')
     }
@@ -715,8 +715,8 @@ window.UI = {
           AlertModal,
           {
             text:
-              'You cannot change the status of an ICE segment to "Translated" without editing it first.</br>' +
-              'Please edit the segment first if you want to change its status to "Translated".',
+              'Te ei saa muuta 101% kattuvad segmendi olekut olekuks "Tõlgitud" ilma seda eelnevalt muutmata.</br>' +
+              'Muutke esmalt segmenti, kui soovite muuta selle olekuks "Tõlgitud".',
           },
           'Error',
         )
@@ -770,7 +770,7 @@ window.UI = {
         return
       }
       var text =
-        'The segment translation has been propagated to the other repetitions.'
+        'Segmendi tõlge on üle viidud teistele kordustele.'
       if (
         propagationData.segments_for_propagation.not_propagated &&
         propagationData.segments_for_propagation.not_propagated.ice.id &&

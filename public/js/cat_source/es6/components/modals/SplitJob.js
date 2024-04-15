@@ -433,7 +433,7 @@ class SplitJobModal extends React.Component {
                 className="ui button cancel-button"
                 onClick={this.closeModal.bind(this)}
               >
-                Cancel
+                Tühista
               </div>
             </div>
           </div>

@@ -188,7 +188,7 @@ const GlossaryList = () => {
   return (
     <div ref={scrollItemsRef} className="glossary_items">
       {!terms.length && isLoading ? (
-        <span className="loading_label">Loading</span>
+        <span className="loading_label">Laadimine</span>
       ) : (
         terms.map((term, index) => (
           <GlossaryItem
@@ -214,10 +214,10 @@ const GlossaryList = () => {
         <div className="no-terms-result">
           {searchTerm && searchTerm === previousSearchTermRef.current ? (
             <span>
-              No results for <b>{searchTerm}</b>
+              Järgmist ei leitud <b>{searchTerm}</b>
             </span>
           ) : !searchTerm ? (
-            <span>No results</span>
+            <span>Ei leitud</span>
           ) : undefined}
         </div>
       )}

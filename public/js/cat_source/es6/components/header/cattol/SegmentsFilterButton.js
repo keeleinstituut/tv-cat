@@ -17,7 +17,7 @@ export const SegmentsFilterButton = () => {
         <div
           className="action-submenu ui floating"
           id="action-filter"
-          title="Filter segments"
+          title="Filtreeri segmente"
           onClick={openSegmetsFilters}
         >
           <svg

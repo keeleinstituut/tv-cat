@@ -42,18 +42,18 @@ class CopySourceModal extends React.Component {
     return (
       <div className="copy-source-modal">
         <h3 className="text-container-top">
-          Do you really want to copy source to target for all new segments?
+          Kas soovid kopeerida kõigi tõlkimata segmentide lähtekeele teksti sihtkeelde?
           <br />
-          This action cannot be undone.
+          Seda tegevust ei saa tagasi võtta.
         </h3>
 
         <div className="buttons-popup-container">
-          <label>Copy source to target for:</label>
+          <label>Kopeeri sihtkeel lähtekeelde järgmiselt:</label>
           <a className="btn-cancel" onClick={this.copyAllSources.bind(this)}>
-            ALL new segments
+            KÕIK uued segmendid
           </a>
           <a className="btn-ok" onClick={this.copySegmentOnly.bind(this)}>
-            This segment only
+            Ainult see segment
           </a>
           <div className="notes-action"></div>
         </div>
@@ -65,7 +65,7 @@ class CopySourceModal extends React.Component {
             ref={(checkbox) => (this.checkbox = checkbox)}
           />
           <label htmlFor="copy_s2t_dont_show">
-            {` Don't show this dialog again for the current job`}
+            {` Ära seda hoiatust praeguse töö tegemisel uuesti näita`}
           </label>
         </div>
       </div>

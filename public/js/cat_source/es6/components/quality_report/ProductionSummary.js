@@ -124,7 +124,7 @@ class ProductionSummary extends React.Component {
                   className="approved-bar translate-tooltip"
                   data-variation="tiny"
                   data-html={
-                    'Approved ' +
+                    'Kinnitatud ' +
                     Math.round((approvedWords / stats.get('total')) * 100) +
                     '%'
                   }
@@ -140,7 +140,7 @@ class ProductionSummary extends React.Component {
                     className="approved-bar-2nd-pass translate-tooltip"
                     data-variation="tiny"
                     data-html={
-                      'Approved ' +
+                      'Kinnitatud ' +
                       Math.round(
                         (approvedWords2ndPass / stats.get('total')) * 100,
                       ) +

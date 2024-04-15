@@ -224,7 +224,7 @@ class SegmentButton extends React.Component {
             onClick={(e) => this.clickOnTranslatedButton(e, true)}
             className={'btn next-untranslated ' + classDisable}
             data-segmentid={'segment-' + this.props.segment.sid}
-            title="Translate and go to next untranslated"
+            title="Tõlgi ja liigu järgmisele tõlkimata segmendile"
           >
             {' '}
             T+>>
@@ -251,8 +251,9 @@ class SegmentButton extends React.Component {
                 onClick={(e) => this.goToNextRepetition(e, 'translated')}
                 className="next-repetition ui primary button"
                 data-segmentid={'segment-' + this.currentSegmentId}
-                title="Translate and go to next repetition"
+                title="Tõlgi ja liikuge järgmise korduslõigu juurde"
               >
+                {/* eslint-disable-next-line react/no-unescaped-entities */}
                 REP >
               </a>
             </li>
@@ -262,8 +263,9 @@ class SegmentButton extends React.Component {
                 onClick={(e) => this.goToNextRepetitionGroup(e, 'translated')}
                 className="next-repetition-group ui primary button"
                 data-segmentid={'segment-' + this.currentSegmentId}
-                title="Translate and go to next repetition group"
+                title="Tõlkige ja liikuge järgmise kordusrühma juurde"
               >
+                {/* eslint-disable-next-line react/no-unescaped-entities */}
                 REP >>
               </a>
             </li>

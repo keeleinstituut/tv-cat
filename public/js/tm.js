@@ -172,7 +172,7 @@ import TEXT_UTILS from './cat_source/es6/utils/textUtils'
               ModalsActions.onCloseModal()
               $('#modal').trigger('openlogin')
             },
-            warningText: 'Cancel',
+            warningText: 'Tühista',
             warningCallback: function () {
               ModalsActions.onCloseModal()
             },
@@ -847,13 +847,13 @@ import TEXT_UTILS from './cat_source/es6/utils/textUtils'
               ConfirmMessageModal,
               {
                 text: 'If you confirm this action, your Private TM key will be lost. <br />If you want to avoid this, please, log in with your account now.',
-                successText: 'Continue',
-                cancelText: 'Cancel',
+                successText: 'Jätka',
+                cancelText: 'Tühista',
                 successCallback: () => UI.continueTMDisable(data),
                 cancelCallback: () => UI.cancelTMDisable(data),
                 closeOnSuccess: true,
               },
-              'Confirmation required',
+              'Kinnitus vajalik',
             )
             return false
           }

@@ -46,9 +46,9 @@ let ModalsActions = {
   openMergeModal: function (project, job, successCallback) {
     const props = {
       text:
-        'This will cause the merging of all chunks in only one job. ' +
-        'This operation cannot be canceled.',
-      successText: 'Continue',
+        'See põhjustab kõigi osade ühendamise ainult ühes töös. ' +
+          'Seda toimingut ei saa tühistada. ',
+      successText: 'Jätka',
       successCallback: () => {
         mergeJobChunks(project, job).then(function () {
           if (successCallback) {
@@ -57,12 +57,12 @@ let ModalsActions = {
         })
         this.onCloseModal()
       },
-      cancelText: 'Cancel',
+      cancelText: 'Tühista',
       cancelCallback: () => {
         this.onCloseModal()
       },
     }
-    this.showModalComponent(ConfirmMessageModal, props, 'Confirmation required')
+    this.showModalComponent(ConfirmMessageModal, props, 'Kinnitus vajalik')
   },
 
   openDQFModal: function () {
@@ -76,17 +76,17 @@ let ModalsActions = {
     ModalsActions.showModalComponent(
       ConfirmMessageModal,
       {
-        cancelText: 'Fix issues',
+        cancelText: 'Lahenda probleemid',
         cancelCallback: () => cancelCallback(),
         successCallback: () => successCallback(),
-        successText: 'Download anyway',
+        successText: 'Laadi ikkagi alla',
         text:
-          'Unresolved tag issues may prevent the successful download of your translation.<br />' +
-          'For information on how to fix them, please open <a style="color: #4183C4; font-weight: 700; text-decoration: underline;"' +
-          ' href="https://guides.matecat.com/fixing-tags" target="_blank">the dedicated support page </a>. <br /><br /> ' +
-          ' If you download the file anyway, part of the content may be untranslated - look for the string UNTRANSLATED_CONTENT in the downloaded files.',
+          'Vormingu siltide parandamata jätmine mõjutab valmisfaili allalaadimise funktsionaalsust.<br />' +
+          'Teavet nende parandamise kohta saab vaadata <a style="color: #4183C4; font-weight: 700; text-decoration: underline;"' +
+          ' href="https://guides.matecat.com/fixing-tags" target="_blank">kasutusjuhendist </a>. <br /><br /> ' +
+          ' Kui soovid selle faili ikkagi alla laadida, siis võib osa selle sisust olla tõlkimata. Allalaaditud failis leiab need kohtad otsides märget UNTRANSLATED_CONTENT.',
       },
-      'Confirmation required',
+      'Kinnitus vajalik',
     )
   },
 }

@@ -142,7 +142,7 @@ class SegmentPlaceholderLite extends React.Component {
                     readOnly={false}
                   />
                 </div>
-                <div className="copy" title="Copy source to target">
+                <div className="copy" title="Kopeeri sihtkeel lähtekeelde">
                   <a href="#"> </a>
                   <p>CTRL+I</p>
                 </div>
@@ -159,7 +159,7 @@ class SegmentPlaceholderLite extends React.Component {
                     <div className="toolbar">
                       <a
                         className="revise-qr-link"
-                        title="Segment Quality Report."
+                        title="Segmendi kvaliteediaruanne."
                         target="_blank"
                         href="#"
                       >
@@ -168,7 +168,7 @@ class SegmentPlaceholderLite extends React.Component {
                       <a
                         href="#"
                         className="tagModeToggle "
-                        title="Display full/short tags"
+                        title="Kuva täielikud/lühikesed sildid"
                       >
                         <span className="icon-chevron-left"> </span>
                         <span className="icon-tag-expand"> </span>
@@ -177,7 +177,7 @@ class SegmentPlaceholderLite extends React.Component {
                       <a
                         href="#"
                         className="autofillTag"
-                        title="Copy missing tags from source to target"
+                        title="Kopeeri puuduvad vormingu sildid lähtekeelest sihtkeelde"
                       >
                         {' '}
                       </a>
@@ -199,7 +199,7 @@ class SegmentPlaceholderLite extends React.Component {
                     <li>
                       <a href="#" className="translated">
                         {' '}
-                        Translated{' '}
+                        Tõlgitud{' '}
                       </a>
                       <p>CTRL ENTER</p>
                     </li>
@@ -216,7 +216,7 @@ class SegmentPlaceholderLite extends React.Component {
           <div className="timetoedit" data-raw-time-to-edit="0">
             {' '}
           </div>
-          <div className="edit-distance">Edit Distance:</div>
+          <div className="edit-distance">Muuda vahemaad:</div>
         </div>
         <div className="segment-side-buttons">
           <div

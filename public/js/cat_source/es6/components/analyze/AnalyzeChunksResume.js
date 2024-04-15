@@ -247,7 +247,7 @@ class AnalyzeChunksResume extends React.Component {
                     <button
                       onClick={copyJobLinkToClipboard(jidChunk)}
                       className={'ui icon button copy'}
-                      data-content="Copied to Clipboard!"
+                      data-content="Kopeeritud lõikelauale!"
                       data-position="top center"
                     >
                       <i className="icon-link icon" />
@@ -412,7 +412,7 @@ class AnalyzeChunksResume extends React.Component {
                           this.props.jobsInfo[indexJob].jid,
                         )}
                         className={'ui icon button copy'}
-                        data-content="Copied to Clipboard!"
+                        data-content="Kopeeritud lõikelauale!"
                         data-position="top center"
                       >
                         <i className="icon-link icon" />
@@ -435,7 +435,7 @@ class AnalyzeChunksResume extends React.Component {
                           container)
                       }
                     >
-                      {/*<div className="cell-label" >Weighted words:</div>*/}
+                      {/*<div className="cell-label" >Sõnu:</div>*/}
                       <div>
                         {/*<i className="icon-chart4 icon"/>*/}
                         {tmpJobAnalysis
@@ -563,7 +563,7 @@ class AnalyzeChunksResume extends React.Component {
   }
 
   render() {
-    let showHideText = this.props.showAnalysis ? 'Hide Details' : 'Show Details'
+    let showHideText = this.props.showAnalysis ? 'Detaile varjama' : 'Näita detaile'
     let iconClass = this.props.showAnalysis ? 'open' : ''
     let html = this.getResumeJobs()
     return (
@@ -577,23 +577,23 @@ class AnalyzeChunksResume extends React.Component {
             <div className="titles-compare">
               {!config.isCJK ? (
                 <div className="title-total-words">
-                  <h5>Total word count</h5>
+                  <h5>Sõnade koguarv</h5>
                 </div>
               ) : (
                 <div className="title-total-words">
-                  <h5>Total character count</h5>
+                  <h5>Tähemärkide koguarv</h5>
                 </div>
               )}
               <div className="title-standard-words">
                 <h5>
-                  Industry weighted
-                  <span data-tooltip="As counted by other CAT tools">
+                  Tööstusharu kaalutud
+                  <span data-tooltip="Nagu on loendatud teiste CAT-i tööriistadega">
                     <i className="icon-info icon" />
                   </span>
                 </h5>
               </div>
               <div className="title-matecat-words">
-                <h5>Matecat weighted</h5>
+                <h5>NecTM kaalutud</h5>
               </div>
             </div>
           </div>

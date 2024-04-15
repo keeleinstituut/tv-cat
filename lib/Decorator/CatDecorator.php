@@ -115,17 +115,17 @@ class CatDecorator extends \AbstractDecorator {
         );
 
         return array_map( function ( $item ) {
-            return (object)array( 'value' => $item, 'label' => $item );
+            return (object)array( 'value' => $item, 'label' => $this->getStatusLabels()[$item] ?? $item );
         }, $statuses );
     }
 
     private function getStatusLabels() {
         return array(
-                Constants_TranslationStatus::STATUS_NEW        => 'New',
-                Constants_TranslationStatus::STATUS_DRAFT      => 'Draft',
-                Constants_TranslationStatus::STATUS_TRANSLATED => 'Translated',
-                Constants_TranslationStatus::STATUS_APPROVED   => 'Approved',
-                Constants_TranslationStatus::STATUS_REBUTTED   => 'Rebutted'
+                Constants_TranslationStatus::STATUS_NEW        => 'Uus',
+                Constants_TranslationStatus::STATUS_DRAFT      => 'Mustand',
+                Constants_TranslationStatus::STATUS_TRANSLATED => 'Tõlgitud',
+                Constants_TranslationStatus::STATUS_APPROVED   => 'Kinnitatud',
+                Constants_TranslationStatus::STATUS_REBUTTED   => 'Ümberlükatud'
         );
     }
 
@@ -136,13 +136,13 @@ class CatDecorator extends \AbstractDecorator {
           if($this->isGDriveProject) {
             $label = 'OPEN IN GOOGLE DRIVE';
           } else {
-            $label = 'DOWNLOAD TRANSLATION';
+            $label = 'LAADI TÕLGE ALLA';
           }
       } else {
           if($this->isGDriveProject) {
             $label = 'PREVIEW IN GOOGLE DRIVE';
           } else {
-            $label = 'PREVIEW';
+            $label = 'EELVAATE';
           }
       }
 
@@ -156,13 +156,13 @@ class CatDecorator extends \AbstractDecorator {
             if($this->isGDriveProject) {
                 $label = 'Open in Google Drive';
             } else {
-                $label = 'Download Translation';
+                $label = 'Laadige alla tõlge';
             }
         } else {
             if($this->isGDriveProject) {
                 $label = 'Preview in Google Drive';
             } else {
-                $label = 'Draft';
+                $label = 'Mustand';
             }
         }
 
@@ -228,13 +228,13 @@ class CatDecorator extends \AbstractDecorator {
      */
     protected function _buildPageTitle() {
         if ( $this->controller->getRevisionNumber() && $this->controller->getRevisionNumber() > 1 ) {
-            $pageTitle = 'Revise ' . $this->controller->getRevisionNumber() . ' - ' ;
+            $pageTitle = 'Revideerida ' . $this->controller->getRevisionNumber() . ' - ' ;
         }
         elseif ( $this->controller->getRevisionNumber() ) {
-            $pageTitle = 'Revise - ' ;
+            $pageTitle = 'Revideerida – ' ;
         }
         else {
-            $pageTitle = 'Translate - ' ;
+            $pageTitle = 'Tõlgi – ' ;
         }
         return $pageTitle . $this->controller->getProject()->name . ' - ' .
                 $this->controller->getChunk()->id ;

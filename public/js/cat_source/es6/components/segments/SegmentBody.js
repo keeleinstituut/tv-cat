@@ -26,7 +26,7 @@ class SegmentBody extends React.Component {
   statusHandleTitleAttr(status) {
     status = status.toUpperCase()
     return (
-      status.charAt(0) + status.slice(1).toLowerCase() + ', click to change it'
+      status.charAt(0) + status.slice(1).toLowerCase() + ', klõpsake selle muutmiseks'
     )
   }
 
@@ -96,7 +96,7 @@ class SegmentBody extends React.Component {
               title="set draft as status"
               onClick={this.changeStatus.bind(this, 'draft')}
             >
-              DRAFT
+              MUSTAND
             </a>
           </li>
           <li>
@@ -106,7 +106,7 @@ class SegmentBody extends React.Component {
               title="set translated as status"
               onClick={this.changeStatus.bind(this, 'translated')}
             >
-              TRANSLATED
+              TÕLGITUD
             </a>
           </li>
           <li>
@@ -116,7 +116,7 @@ class SegmentBody extends React.Component {
               title="set approved as status"
               onClick={this.changeStatus.bind(this, 'approved')}
             >
-              APPROVED
+              KINNITATUD
             </a>
           </li>
 
@@ -127,7 +127,7 @@ class SegmentBody extends React.Component {
               title="set rejected as status"
               onClick={this.changeStatus.bind(this, 'rejected')}
             >
-              REJECTED
+              TAGASI LÜKATUD
             </a>
           </li>
         </ul>
@@ -156,7 +156,7 @@ class SegmentBody extends React.Component {
         this.context.segment.status,
       )
     } else {
-      status_change_title = 'Change segment status'
+      status_change_title = 'Muutke segmendi saatus'
     }
     let copySourceShortcuts = UI.isMac
       ? Shortcuts.cattol.events.copySource.keystrokes.mac

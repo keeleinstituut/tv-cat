@@ -13,9 +13,9 @@ export const DatasetSelect = () => {
                 className="glossary-dataset-select"
                 name="glossary-term-dataset"
                 label={false}
-                placeholder="No dataset"
+                placeholder="Pole kindlat sõnakogu"
                 showSearchBar
-                searchPlaceholder="Find a dataset"
+                searchPlaceholder="Leia sõnakogudest"
                 options={domainsResponse ? domainsResponse : []}
                 activeOption={searchDataset}
                 checkSpaceToReverse={false}

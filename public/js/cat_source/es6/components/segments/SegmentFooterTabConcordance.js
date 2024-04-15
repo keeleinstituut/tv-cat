@@ -255,7 +255,7 @@ class SegmentFooterTabConcordance extends React.Component {
       isExtendedClass = this.state.extended ? 'extended' : ''
     extended = (
       <a className={'more'} onClick={this.toggleExtendend.bind(this)}>
-        {this.state.extended ? 'Fewer' : 'More'}
+        {this.state.extended ? 'Vähem' : 'Rohkem'}
       </a>
     )
 
@@ -301,7 +301,7 @@ class SegmentFooterTabConcordance extends React.Component {
     } else {
       html = (
         <ul className={'graysmall message prime'}>
-          <li>TM Search is not available when the TM feature is disabled</li>
+          <li>TM-otsing pole saadaval, kui TM-funktsioon on keelatud.</li>
         </ul>
       )
     }
@@ -312,7 +312,7 @@ class SegmentFooterTabConcordance extends React.Component {
     if (this.state.noResults) {
       results = (
         <ul className={'graysmall message prime'}>
-          <li>Can&apos;t find any matches. Check the language combination.</li>
+          <li>Ei leitud ühtegi vastet. Kontrollida keelekombinatsiooni.</li>
         </ul>
       )
     }

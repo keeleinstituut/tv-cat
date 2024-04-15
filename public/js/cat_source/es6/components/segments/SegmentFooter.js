@@ -21,37 +21,37 @@ import SegmentUtils from '../../utils/segmentUtils'
 
 const TAB_ITEMS = {
   matches: {
-    label: 'Translation Matches',
+    label: 'Tõlkevasted',
     code: 'tm',
     tabClass: 'matches',
     isLoading: false,
   },
   concordances: {
-    label: 'TM Search',
+    label: 'TM otsing',
     code: 'cc',
     tabClass: 'concordances',
     isLoading: false,
   },
   glossary: {
-    label: 'Glossary',
+    label: 'Sõnastik',
     code: 'gl',
     tabClass: 'glossary',
     isLoading: false,
   },
   alternatives: {
-    label: 'Translation conflicts',
+    label: 'Ebaühtlane tõlge',
     code: 'al',
     tabClass: 'alternatives',
     isLoading: false,
   },
   messages: {
-    label: 'Messages',
+    label: 'Sõnumid',
     code: 'notes',
     tabClass: 'segment-notes',
     isLoading: false,
   },
   multiMatches: {
-    label: 'Crosslanguage Matches',
+    label: 'Keeleülesed vasted',
     code: 'cl',
     tabClass: 'cross-matches',
     isLoading: false,
@@ -73,7 +73,7 @@ function SegmentFooter() {
       elements: [],
       label:
         value.code === 'tm'
-          ? `Translation Matches ${!config.mt_enabled ? ' (No MT) ' : ''}`
+          ? `Tõlkevasted ${!config.mt_enabled ? ' (No MT) ' : ''}`
           : value.label,
     })),
   )
