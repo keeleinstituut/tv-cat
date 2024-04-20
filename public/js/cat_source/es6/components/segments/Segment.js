@@ -180,8 +180,8 @@ class Segment extends React.Component {
       if (this.props.segment.unlocked) {
         classes.push('ice-unlocked')
       } else {
-        // classes.push('readonly')
-        // classes.push('ice-locked')
+        classes.push('readonly')
+        classes.push('ice-locked')
       }
     }
 
