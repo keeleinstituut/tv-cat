@@ -8,7 +8,7 @@ use Engines_MyMemory;
 use Engines_Results_MyMemory_DomainsResponse;
 use EnginesModel_EngineStruct;
 use Log;
-use Stomp;
+use Stomp\Exception\StompException;
 use TaskRunner\Commons\AbstractElement;
 use TaskRunner\Commons\AbstractWorker;
 use TaskRunner\Exceptions\EndQueueException;
@@ -78,12 +78,12 @@ class GlossaryWorker extends AbstractWorker
         $response = $client->glossaryCheck($payload['source'], $payload['target'], $payload['source_language'], $payload['target_language'], $payload['keys']);
         $matches = $response->matches;
 
-        if ($matches['id_segment'] === null or $matches['id_segment'] === "") {
+        if (empty($matches['id_segment'])) {
             $id_segment = isset($payload['id_segment']) ? $payload['id_segment'] : null;
             $matches['id_segment'] = $id_segment;
         }
 
-        $this->publishMessage(
+        $this->publishToSseTopic(
             $this->setResponsePayload(
                 'glossary_check',
                 $payload['id_client'],
@@ -136,7 +136,7 @@ class GlossaryWorker extends AbstractWorker
             $message['payload'] = $payload;
         }
 
-        $this->publishMessage(
+        $this->publishToSseTopic(
             $this->setResponsePayload(
                 'glossary_delete',
                 $payload['id_client'],
@@ -151,14 +151,13 @@ class GlossaryWorker extends AbstractWorker
      *
      * @param $payload
      *
-     * @throws \StompException
      * @throws \Exception
      */
     private function domains($payload)
     {
         $id_segment = $payload['id_segment'] ?? null;
         $client = $this->getEkilexClient();
-        $this->publishMessage(
+        $this->publishToSseTopic(
             $this->setResponsePayload(
                 'glossary_domains',
                 $payload['id_client'],
@@ -211,7 +210,7 @@ class GlossaryWorker extends AbstractWorker
 
         $matches = $this->formatGetGlossaryMatches($matches, $payload['tmKeys']);
 
-        $this->publishMessage(
+        $this->publishToSseTopic(
             $this->setResponsePayload(
                 'glossary_get',
                 $payload['id_client'],
@@ -236,7 +235,7 @@ class GlossaryWorker extends AbstractWorker
         /** @var \Engines_Results_MyMemory_KeysGlossaryResponse $response */
         $response = $client->glossaryKeys($payload['source_language'], $payload['target_language'], $payload['keys']);
 
-        $this->publishMessage(
+        $this->publishToSseTopic(
             $this->setResponsePayload(
                 'glossary_keys',
                 $payload['id_client'],
@@ -253,7 +252,7 @@ class GlossaryWorker extends AbstractWorker
      *
      * @param $payload
      *
-     * @throws \StompException
+     * @throws StompException
      * @throws \Exception
      */
     private function search($payload)
@@ -273,7 +272,7 @@ class GlossaryWorker extends AbstractWorker
             'response' => $matches,
         ], 'GlossaryWorker.log');
 
-        $this->publishMessage(
+        $this->publishToSseTopic(
             $this->setResponsePayload(
                 'glossary_search',
                 $payload['id_client'],
@@ -376,7 +375,7 @@ class GlossaryWorker extends AbstractWorker
             $message['payload'] = $payload;
         }
 
-        $this->publishMessage(
+        $this->publishToSseTopic(
             $this->setResponsePayload(
                 'glossary_set',
                 $payload['id_client'],
@@ -440,7 +439,7 @@ class GlossaryWorker extends AbstractWorker
             $message['payload'] = $payload;
         }
 
-        $this->publishMessage(
+        $this->publishToSseTopic(
             $this->setResponsePayload(
                 'glossary_update',
                 $payload['id_client'],
@@ -471,26 +470,6 @@ class GlossaryWorker extends AbstractWorker
                 'passwords' => $jobData['password']
             ]
         ];
-    }
-
-    /**
-     * @param $_object
-     *
-     * @throws \StompException
-     */
-    private function publishMessage($_object)
-    {
-
-        $message = json_encode($_object);
-
-        $stomp = new Stomp(\INIT::$QUEUE_BROKER_ADDRESS);
-        $stomp->connect();
-        $stomp->send(\INIT::$SSE_NOTIFICATIONS_QUEUE_NAME,
-            $message,
-            ['persistent' => 'false']
-        );
-
-        $this->_doLog($message);
     }
 
     /**

@@ -20,6 +20,7 @@ use PDOException;
 use Predis\CommunicationException;
 use Projects_MetadataDao;
 use Projects_ProjectDao;
+use Stomp\Transport\Message;
 use TaskRunner\Commons\AbstractDaemon;
 use TaskRunner\Commons\Context;
 use TaskRunner\Commons\ContextList;
@@ -310,7 +311,7 @@ class FastAnalysis extends AbstractDaemon {
 
         self::$queueHandler->getRedisClient()->disconnect();
 
-        self::$queueHandler->disconnect();
+        self::$queueHandler->getClient()->disconnect();
         self::$queueHandler = null;
 
     }
@@ -578,7 +579,7 @@ class FastAnalysis extends AbstractDaemon {
                         $element->params    = $queue_element;
                         $element->classLoad = '\Analysis\Workers\TMAnalysisWorker';
 
-                        self::$queueHandler->send( $queueInfo->queue_name, $element, [ 'persistent' => self::$queueHandler->persistent ] );
+                        self::$queueHandler->publishToQueues( $queueInfo->queue_name, new Message( $element, [ 'persistent' => self::$queueHandler->persistent ] ) );
                         self::_TimeStampMsg( "AMQ Set Executed " . ( $k + 1 ) . " Language: $language" );
 
                     }

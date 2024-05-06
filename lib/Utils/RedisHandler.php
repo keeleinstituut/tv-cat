@@ -19,7 +19,6 @@ class RedisHandler {
      *
      * Get the connection to Redis server and return it
      *
-     * @throws \Predis\Connection\ConnectionException
      * @throws ReflectionException
      * @return Predis\Client
      */
@@ -33,30 +32,37 @@ class RedisHandler {
             $resource = $reflectorProperty->getValue( $this->redisHandler->getConnection() );
         }
 
-        if(
+        if (
                 $this->redisHandler === null
                 || !$this->redisHandler->getConnection()->isConnected()
                 || !is_resource( $resource )
-        ){
+        ) {
 
-            $connectionParams = INIT::$REDIS_SERVERS;
-
-            if ( is_string( $connectionParams ) ) {
-
-                $connectionParams = $this->formatDSN( $connectionParams );
-
-            } elseif( is_array( $connectionParams ) ){
-
-                $connectionParams = array_map( 'RedisHandler::formatDSN', $connectionParams );
-
-            }
-
-            $this->redisHandler = new Predis\Client( $connectionParams );
+            $this->redisHandler = $this->getClient();
 
         }
 
         return $this->redisHandler;
 
+    }
+
+    /**
+     * @return Predis\Client
+     */
+    private function getClient() {
+        $connectionParams = INIT::$REDIS_SERVERS;
+
+        if ( is_string( $connectionParams ) ) {
+
+            $connectionParams = $this->formatDSN( $connectionParams );
+
+        } elseif ( is_array( $connectionParams ) ) {
+
+            $connectionParams = array_map( 'RedisHandler::formatDSN', $connectionParams );
+
+        }
+
+        return new Predis\Client( $connectionParams );
     }
 
     protected function formatDSN( $dsnString ){

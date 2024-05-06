@@ -6,14 +6,12 @@ use Exceptions\ControllerReturnException;
 use Exceptions\NotFoundException;
 use Features\ReviewExtended\ReviewUtils;
 use Features\TranslationVersions;
-use Features\TranslationVersions\TranslationVersionsHandler;
 use LQA\QA;
 use Matecat\SubFiltering\Commons\Pipeline;
 use Matecat\SubFiltering\MateCatFilter;
 use Matecat\SubFiltering\Filters\FromViewNBSPToSpaces;
 use Matecat\SubFiltering\Filters\PhCounter;
 use Matecat\SubFiltering\Filters\SprintfToPH;
-use TaskRunner\Commons\QueueElement;
 
 class setTranslationController extends ajaxController {
 
@@ -998,7 +996,6 @@ class setTranslationController extends ajaxController {
         );
 
         //assert there is not an exception by following the flow
-        WorkerClient::init( new AMQHandler() );
         Set::contribution( $contributionStruct );
     }
 }
