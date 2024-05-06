@@ -28,6 +28,8 @@ use Log;
 use LQA\ChunkReviewDao;
 use LQA\ChunkReviewStruct;
 use LQA\ModelDao;
+use Predis\Connection\ConnectionException;
+use ReflectionException;
 use Projects_ProjectDao;
 use Projects_ProjectStruct;
 use Revise_FeedbackDAO;
@@ -165,7 +167,7 @@ abstract class AbstractRevisionFeature extends BaseFeature {
      * @return array
      * @throws Exception
      */
-    public function createQaChunkReviewRecords( Array $chunksArray, Projects_ProjectStruct $project, $options = [] ) {
+    public function createQaChunkReviewRecords( array $chunksArray, Projects_ProjectStruct $project, $options = [] ) {
 
         $createdRecords = [];
 
@@ -318,8 +320,9 @@ abstract class AbstractRevisionFeature extends BaseFeature {
      *
      * @param $projectStructure
      *
-     * @throws \Predis\Connection\ConnectionException
-     * @throws \ReflectionException
+     * @throws ConnectionException
+     * @throws \Exceptions\ValidationError
+     * @throws ReflectionException
      */
     public function validateProjectCreation( $projectStructure ) {
         self::loadAndValidateModelFromJsonFile( $projectStructure );
@@ -359,9 +362,8 @@ abstract class AbstractRevisionFeature extends BaseFeature {
      *
      * @param Chunks_ChunkCompletionEventStruct $event
      *
+     * @throws ReflectionException
      * @throws ValidationError
-     * @throws \Exceptions\ValidationError
-     * @throws \ReflectionException
      */
     public function alter_chunk_review_struct( Chunks_ChunkCompletionEventStruct $event ) {
 
@@ -464,8 +466,8 @@ abstract class AbstractRevisionFeature extends BaseFeature {
      * @param             $projectStructure
      * @param null|string $jsonPath
      *
-     * @throws \Predis\Connection\ConnectionException
-     * @throws \ReflectionException
+     * @throws ConnectionException
+     * @throws ReflectionException
      * @throws \Exceptions\ValidationError
      */
 

@@ -7,6 +7,8 @@ use Glossary\Blacklist\BlacklistDao;
 use Glossary\Blacklist\BlacklistStruct;
 use Log;
 use PDO;
+use Predis\Connection\ConnectionException;
+use ReflectionException;
 
 /**
  * Class FsFilesStorage
@@ -372,8 +374,8 @@ abstract class AbstractFilesStorage implements IFilesStorage {
      * @param $uploadToken
      *
      * @return bool|string
-     * @throws \Predis\Connection\ConnectionException
-     * @throws \ReflectionException
+     * @throws ConnectionException
+     * @throws ReflectionException
      */
     public function getTemporaryUploadedZipFile( $uploadToken ) {
         $isFsOnS3 = AbstractFilesStorage::isOnS3();
@@ -466,8 +468,8 @@ abstract class AbstractFilesStorage implements IFilesStorage {
      * @param                     $uid
      *
      * @return mixed
-     * @throws \Predis\Connection\ConnectionException
-     * @throws \ReflectionException
+     * @throws ConnectionException
+     * @throws ReflectionException
      */
     public function saveBlacklistFile($filePath, \Chunks_ChunkStruct $chunkStruct, $uid) {
 

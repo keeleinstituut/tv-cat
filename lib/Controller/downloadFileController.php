@@ -13,6 +13,7 @@ use Matecat\SimpleS3\Client;
 use Matecat\XliffParser\XliffUtils\XliffProprietaryDetect;
 use XliffReplacer\XliffReplacerCallback;
 use Matecat\XliffParser\Utils\Files as XliffFiles;
+use Predis\Connection\ConnectionException;
 
 set_time_limit( 180 );
 
@@ -906,7 +907,7 @@ class downloadFileController extends downloadController {
      * @param $tmpDir
      *
      * @throws ReflectionException
-     * @throws \Predis\Connection\ConnectionException
+     * @throws ConnectionException
      */
     public function transferZipFromS3ToTmpDir( $zipPath, $tmpDir ) {
 
