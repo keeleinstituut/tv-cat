@@ -42,7 +42,7 @@ class CopySourceModal extends React.Component {
     return (
       <div className="copy-source-modal">
         <h3 className="text-container-top">
-          Kas soovid kopeerida kõigi tõlkimata segmentide lähtekeele teksti sihtkeelde?
+          Kas soovid kopeerida kõigi tõlkimata segmentide allikas teksti sihtkeelde?
           <br />
           Seda tegevust ei saa tagasi võtta.
         </h3>

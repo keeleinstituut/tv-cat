@@ -444,7 +444,7 @@ class Search extends React.Component {
         let statusLabel = (
           <span key="status">
             {' '}
-            ja staatus{' '}
+            Staatus{' '}
             <span className="param">{this.state.search.selectStatus}</span>
           </span>
         )
@@ -676,7 +676,7 @@ class Search extends React.Component {
                       type="text"
                       tabIndex={1}
                       value={this.state.search.searchSource}
-                      placeholder="Leia lähtekeelest"
+                      placeholder="Leia allikas"
                       onKeyDown={(e) => this.handleKeyDown(e, 'searchSource')}
                       onChange={this.handleInputChange.bind(
                         this,

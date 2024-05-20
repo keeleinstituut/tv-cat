@@ -48,7 +48,7 @@ $.extend(window.UI, {
         '<p>Click here to navigate to:</br>' +
         '- Translate/Revise mode</br>' +
         '- Volume analysis</br>' +
-        '- XLIFFist-sihtfaili konvertimine</br>' +
+        '- XLIFFist-sihtfaili konvertija</br>' +
         '- Shortcut guide</p>' +
         "<a class='close-popup-teams'>Got it!</a>" +
         '</div>'
