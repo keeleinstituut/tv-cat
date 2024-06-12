@@ -95,11 +95,11 @@ export const ActionMenu = ({
 
         <li
           className="item"
-          title="XLIFFist-sihtfaili konvertimine"
+          title="XLIFFist-sihtfaili konvertija"
           data-value="target"
         >
           <a rel="noreferrer" target="_blank" href={`/utils/xliff-to-target`}>
-              XLIFFist-sihtfaili konvertimine
+              XLIFFist-sihtfaili konvertija
           </a>
         </li>
         <li

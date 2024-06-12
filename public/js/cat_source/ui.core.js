@@ -934,17 +934,17 @@ window.UI = {
       !config.isReview &&
       config.job_completion_current_phase == 'revise'
     if (projectCompletionCheck) {
-      return 'This job is currently under review. Segments are in read-only mode.'
+      return 'See töö on hetkel ülevaatamisel. Segmendid on kirjutuskaitstud režiimis.'
     }
-    const msgArchived = 'Job has been archived and cannot be edited.'
-    const msgOther = 'This part has not been assigned to you.'
+    const msgArchived = 'Töö on arhiveeritud ja seda ei saa muuta.'
+    const msgOther = 'Seda osa pole teile määratud.'
     return UI.body.hasClass('archived') ? msgArchived : msgOther
   },
   messageForClickOnIceMatch: function () {
     return (
-      'Segment is locked (in-context exact match) and shouldn’t be edited. ' +
-      'If you must edit it, click on the padlock icon to the left of the segment. ' +
-      'The owner of the project will be notified of any edits.'
+      'Segment on lukus (kontekstisisene täpne vaste) ja seda ei tohiks muuta. ' +
+      'Kui peate seda muutma, klõpsake segmendist vasakul tabaluku ikooni. ' +
+      'Projekti omanikku teavitatakse kõigist muudatustest.'
     )
   },
   openOptionsPanel: function () {

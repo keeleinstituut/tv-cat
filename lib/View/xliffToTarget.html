@@ -9,12 +9,12 @@
     <title>Matecat XLIFF-to-target utility</title>
     <link rel="icon" type="image/png" sizes="32x32" href="${basepath}public/img/meta/favicon-32x32.svg"/>
     <link rel="icon" type="image/png" sizes="16x16" href="${basepath}public/img/meta/favicon-16x16.svg"/>
-    <meta name="description" content="Matecat allows you to get more matches than any other CAT tool."/>
+<!--    <meta name="description" content="Matecat allows you to get more matches than any other CAT tool."/>-->
     <meta name="viewport" content="width=device-width"/>
     <meta property="og:title" content="Translate a file with MateCat"/>
-    <meta property="og:description" content="Matecat is a free, online and open source software that gives you more matches than any other CAT tool. Use it now!"/>
-    <meta property="og:url" content="https://www.matecat.com"/>
-    <meta property="og:image" content="https://www.matecat.com/public/img/fbimg.png"/>
+<!--    <meta property="og:description" content="Matecat is a free, online and open source software that gives you more matches than any other CAT tool. Use it now!"/>-->
+<!--    <meta property="og:url" content="https://www.matecat.com"/>-->
+<!--    <meta property="og:image" content="https://www.matecat.com/public/img/fbimg.png"/>-->
 
     <!--
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
@@ -129,19 +129,19 @@
                 </div>
 
                 <p class="file-drag">
-                    <strong>Drag and drop</strong> your XLIFF here<br/>
-                    <span class="min">to obtain the translated documents</span>
+                    <strong>Lohista</strong> XLIFF fail siia,<br/>
+                    <span class="min">et saada tõlgitud dokumendid</span>
                 </p>
 
                 <p class="file-drop">
-                    <strong>Drop it</strong> here.
+                    <strong>Lohista</strong> fail siia.
                 </p>
 
                 <div class="container">
                     <div class="row fileupload-buttonbar">
                         <div class="span7">
                         <span class="btn btn-success fileinput-button">
-                            <span>Add files...</span>
+                            <span>Vali fail(id)</span>
                             <input type="file" name="xliff" multiple="multiple" class="multiple-button"/>
                         </span>
                         </div>
@@ -671,7 +671,7 @@
                             size: data.originalFiles[0].size,
                             type: data.originalFiles[0].type
                         };
-                        file.error = 'An error occurred. Please, be sure that the xliff file has been downloaded from MateCat';
+                        file.error = 'tekkis viga. Palun kontrolli, et XLIFF on pärit Tõlkevärava tõlketööriistast.';
                         that._transition( $( this ) ).done(
                                 function () {
                                     var node = $( this );
@@ -848,7 +848,6 @@
                 <img src="${basepath}public/img/logo_matecat_small.svg"/>
             </div>
             <div class="description">
-                Matecat is a free and open source online CAT tool. It’s free for translation companies, translators and enterprise users.
             </div>
         </div>
 <!--        <div class="info">-->
