@@ -36,6 +36,27 @@ allowedOrigins[] = *
 EOT
 
 cp $APP_ROOT/inc/task_manager_config.ini.sample $APP_ROOT/inc/task_manager_config.ini
+if [ -v TM_ANALYSIS_P1_MAX_EXECUTORS ]; then
+  # Replace P1[max_executors] value
+  sed -i "s/P1\[max_executors\] = [0-9]*/P1\[max_executors\] = $TM_ANALYSIS_P1_MAX_EXECUTORS/" $APP_ROOT/inc/task_manager_config.ini
+fi
+
+if [ -v TM_ANALYSIS_P2_MAX_EXECUTORS ]; then
+  # Replace P1[max_executors] value
+  sed -i "s/P2\[max_executors\] = [0-9]*/P2\[max_executors\] = $TM_ANALYSIS_P2_MAX_EXECUTORS/" $APP_ROOT/inc/task_manager_config.ini
+fi
+
+if [ -v TM_ANALYSIS_P3_MAX_EXECUTORS ]; then
+  # Replace P1[max_executors] value
+  sed -i "s/P3\[max_executors\] = [0-9]*/P3\[max_executors\] = $TM_ANALYSIS_P3_MAX_EXECUTORS/" $APP_ROOT/inc/task_manager_config.ini
+fi
+
+if [ -v GET_CONTRIBUTION_MAX_EXECUTORS ]; then
+  # Replace P1[max_executors] value
+  sed -i "s/CONTRIBUTION_GET\[max_executors\] = [0-9]*/CONTRIBUTION_GET\[max_executors\] = $GET_CONTRIBUTION_MAX_EXECUTORS/" $APP_ROOT/inc/task_manager_config.ini
+fi
+
+
 cp $APP_ROOT/inc/Error_Mail_List.ini.sample $APP_ROOT/inc/Error_Mail_List.ini
 cp $APP_ROOT/inc/oauth_config.ini.sample $APP_ROOT/inc/oauth_config.ini
 touch $APP_ROOT/inc/oauth-token-key.txt
