@@ -306,7 +306,7 @@ class Executor implements SplObserver {
 
         } while ( $this->RUNNING );
 
-
+        self::cleanShutDown();
     }
 
     /**
