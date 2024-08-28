@@ -10,6 +10,7 @@
 namespace TaskRunner;
 
 use AMQHandler;
+use AsyncTasks\Workers\ProjectCreationWorker;
 use Bootstrap;
 use Database;
 use Exception;
@@ -299,10 +300,13 @@ class Executor implements SplObserver {
 
             $this->_logMsg( "--- (Executor " . $this->_executor_instance_id . ") - QueueElement acknowledged." );
 
+            if ($queueElement->classLoad === ProjectCreationWorker::class) {
+                self::cleanShutDown();
+            }
+
         } while ( $this->RUNNING );
 
         self::cleanShutDown();
-
     }
 
     /**
