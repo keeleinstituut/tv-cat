@@ -11,7 +11,9 @@
 
 namespace Predis\Connection;
 
+use Log;
 use Predis\Command\CommandInterface;
+use Predis\CommunicationException;
 use Predis\Response\Error as ErrorResponse;
 use Predis\Response\Status as StatusResponse;
 
@@ -33,6 +35,8 @@ use Predis\Response\Status as StatusResponse;
  */
 class StreamConnection extends AbstractConnection
 {
+    const MAX_RECONNECT_ATTEMPTS = 5;
+
     /**
      * Disconnects from the server and destroys the underlying resource when the
      * garbage collector kicks in only if the connection has not been marked as
@@ -70,32 +74,32 @@ class StreamConnection extends AbstractConnection
         $uri = "tcp://{$parameters->host}:{$parameters->port}";
         $flags = STREAM_CLIENT_CONNECT;
 
-        if (isset($parameters->async_connect) && (bool) $parameters->async_connect) {
+        if (isset($parameters->async_connect) && (bool)$parameters->async_connect) {
             $flags |= STREAM_CLIENT_ASYNC_CONNECT;
         }
 
-        if (isset($parameters->persistent) && (bool) $parameters->persistent) {
+        if (isset($parameters->persistent) && (bool)$parameters->persistent) {
             $flags |= STREAM_CLIENT_PERSISTENT;
             $uri .= strpos($path = $parameters->path, '/') === 0 ? $path : "/$path";
         }
 
-        $resource = @stream_socket_client($uri, $errno, $errstr, (float) $parameters->timeout, $flags);
+        $resource = @stream_socket_client($uri, $errno, $errstr, (float)$parameters->timeout, $flags);
 
         if (!$resource) {
             $this->onConnectionError(trim($errstr), $errno);
         }
 
         if (isset($parameters->read_write_timeout)) {
-            $rwtimeout = (float) $parameters->read_write_timeout;
+            $rwtimeout = (float)$parameters->read_write_timeout;
             $rwtimeout = $rwtimeout > 0 ? $rwtimeout : -1;
-            $timeoutSeconds  = floor($rwtimeout);
+            $timeoutSeconds = floor($rwtimeout);
             $timeoutUSeconds = ($rwtimeout - $timeoutSeconds) * 1000000;
             stream_set_timeout($resource, $timeoutSeconds, $timeoutUSeconds);
         }
 
         if (isset($parameters->tcp_nodelay) && function_exists('socket_import_stream')) {
             $socket = socket_import_stream($resource);
-            socket_set_option($socket, SOL_TCP, TCP_NODELAY, (int) $parameters->tcp_nodelay);
+            socket_set_option($socket, SOL_TCP, TCP_NODELAY, (int)$parameters->tcp_nodelay);
         }
 
         return $resource;
@@ -113,20 +117,20 @@ class StreamConnection extends AbstractConnection
         $uri = "unix://{$parameters->path}";
         $flags = STREAM_CLIENT_CONNECT;
 
-        if ((bool) $parameters->persistent) {
+        if ((bool)$parameters->persistent) {
             $flags |= STREAM_CLIENT_PERSISTENT;
         }
 
-        $resource = @stream_socket_client($uri, $errno, $errstr, (float) $parameters->timeout, $flags);
+        $resource = @stream_socket_client($uri, $errno, $errstr, (float)$parameters->timeout, $flags);
 
         if (!$resource) {
             $this->onConnectionError(trim($errstr), $errno);
         }
 
         if (isset($parameters->read_write_timeout)) {
-            $rwtimeout = (float) $parameters->read_write_timeout;
+            $rwtimeout = (float)$parameters->read_write_timeout;
             $rwtimeout = $rwtimeout > 0 ? $rwtimeout : -1;
-            $timeoutSeconds  = floor($rwtimeout);
+            $timeoutSeconds = floor($rwtimeout);
             $timeoutUSeconds = ($rwtimeout - $timeoutSeconds) * 1000000;
             stream_set_timeout($resource, $timeoutSeconds, $timeoutUSeconds);
         }
@@ -165,21 +169,32 @@ class StreamConnection extends AbstractConnection
      */
     protected function write($buffer)
     {
-        $socket = $this->getResource();
+        $attempt = 0;
+        $connected = false;
+        do {
+            try {
+                $socket = $this->getResource();
+                while (($length = strlen($buffer)) > 0) {
+                    $written = @fwrite($socket, $buffer);
 
-        while (($length = strlen($buffer)) > 0) {
-            $written = @fwrite($socket, $buffer);
+                    if ($length === $written) {
+                        return;
+                    }
 
-            if ($length === $written) {
-                return;
+                    if ($written === false || $written === 0) {
+                        $this->onConnectionError('Error while writing bytes to the server.');
+                    }
+                    $buffer = substr($buffer, $written);
+                }
+                $connected = true;
+            } catch (CommunicationException $e) {
+                if ($attempt >= self::MAX_RECONNECT_ATTEMPTS) {
+                    throw $e;
+                }
+                Log::doJsonLog("Unable to connect to Redis. Retrying... Attempt: " . $attempt);
+                sleep(1);
             }
-
-            if ($written === false || $written === 0) {
-                $this->onConnectionError('Error while writing bytes to the server.');
-            }
-
-            $buffer = substr($buffer, $written);
-        }
+        } while (!$connected);
     }
 
     /**
@@ -187,12 +202,26 @@ class StreamConnection extends AbstractConnection
      */
     public function read()
     {
-        $socket = $this->getResource();
-        $chunk = fgets($socket);
+        $attempt = 0;
+        $connected = false;
+        do {
+            try {
+                $attempt++;
+                $socket = $this->getResource();
+                $chunk = fgets($socket);
 
-        if ($chunk === false || $chunk === '') {
-            $this->onConnectionError('Error while reading line from the server.');
-        }
+                if ($chunk === false || $chunk === '') {
+                    $this->onConnectionError('Error while reading line from the server.');
+                }
+                $connected = true;
+            } catch (CommunicationException $e) {
+                if ($attempt >= self::MAX_RECONNECT_ATTEMPTS) {
+                    throw $e;
+                }
+                Log::doJsonLog("Unable to connect to Redis. Retrying... Attempt: " . $attempt);
+                sleep(1);
+            }
+        } while (!$connected);
 
         $prefix = $chunk[0];
         $payload = substr($chunk, 1, -2);
@@ -202,7 +231,7 @@ class StreamConnection extends AbstractConnection
                 return StatusResponse::get($payload);
 
             case '$':
-                $size = (int) $payload;
+                $size = (int)$payload;
 
                 if ($size === -1) {
                     return null;
@@ -225,7 +254,7 @@ class StreamConnection extends AbstractConnection
                 return substr($bulkData, 0, -2);
 
             case '*':
-                $count = (int) $payload;
+                $count = (int)$payload;
 
                 if ($count === -1) {
                     return null;
@@ -240,7 +269,7 @@ class StreamConnection extends AbstractConnection
                 return $multibulk;
 
             case ':':
-                return (int) $payload;
+                return (int)$payload;
 
             case '-':
                 return new ErrorResponse($payload);

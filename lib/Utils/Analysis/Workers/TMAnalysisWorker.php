@@ -518,6 +518,8 @@ class TMAnalysisWorker extends AbstractWorker {
             throw $rEx;  // just to make code more readable, re-throw exception
         } catch ( NotSupportedMTException $nMTEx ) {
             // Do nothing, skip frame
+        } catch ( \Exception $e ) {
+            $this->_doLog( "--- (Worker " . $this->_workerPid . ") : Getting contributions failed for this segment. Reason: " . $e->getMessage() . " Trace: " . $e->getTraceAsString());
         }
 
         $mt_result = $this->_getMT( $mtEngine, $_config, $queueElement );
@@ -575,7 +577,7 @@ class TMAnalysisWorker extends AbstractWorker {
             }
 
         } catch ( \Exception $e ) {
-            $this->_doLog( $e->getMessage() );
+            $this->_doLog( "--- (Worker " . $this->_workerPid . ") : Getting MT results failed for this segment. Reason: " . $e->getMessage() . " Trace: " . $e->getTraceAsString());
         }
 
         return $mt_result;

@@ -17,6 +17,7 @@ use INIT;
 use Log;
 use PDO;
 use PDOException;
+use Predis\CommunicationException;
 use Projects_MetadataDao;
 use Projects_ProjectDao;
 use TaskRunner\Commons\AbstractDaemon;
@@ -137,6 +138,10 @@ class FastAnalysis extends AbstractDaemon {
                 $projects_list = $this->_getLockProjectForVolumeAnalysis( 5 );
             } catch ( PDOException $e ) {
                 self::_TimeStampMsg( $e->getMessage() . " - Error again. Try to reconnect in next cycle." );
+                sleep( 3 ); // wait for reconnection
+                continue; // next cycle, reload projects.
+            } catch ( CommunicationException $e ) {
+                self::_TimeStampMsg( "Error during locking project for volume analysis. Try to reconnect in next cycle. Reason: " . $e->getMessage() . " Trace: " . $e->getTraceAsString());
                 sleep( 3 ); // wait for reconnection
                 continue; // next cycle, reload projects.
             }
