@@ -22,7 +22,11 @@ class KeycloakServiceAccountJwtRetriever implements ServiceAccountJwtRetrieverIn
 
     public function getJwt(): string
     {
-        return $this->sendClientCredentialsGrantRequest()['access_token'];
+        if (empty($jwt = $this->sendClientCredentialsGrantRequest()['access_token'] ?? '')) {
+            throw new RuntimeException("Retrieving of service account JWT failed");
+        }
+
+        return $jwt;
     }
 
     public function sendClientCredentialsGrantRequest(): array

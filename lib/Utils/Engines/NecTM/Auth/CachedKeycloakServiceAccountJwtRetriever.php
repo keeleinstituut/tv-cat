@@ -4,6 +4,7 @@ namespace Engines\NecTM\Auth;
 
 use INIT;
 use Predis\Client;
+use Predis\CommunicationException;
 use Predis\Connection\ConnectionException;
 use RedisHandler;
 use ReflectionException;
@@ -30,16 +31,25 @@ class CachedKeycloakServiceAccountJwtRetriever implements ServiceAccountJwtRetri
      */
     public function getJwt(): string
     {
-        $cacheClient = $this->getCacheClient();
-        if ($cacheClient->exists($this->getCacheKey())) {
-            return $cacheClient->get($this->getCacheKey());
-        }
+        try {
+            $cacheClient = $this->getCacheClient();
+            if ($cacheClient->exists($this->getCacheKey()) && !empty($jwt = $cacheClient->get($this->getCacheKey()))) {
+                return $jwt;
+            }
+        } catch (CommunicationException $e) {}
 
         $response = $this->jwtRetriever->sendClientCredentialsGrantRequest();
-        $jwtToken = $response['access_token'];
-        $cacheClient->set($this->getCacheKey(), $jwtToken, 'EX', $this->getCacheTTL($response));
+        $jwtToken = $response['access_token'] ?? '';
 
-        return $jwtToken;
+        if (!empty($jwtToken)) {
+            try {
+                isset($cacheClient) && $cacheClient->set($this->getCacheKey(), $jwtToken, 'EX', $this->getCacheTTL($response));
+            } catch (CommunicationException $e) {}
+
+            return $jwtToken;
+        }
+
+        throw new RuntimeException("Retrieving of service account JWT failed");
     }
 
     /**
