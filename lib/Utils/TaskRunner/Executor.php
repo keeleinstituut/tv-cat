@@ -215,6 +215,13 @@ class Executor implements SplObserver {
         $this->_frameID = 1;
         do {
 
+            if (!$this->_queueHandler->isConnected()) {
+                $this->_logMsg( "(Executor " . $this->_executor_instance_id . ") :  EXITING! AMQ connection lost" );
+                $this->RUNNING = false;
+                break;
+            }
+
+
             try {
 
                 // PROCESS CONTROL FUNCTIONS

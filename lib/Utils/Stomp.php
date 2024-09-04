@@ -556,7 +556,7 @@ class Stomp {
 
         do {
             $read = fread( $this->_socket, $rb );
-            if ( $read === false ) {
+            if ( $read === false || $read === '' ) {
                 $this->_reconnect();
 
                 return $this->readFrame();
