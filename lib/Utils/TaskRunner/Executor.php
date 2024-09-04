@@ -26,6 +26,7 @@ use TaskRunner\Commons\QueueElement;
 use TaskRunner\Exceptions\EmptyElementException;
 use TaskRunner\Exceptions\EndQueueException;
 use TaskRunner\Exceptions\FrameException;
+use TaskRunner\Exceptions\NoFrameFoundException;
 use TaskRunner\Exceptions\ReQueueException;
 use TaskRunner\Exceptions\WorkerClassException;
 
@@ -232,13 +233,15 @@ class Executor implements SplObserver {
                  */
                 list( $msgFrame, $queueElement ) = $this->_readAMQFrame();
 
-            } catch ( Exception $e ) {
-
-//                $this->_logMsg( "--- (Executor " . $this->_executorPID . ") : Failed to read frame from AMQ. Doing nothing, wait and re-try in next cycle." );
-//                $this->_logMsg( $e->getMessage() );
+            } catch ( NoFrameFoundException $e ) {
                 usleep( 250000 );
                 continue;
+            } catch ( Exception $e ) {
+                $this->_logMsg( "--- (Executor " . $this->_executorPID . ") : Failed to read frame from AMQ. Doing nothing, wait and re-try in next cycle." );
+                $this->_logMsg( $e->getMessage() );
 
+                usleep( 250000 );
+                continue;
             }
 
 //            $this->_logMsg( "--- (Worker " . $this->_executor_instance_id . ") - QueueElement found: " . var_export( $queueElement, true ) );
@@ -314,6 +317,7 @@ class Executor implements SplObserver {
      *
      * @return array[ \StompFrame, QueueElement ]
      * @throws FrameException
+     * @throws NoFrameFoundException
      */
     protected function _readAMQFrame() {
 
@@ -352,11 +356,11 @@ class Executor implements SplObserver {
                 }
 
             } else {
-                throw new FrameException( "--- (Executor " . $this->_executor_instance_id . ") : no frame found. Starting next cycle." );
+                throw new NoFrameFoundException( "--- (Executor " . $this->_executor_instance_id . ") : no frame found. Starting next cycle." );
             }
 
-        } catch ( FrameException $e ) {
-            throw new FrameException( $e->getMessage() );
+        } catch ( FrameException | NoFrameFoundException $e ) {
+            throw $e;
             /* jump the ack */
         } catch ( Exception $e ) {
             $this->_logMsg( $e->getMessage() );
