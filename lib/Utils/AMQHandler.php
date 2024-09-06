@@ -19,6 +19,8 @@ use TaskRunner\Commons\Context;
 
 class AMQHandler {
 
+    const AMQ_JMX_CALL_MAX_RETRY = 20;
+
     /**
      * @var PredisClient
      */
@@ -282,7 +284,7 @@ class AMQHandler {
      * @return mixed
      * @throws Exception
      */
-    public function callAmqJmx( $queue_interface_url ) {
+    public function callAmqJmx( $queue_interface_url, $retry = 1 ) {
         $mHandler = new MultiCurlHandler();
 
         $options = [
@@ -301,9 +303,15 @@ class AMQHandler {
         $mHandler->multiCurlCloseAll();
         $result = json_decode( $result, true );
 
-        Utils::raiseJsonExceptionError();
+        try {
+            Utils::raiseJsonExceptionError();
+        } catch (Exception $e) {
+            if ($retry < self::AMQ_JMX_CALL_MAX_RETRY) {
+                return $this->callAmqJmx($queue_interface_url, ++$retry);
+            }
+            throw $e;
+        }
 
         return $result[ 'value' ];
     }
-
 }
