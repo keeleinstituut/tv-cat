@@ -151,7 +151,6 @@ class BlacklistController extends KleinController {
             ];
 
             try {
-                \WorkerClient::init( new \AMQHandler() );
                 \WorkerClient::enqueue( 'QA_CHECKS',
                         '\Features\QaCheckBlacklist\Worker\BlacklistWorker',
                         $queue_element,

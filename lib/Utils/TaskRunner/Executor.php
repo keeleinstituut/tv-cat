@@ -10,24 +10,28 @@
 namespace TaskRunner;
 
 use AMQHandler;
-use AsyncTasks\Workers\ProjectCreationWorker;
 use Bootstrap;
 use Database;
 use Exception;
 use INIT;
 use Log;
 use PDOException;
+use Predis\PredisException;
+use ReflectionException;
 use SplObserver;
 use SplSubject;
-use StompFrame;
+use Stomp\Network\Observer\Exception\HeartbeatException;
+use Stomp\Transport\Frame;
 use TaskRunner\Commons\AbstractWorker;
 use TaskRunner\Commons\Context;
 use TaskRunner\Commons\QueueElement;
 use TaskRunner\Exceptions\EmptyElementException;
 use TaskRunner\Exceptions\EndQueueException;
 use TaskRunner\Exceptions\FrameException;
+use TaskRunner\Exceptions\NoFrameFoundException;
 use TaskRunner\Exceptions\ReQueueException;
 use TaskRunner\Exceptions\WorkerClassException;
+use Utils;
 
 include_once realpath( dirname( __FILE__ ) . '/../../../' ) . "/inc/Bootstrap.php";
 Bootstrap::start();
@@ -39,15 +43,13 @@ Bootstrap::start();
  *
  * @package TaskRunner
  */
-class Executor implements SplObserver
-{
+class Executor implements SplObserver {
 
     const MAX_RECONNECT_ATTEMPTS = 5;
-
     /**
      * Handler of AMQ connector
      *
-     * @var \AMQHandler
+     * @var AMQHandler
      */
     protected $_queueHandler;
 
@@ -116,10 +118,9 @@ class Executor implements SplObserver
      *
      * @param Context $_context
      */
-    protected function __construct(Context $_context)
-    {
+    protected function __construct( Context $_context ) {
 
-        $this->_executorPID = posix_getpid();
+        $this->_executorPID          = posix_getpid();
         $this->_executor_instance_id = $this->_executorPID . ":" . gethostname() . ":" . (int)INIT::$INSTANCE_ID;
 
         Log::$fileName = $_context->loggerName;
@@ -136,32 +137,37 @@ class Executor implements SplObserver
      *
      * @return static
      */
-    public static function getInstance(Context $queueContext)
-    {
+    public static function getInstance( Context $queueContext ) {
 
-        if (PHP_SAPI != 'cli' || isset ($_SERVER ['HTTP_HOST'])) {
-            die ("This script can be run only in CLI Mode.\n\n");
+        if ( PHP_SAPI != 'cli' || isset ( $_SERVER [ 'HTTP_HOST' ] ) ) {
+            die ( "This script can be run only in CLI Mode.\n\n" );
         }
 
-        declare(ticks=10);
-        set_time_limit(0);
+        declare( ticks=10 );
+        set_time_limit( 0 );
 
-        if (!extension_loaded("pcntl") && (bool)ini_get("enable_dl")) {
-            dl("pcntl.so");
+        if ( !extension_loaded( "pcntl" ) && ini_get( "enable_dl" ) ) {
+            dl( "pcntl.so" );
         }
-        if (!function_exists('pcntl_signal')) {
+        if ( !function_exists( 'pcntl_signal' ) ) {
             $msg = "****** PCNTL EXTENSION NOT LOADED. KILLING THIS PROCESS COULD CAUSE UNPREDICTABLE ERRORS ******";
         } else {
 
-            pcntl_signal(SIGTERM, [get_called_class(), 'sigSwitch']);
-            pcntl_signal(SIGINT, [get_called_class(), 'sigSwitch']);
-            pcntl_signal(SIGHUP, [get_called_class(), 'sigSwitch']);
+            pcntl_signal( SIGTERM, [ get_called_class(), 'sigSwitch' ] );
+            pcntl_signal( SIGINT, [ get_called_class(), 'sigSwitch' ] );
+            pcntl_signal( SIGHUP, [ get_called_class(), 'sigSwitch' ] );
+            pcntl_signal( SIGPIPE, [ get_called_class(), 'sigSwitch' ] );
+            pcntl_signal( SIGQUIT, [ get_called_class(), 'sigSwitch' ] );
+            pcntl_signal( SIGSEGV, [ get_called_class(), 'sigSwitch' ] );
+            pcntl_signal( SIGTSTP, [ get_called_class(), 'sigSwitch' ] );
+            pcntl_signal( SIGUSR1, [ get_called_class(), 'sigSwitch' ] );
+            pcntl_signal( SIGUSR2, [ get_called_class(), 'sigSwitch' ] );
 
-            $msg = str_pad(" Signal Handler Installed ", 50, "-", STR_PAD_BOTH);
+            $msg = str_pad( " Signal Handler Installed ", 50, "-", STR_PAD_BOTH );
 
         }
 
-        static::$__INSTANCE = new static($queueContext);
+        static::$__INSTANCE = new static( $queueContext );
 
 //        static::$__INSTANCE->_logMsg( $msg );
 
@@ -174,15 +180,20 @@ class Executor implements SplObserver
      *
      * @param $sig_no
      */
-    public static function sigSwitch($sig_no)
-    {
+    public static function sigSwitch( $sig_no ) {
 
 //        static::$__INSTANCE->_logMsg( "Trapped Signal : $sig_no" );
 
-        switch ($sig_no) {
+        switch ( $sig_no ) {
             case SIGTERM :
             case SIGINT :
             case SIGHUP :
+            case SIGPIPE:
+            case SIGQUIT:
+            case SIGSEGV:
+            case SIGTSTP:
+            case SIGUSR1:
+            case SIGUSR2:
                 static::$__INSTANCE->RUNNING = false;
                 break;
             default :
@@ -193,28 +204,25 @@ class Executor implements SplObserver
     /**
      * Main method
      *
-     * @param null $args
-     *
-     * @throws \StompException
+     * @throws Exception
      */
-    public function main($args = null)
-    {
+    public function main() {
 
         $this->_frameID = 1;
         do {
 
-            if (!$this->_queueHandler->isConnected()) {
-                $this->_logMsg("(Executor " . $this->_executor_instance_id . ") :  EXITING! AMQ connection lost");
-                $this->RUNNING = false;
-                break;
-            }
+//            if (!$this->_queueHandler->getClient()->isConnected()) {
+//                $this->_logMsg("(Executor " . $this->_executor_instance_id . ") :  EXITING! AMQ connection lost");
+//                $this->RUNNING = false;
+//                break;
+//            }
 
 
             try {
 
                 // PROCESS CONTROL FUNCTIONS
-                if (!self::_myProcessExists($this->_executor_instance_id)) {
-                    $this->_logMsg("(Executor " . $this->_executor_instance_id . ") :  EXITING! my pid does not exists anymore, my parent told me to die.");
+                if ( !self::_myProcessExists( $this->_executor_instance_id ) ) {
+                    $this->_logMsg( "(Executor " . $this->_executor_instance_id . ") :  EXITING! my pid does not exists anymore, my parent told me to die." );
                     $this->RUNNING = false;
                     break;
                 }
@@ -222,161 +230,163 @@ class Executor implements SplObserver
 
                 //read Message frame from the queue
                 /**
-                 * @var $msgFrame     \StompFrame
+                 * @var $msgFrame     Frame
                  * @var $queueElement QueueElement
                  */
-                list($msgFrame, $queueElement) = $this->_readAMQFrame();
+                list( $msgFrame, $queueElement ) = $this->_readAMQFrame();
 
-            } catch (Exception $e) {
-
-//                $this->_logMsg( "--- (Executor " . $this->_executorPID . ") : Failed to read frame from AMQ. Doing nothing, wait and re-try in next cycle." );
-//                $this->_logMsg( $e->getMessage() );
-                usleep(250000);
+            } catch ( NoFrameFoundException $e ) {
+                usleep( 250000 );
                 continue;
-
+            } catch (HeartbeatException $e) {
+                $this->_logMsg("(Executor " . $this->_executor_instance_id . ") :  EXITING! AMQ connection lost");
+                $this->RUNNING = false;
+                break;
+            } catch ( Exception $e ) {
+                $this->_logMsg( "--- (Executor " . $this->_executorPID . ") : Failed to read frame from AMQ. Doing nothing, wait and re-try in next cycle." );
+                $this->_logMsg( $e->getMessage() );
+                usleep( 250000 );
+                continue;
             }
 
 //            $this->_logMsg( "--- (Worker " . $this->_executor_instance_id . ") - QueueElement found: " . var_export( $queueElement, true ) );
-            $this->_logMsg($queueElement);
+            $this->_logMsg( $queueElement );
 
             try {
 
                 /**
                  * Do not re-instantiate an already existent object
                  */
-                if ($this->_worker == null || ltrim($queueElement->classLoad, "\\") != ltrim(get_class($this->_worker), "\\")) {
-                    $this->_worker = new $queueElement->classLoad($this->_queueHandler);
-                    $this->_worker->attach($this);
-                    $this->_worker->setPid($this->_executor_instance_id);
-                    $this->_worker->setContext($this->_executionContext);
+                if ( $this->_worker == null || ltrim( $queueElement->classLoad, "\\" ) != ltrim( get_class( $this->_worker ), "\\" ) ) {
+                    $this->_worker = new $queueElement->classLoad( $this->_queueHandler );
+                    $this->_worker->attach( $this );
+                    $this->_worker->setPid( $this->_executor_instance_id );
+                    $this->_worker->setContext( $this->_executionContext );
                 }
 
-                $this->_worker->process($queueElement);
+                $this->_worker->process( $queueElement );
 
-            } catch (EndQueueException $e) {
+            } catch ( EndQueueException $e ) {
 
-                $this->_logMsg("--- (Executor " . $this->_executor_instance_id . ") : End queue limit reached. Acknowledged. - " . $e->getMessage()); // ERROR End Queue
+                $this->_logMsg( "--- (Executor " . $this->_executor_instance_id . ") : End queue limit reached. Acknowledged. - " . $e->getMessage() ); // ERROR End Queue
 
-            } catch (ReQueueException $e) {
+            } catch ( ReQueueException $e ) {
 
-                $this->_logMsg("--- (Executor " . $this->_executor_instance_id . ") : Error executing task. Re-Queue - " . $e->getMessage()); // ERROR Re-queue
+                $this->_logMsg( "--- (Executor " . $this->_executor_instance_id . ") : Error executing task. Re-Queue - " . $e->getMessage() ); // ERROR Re-queue
 
                 //set/increment the reQueue number
                 $queueElement->reQueueNum = ++$queueElement->reQueueNum;
-                $amqHandlerPublisher = new AMQHandler();
-                $amqHandlerPublisher->reQueue($queueElement, $this->_executionContext);
-                $amqHandlerPublisher->disconnect();
+                $amqHandlerPublisher      = AMQHandler::getNewInstanceForDaemons();
+                $amqHandlerPublisher->reQueue( $queueElement, $this->_executionContext );
+                $amqHandlerPublisher->getClient()->disconnect();
 
-            } catch (EmptyElementException $e) {
+            } catch ( EmptyElementException $e ) {
 
 //                $this->_logMsg( $e->getMessage() );
 
-            } catch (PDOException $e) {
+            } catch ( PDOException $e ) {
 
-                $this->_logMsg("************* (Executor " . $this->_executor_instance_id . ") Caught a Database exception. Wait 2 seconds and try next cycle *************\n************* " . $e->getMessage());
-                $this->_logMsg("************* (Executor " . $this->_executor_instance_id . ") " . $e->getTraceAsString());
+                $this->_logMsg( "************* (Executor " . $this->_executor_instance_id . ") Caught a Database exception. Wait 2 seconds and try next cycle *************\n************* " . $e->getMessage() );
+                $this->_logMsg( "************* (Executor " . $this->_executor_instance_id . ") " . $e->getTraceAsString() );
 
                 $queueElement->reQueueNum = ++$queueElement->reQueueNum;
-                $amqHandlerPublisher = new AMQHandler();
-                $amqHandlerPublisher->reQueue($queueElement, $this->_executionContext);
-                $amqHandlerPublisher->disconnect();
-                sleep(2);
+                $amqHandlerPublisher      = AMQHandler::getNewInstanceForDaemons();
+                $amqHandlerPublisher->reQueue( $queueElement, $this->_executionContext );
+                $amqHandlerPublisher->getClient()->disconnect();
+                sleep( 2 );
 
-            } catch (Exception $e) {
+            } catch ( Exception $e ) {
 
-                $this->_logMsg("************* (Executor " . $this->_executor_instance_id . ") Caught a generic exception. SKIP Frame *************");
-                $this->_logMsg("Exception details: " . $e->getMessage() . " " . $e->getFile() . " line " . $e->getLine());
-                $this->_logMsg($e->getTraceAsString());
+                $this->_logMsg( "************* (Executor " . $this->_executor_instance_id . ") Caught a generic exception. SKIP Frame *************" );
+                $this->_logMsg( "Exception details: " . $e->getMessage() . " " . $e->getFile() . " line " . $e->getLine() );
+                $this->_logMsg( $e->getTraceAsString() );
 
             }
 
             //unlock frame
-            $this->_queueHandler->ack($msgFrame);
+            $this->_queueHandler->ack( $msgFrame );
 
-            $this->_logMsg("--- (Executor " . $this->_executor_instance_id . ") - QueueElement acknowledged.");
+            $this->_logMsg( "--- (Executor " . $this->_executor_instance_id . ") - QueueElement acknowledged." );
 
-            if ($queueElement->classLoad === ProjectCreationWorker::class) {
-                self::cleanShutDown();
-            }
-
-        } while ($this->RUNNING);
+        } while ( $this->RUNNING );
 
         self::cleanShutDown();
+
     }
 
     /**
      * Read frame msg from the queue
      *
-     * @return array[ \StompFrame, QueueElement ]
+     * @return array [ Frame , QueueElement ]
      * @throws FrameException
+     * @throws NoFrameFoundException
      */
-    protected function _readAMQFrame()
-    {
+    protected function _readAMQFrame() {
 
         /**
-         * @var $msgFrame \StompFrame
+         * @var $msgFrame Frame
          */
-        $msgFrame = null;
         try {
 
-            $msgFrame = $this->_queueHandler->readFrame();
+            $msgFrame = $this->_queueHandler->read();
 
-            if ($msgFrame instanceof StompFrame && ($msgFrame->command == "MESSAGE" || array_key_exists('MESSAGE', $msgFrame->headers /* Stomp Client bug... hack */))) {
+            if ( $msgFrame instanceof Frame && ( $msgFrame->getCommand() == "MESSAGE" || array_key_exists( 'MESSAGE', $msgFrame->getHeaders() ) ) ) {
 
                 $this->_frameID++;
-                $this->_logMsg("--- (Executor " . $this->_executor_instance_id . ") : processing frame {$this->_frameID}");
+                $this->_logMsg( "--- (Executor " . $this->_executor_instance_id . ") : processing frame {$this->_frameID}" );
 
-                $queueElement = json_decode($msgFrame->body, true);
+                $queueElement = json_decode( $msgFrame->body, true );
 
-                if (empty($queueElement)) {
+                if ( empty( $queueElement ) ) {
 
-                    $this->_queueHandler->ack($msgFrame);
-                    $msg = \Utils::raiseJsonExceptionError(false);
-                    $this->_logMsg(['ERROR' => "*** Failed to decode the json frame payload, reason: " . $msg, 'FRAME' => $msgFrame->body]);
-                    throw new FrameException("*** Failed to decode the json, reason: " . $msg, -1);
+                    $this->_queueHandler->ack( $msgFrame );
+                    $msg = Utils::raiseJsonExceptionError( false );
+                    $this->_logMsg( [ 'ERROR' => "*** Failed to decode the json frame payload, reason: " . $msg, 'FRAME' => $msgFrame->body ] );
+                    throw new FrameException( "*** Failed to decode the json, reason: " . $msg, -1 );
 
                 }
 
-                $queueElement = new QueueElement($queueElement);
+                $queueElement = new QueueElement( $queueElement );
 
                 //empty message what to do?? it should not be there, acknowledge and process the next one
-                if (empty($queueElement->classLoad) || !class_exists($queueElement->classLoad, true)) {
+                if ( empty( $queueElement->classLoad ) || !class_exists( $queueElement->classLoad, true ) ) {
 
-                    $this->_queueHandler->ack($msgFrame);
-                    throw new WorkerClassException("--- (Executor " . $this->_executor_instance_id . ") : found frame but no valid Worker Class found: wait 2 seconds");
+                    $this->_queueHandler->ack( $msgFrame );
+                    throw new WorkerClassException( "--- (Executor " . $this->_executor_instance_id . ") : found frame but no valid Worker Class found: wait 2 seconds" );
 
                 }
 
             } else {
-                throw new FrameException("--- (Executor " . $this->_executor_instance_id . ") : no frame found. Starting next cycle.");
+                throw new NoFrameFoundException( "--- (Executor " . $this->_executor_instance_id . ") : no frame found. Starting next cycle." );
             }
 
-        } catch (FrameException $e) {
-            throw new FrameException($e->getMessage());
+        } catch ( FrameException | NoFrameFoundException | HeartbeatException $e ) {
+            throw $e;
             /* jump the ack */
-        } catch (Exception $e) {
-            $this->_logMsg($e->getMessage());
-            throw new FrameException("*** \$this->amqHandler->readFrame() Failed. Continue Execution. ***", -1, $e);
+        } catch ( Exception $e ) {
+            $this->_logMsg( $e->getMessage() );
+            throw new FrameException( "*** \$this->amqHandler->read() Failed. Continue Execution. ***", -1, $e );
         }
 
-        return [$msgFrame, $queueElement];
+        return [ $msgFrame, $queueElement ];
 
     }
 
     /**
      * Close all opened resources
      *
+     * @throws ReflectionException
+     * @throws PredisException
      */
-    public static function cleanShutDown()
-    {
+    public static function cleanShutDown() {
 
         Database::obtain()->close();
         static::$__INSTANCE->_queueHandler->getRedisClient()->disconnect();
-        static::$__INSTANCE->_queueHandler->disconnect();
+        static::$__INSTANCE->_queueHandler->getClient()->disconnect();
 
         //SHUTDOWN
-        $msg = str_pad(" Executor " . getmypid() . ":" . gethostname() . ":" . INIT::$INSTANCE_ID . " HALTED ", 50, "-", STR_PAD_BOTH);
-        static::$__INSTANCE->_logMsg($msg);
+        $msg = str_pad( " Executor " . getmypid() . ":" . gethostname() . ":" . INIT::$INSTANCE_ID . " HALTED ", 50, "-", STR_PAD_BOTH );
+        static::$__INSTANCE->_logMsg( $msg );
 
         die();
 
@@ -388,12 +398,12 @@ class Executor implements SplObserver
      * @param $pid
      *
      * @return int
-     * @throws \Predis\Connection\ConnectionException
+     * @throws ReflectionException
+     * @throws PredisException
      */
-    protected function _myProcessExists($pid)
-    {
+    protected function _myProcessExists( $pid ) {
 
-        return $this->_queueHandler->getRedisClient()->sismember($this->_executionContext->pid_set_name, $pid);
+        return $this->_queueHandler->getRedisClient()->sismember( $this->_executionContext->pid_set_name, $pid );
 
     }
 
@@ -402,20 +412,18 @@ class Executor implements SplObserver
      *
      * @param SplSubject $subject
      */
-    public function update(SplSubject $subject)
-    {
+    public function update( SplSubject $subject ) {
 
         /**
          * @var $subject AbstractWorker
          */
         Log::$fileName = $subject->getLoggerName();
-        $this->_logMsg($subject->getLogMsg());
+        $this->_logMsg( $subject->getLogMsg() );
         Log::$fileName = $this->_executionContext->loggerName;
 
     }
 
-    public function forceAck(SplSubject $subject)
-    {
+    public function forceAck( SplSubject $subject ) {
         //TODO
     }
 
@@ -426,7 +434,7 @@ class Executor implements SplObserver
         do {
             try {
                 $attempt++;
-                $this->_queueHandler = new AMQHandler();
+                $this->_queueHandler = AMQHandler::getNewInstanceForDaemons();
 
                 if (!$this->_queueHandler->getRedisClient()->sadd($this->_executionContext->pid_set_name, $this->_executor_instance_id)) {
                     throw new Exception("(Executor " . $this->_executor_instance_id . ") : FATAL !! cannot create my resource ID. Exiting!");
@@ -457,6 +465,7 @@ class Executor implements SplObserver
 //$argv[ 1 ] = '{"queue_name":"analysis_queue_P1","pid_set_name":"ch_pid_set_p1","max_executors":"1","redis_key":"p1_list","loggerName":"tm_analysis_P1.log"}';
 //$argv[ 1 ] = '{"queue_name":"activity_log","pid_set_name":"ch_pid_activity_log","max_executors":"1","redis_key":"activity_log_list","loggerName":"activity_log.log"}';
 //$argv[ 1 ] = '{"queue_name":"project_queue","pid_set_name":"ch_pid_project_queue","max_executors":"1","redis_key":"project_queue_list","loggerName":"project_queue.log"}';
+//$argv[ 1 ] = '{"queue_name":"ai_assistant_explain_meaning","pid_set_name":"ch_pid_ai_assistant_explain_meaning","max_executors":"1","redis_key":"ai_assistant_explain_meaning","loggerName":"ai_assistant_explain_meaning.log"}';
 //$argv[ 1 ] = '{"queue_name":"dqf","pid_set_name":"ch_pid_dqf","max_executors":"1","redis_key":"dqf_list","loggerName":"dqf.log"}';
 //$argv[ 1 ] = '{"queue_length":0,"queue_name":"set_contribution_mt","pid_set_name":"ch_pid_set_contribution_mt","pid_list":[],"pid_list_len":0,"max_executors":"1","loggerName":"set_contribution_mt.log"}';
 //$argv[ 1 ] = '{"queue_name":"jobs","pid_set_name":"ch_pid_jobs","max_executors":"1","redis_key":"jobs_list","loggerName":"jobs.log"}';

@@ -9,6 +9,7 @@
 
 use TaskRunner\Commons\ContextList;
 use TaskRunner\Commons\QueueElement;
+use Stomp\Transport\Message;
 
 class WorkerClient {
 
@@ -66,7 +67,7 @@ class WorkerClient {
             ) ;
         }
 
-        self::$_HANDLER->send( $queue_name, $element, $options );
+        self::$_HANDLER->publishToQueues( $queue_name, new Message( strval( $element ), $options ) );
     }
 
 }

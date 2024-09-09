@@ -17,7 +17,6 @@ use FeatureSet;
 use INIT;
 use Log;
 use PostProcess;
-use Stomp;
 use Matecat\SubFiltering\MateCatFilter;
 use TaskRunner\Commons\AbstractElement;
 use TaskRunner\Commons\AbstractWorker;
@@ -116,7 +115,6 @@ class GetContributionWorker extends AbstractWorker {
      *
      * @param bool                      $isCrossLang
      *
-     * @throws \StompException
      */
     protected function _publishPayload( array $content, ContributionRequestStruct $contributionStruct, $isCrossLang = false ) {
 
@@ -143,15 +141,8 @@ class GetContributionWorker extends AbstractWorker {
                 ]
         ];
 
-        $message = json_encode( $_object, true );
-        $stomp = new Stomp( INIT::$QUEUE_BROKER_ADDRESS );
-        $stomp->connect();
-        $stomp->send( INIT::$SSE_NOTIFICATIONS_QUEUE_NAME,
-                $message,
-                [ 'persistent' => 'false' ]
-        );
-
-        $this->_doLog( $message );
+        $this->publishToSseTopic( $_object );
+        $this->_doLog( json_encode( $_object ) );
 
     }
 

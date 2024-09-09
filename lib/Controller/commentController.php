@@ -1,6 +1,8 @@
 <?php
 
 use DataAccess\ShapelessConcreteStruct;
+use Stomp\Exception\StompException;
+use Stomp\Transport\Message;
 use Url\JobUrlBuilder;
 
 class commentController extends ajaxController {
@@ -475,12 +477,9 @@ class commentController extends ajaxController {
             ]
         ] );
 
-        $stomp = new Stomp( INIT::$QUEUE_BROKER_ADDRESS );
-        $stomp->connect();
-        $stomp->send( INIT::$SSE_NOTIFICATIONS_QUEUE_NAME,
-                $message,
-                [ 'persistent' => 'true' ]
-        );
+        $queueHandler = new AMQHandler();
+        $queueHandler->publishToTopic( INIT::$SSE_NOTIFICATIONS_QUEUE_NAME, new Message( $message ) );
+
     }
 
     /**
@@ -511,12 +510,9 @@ class commentController extends ajaxController {
                 ]
         ] );
 
-        $stomp = new Stomp( INIT::$QUEUE_BROKER_ADDRESS );
-        $stomp->connect();
-        $stomp->send( INIT::$SSE_NOTIFICATIONS_QUEUE_NAME,
-                $message,
-                [ 'persistent' => 'true' ]
-        );
+        $queueHandler = new AMQHandler();
+        $queueHandler->publishToTopic( INIT::$SSE_NOTIFICATIONS_QUEUE_NAME, new Message( $message ) );
+
     }
 
     private function getProjectPasswords() {

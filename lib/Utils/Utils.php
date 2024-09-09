@@ -389,8 +389,7 @@ class Utils {
         $queue_element[ 'subject' ] = $subject;
         $queue_element[ 'body' ]    = '<pre>' . self::_getBackTrace() . "<br />" . $htmlContent . '</pre>';
 
-        WorkerClient::init( new AMQHandler() );
-        \WorkerClient::enqueue( 'MAIL', '\AsyncTasks\Workers\ErrMailWorker', $queue_element, [ 'persistent' => WorkerClient::$_HANDLER->persistent ] );
+        WorkerClient::enqueue( 'MAIL', '\AsyncTasks\Workers\ErrMailWorker', $queue_element, [ 'persistent' => WorkerClient::$_HANDLER->persistent ] );
 
         Log::doJsonLog( 'Message has been sent' );
 
@@ -813,5 +812,180 @@ class Utils {
      */
     public static function htmlentitiesToUft8WithoutDoubleEncoding( $string ) {
         return htmlentities( $string, ENT_QUOTES, 'UTF-8', false );
+    }
+
+    /**
+     * @param string $format
+     * @return array
+     */
+    public static function allowedLanguages($format = 'rfc3066code')
+    {
+        $allowedLanguages = [];
+
+        $file = INIT::$UTILS_ROOT . '/Langs/supported_langs.json';
+        $string = file_get_contents( $file );
+        $langs = json_decode( $string, true );
+
+        foreach ($langs['langs'] as $lang){
+            $allowedLanguages[] = (isset($lang[$format])) ? $lang[$format] : $lang['rfc3066code'];
+        }
+
+        return $allowedLanguages;
+    }
+
+    /**
+     * @param string $language
+     * @param string $format
+     * @return bool
+     */
+    public static function isValidLanguage($language, $format = 'rfc3066code')
+    {
+        $allowedLanguages = Utils::allowedLanguages($format);
+
+        return in_array($language, $allowedLanguages);
+    }
+
+    /**
+     * @param $rfc3066code
+     * @return string|null
+     */
+    public static function getLocalizedLanguage($rfc3066code)
+    {
+        $file = INIT::$UTILS_ROOT . '/Langs/supported_langs.json';
+        $string = file_get_contents( $file );
+        $langs = json_decode( $string, true );
+
+        foreach ($langs['langs'] as $lang){
+            if($lang['rfc3066code'] === $rfc3066code){
+                return isset( $lang['localized'][0]['en'] ) ? $lang['localized'][0]['en'] : null;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $phrase
+     * @param int $max_words
+     *
+     * @return string
+     */
+    public static function truncatePhrase($phrase, $max_words){
+
+        $phrase_array = explode(' ',$phrase);
+        if(count($phrase_array) > $max_words && $max_words > 0){
+            $phrase = implode(' ',array_slice($phrase_array, 0, $max_words));
+        }
+
+        return $phrase;
+    }
+
+    /**
+     * Examples:
+     *
+     * it-IT  ---> it
+     * es-419 ---> es
+     * to-TO ----> ton
+     *
+     * @param $rfc3066code
+     * @return string|null
+     */
+    public static function convertLanguageToIsoCode($rfc3066code)
+    {
+        $file = INIT::$UTILS_ROOT . '/Langs/supported_langs.json';
+        $string = file_get_contents( $file );
+        $langs = json_decode( $string, true );
+
+        foreach ($langs['langs'] as $lang){
+            if($rfc3066code === $lang['rfc3066code']){
+                return $lang['isocode'];
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * This escape is need by
+     * javascript JSON.parse() function
+     *
+     * @param array $data
+     * @return string
+     */
+    public static function escapeJsonEncode($data){
+        return str_replace("\\\"","\\\\\\\"", json_encode($data));
+    }
+
+    /**
+     * This function strips html tag, but preserves hrefs.
+     *
+     * Example:
+     *
+     * This is the link: <a href="https://matecat.com">click here</a> -----> This is the link: click here(https://matecat.com)
+     *
+     * @param string $html
+     * @return string
+     */
+    public static function stripTagsPreservingHrefs($html)
+    {
+        $htmlDom = new DOMDocument('1.0', 'UTF-8');
+        $htmlDom->formatOutput = false;
+
+        @$htmlDom->loadHTML($html);
+
+        $links = $htmlDom->getElementsByTagName('a');
+
+        /** @var DOMElement $link */
+        foreach($links as $link){
+            $linkLabel = $link->nodeValue;
+            $linkHref = $link->getAttribute('href');
+            $link->nodeValue = $linkLabel . "(".str_replace("\\\"","", $linkHref).")";
+        }
+
+        $html = $htmlDom->saveHtml($htmlDom->documentElement);
+        $html = utf8_decode($html);
+
+        $strippedHtml = strip_tags($html);
+        $strippedHtml = ltrim($strippedHtml);
+        $strippedHtml = rtrim($strippedHtml);
+
+        return $strippedHtml;
+    }
+
+    /**
+     * @param $email
+     *
+     * @throws Exception
+     */
+    public static function validateEmailAddress($email)
+    {
+        $clean_email = filter_var($email,FILTER_SANITIZE_EMAIL);
+
+        if( $email !== $clean_email or !filter_var($email,FILTER_VALIDATE_EMAIL) ){
+            throw new Exception($email . " is not a valid email address");
+        }
+    }
+
+    /**
+     * @param $list
+     * @return array
+     */
+    public static function validateEmailList($list){
+
+        $aValid = [];
+        foreach ( explode( ',', $list ) AS $sEmailAddress ) {
+            $sEmailAddress = trim( $sEmailAddress );
+            if( empty( $sEmailAddress ) ) continue;
+            $aValid[ $sEmailAddress ] = filter_var( $sEmailAddress, FILTER_VALIDATE_EMAIL );
+        }
+
+        $invalidEmails = array_keys( $aValid, false );
+
+        if( !empty( $invalidEmails ) ){
+            throw new InvalidArgumentException( "Not valid e-mail provided: " . implode( ", ", $invalidEmails ), -6 );
+        }
+
+        return array_keys( $aValid );
+
     }
 }

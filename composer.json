@@ -9,6 +9,7 @@
         "google/apiclient": "^2.4.1",
         "google/apiclient-services": "^0.128",
         "klein/klein": "^2.1",
+        "stomp-php/stomp-php": "^5.0",
         "matecat/simple-s3": "0.0.1",
         "matecat/whole-text-finder": "^1.0",
         "matecat/xliff-parser": "^v1.0.104",

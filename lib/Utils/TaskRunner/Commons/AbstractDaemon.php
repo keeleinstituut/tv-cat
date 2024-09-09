@@ -86,9 +86,15 @@ abstract class AbstractDaemon {
             } else {
                 //static::_TimeStampMsg( str_pad( " Registering signal handlers ", 60, "*", STR_PAD_BOTH ) );
 
-                pcntl_signal( SIGTERM, array( get_called_class(), 'sigSwitch' ) );
-                pcntl_signal( SIGINT, array( get_called_class(), 'sigSwitch' ) );
-                pcntl_signal( SIGHUP, array( get_called_class(), 'sigSwitch' ) );
+                pcntl_signal( SIGTERM, [ get_called_class(), 'sigSwitch' ] );
+                pcntl_signal( SIGINT, [ get_called_class(), 'sigSwitch' ] );
+                pcntl_signal( SIGHUP, [ get_called_class(), 'sigSwitch' ] );
+                pcntl_signal( SIGPIPE, [ get_called_class(), 'sigSwitch' ] );
+                pcntl_signal( SIGQUIT, [ get_called_class(), 'sigSwitch' ] );
+                pcntl_signal( SIGSEGV, [ get_called_class(), 'sigSwitch' ] );
+                pcntl_signal( SIGTSTP, [ get_called_class(), 'sigSwitch' ] );
+                pcntl_signal( SIGUSR1, [ get_called_class(), 'sigSwitch' ] );
+                pcntl_signal( SIGUSR2, [ get_called_class(), 'sigSwitch' ] );
                 $msg = str_pad( " Signal Handler Installed ", 60, "-", STR_PAD_BOTH );
 
                 //static::_TimeStampMsg( "$msg" );
@@ -112,6 +118,12 @@ abstract class AbstractDaemon {
             case SIGTERM :
             case SIGINT :
             case SIGHUP :
+            case SIGPIPE:
+            case SIGQUIT:
+            case SIGSEGV:
+            case SIGTSTP:
+            case SIGUSR1:
+            case SIGUSR2:
                 static::$__INSTANCE->RUNNING = false;
                 break;
             default :

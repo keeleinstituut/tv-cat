@@ -8,7 +8,6 @@
 
 namespace API\V2;
 
-use AMQHandler;
 use API\V2\Validators\ChunkPasswordValidator;
 use Constants_TranslationStatus;
 use Features\ReviewExtended\ReviewUtils;
@@ -65,7 +64,6 @@ class JobStatusController extends BaseChunkController {
             if ( !empty( $segments_id ) ) {
 
                 try {
-                    WorkerClient::init( new AMQHandler() );
                     WorkerClient::enqueue( 'JOBS', '\AsyncTasks\Workers\BulkSegmentStatusChangeWorker',
                             [
                                     'segment_ids'        => $segments_id,

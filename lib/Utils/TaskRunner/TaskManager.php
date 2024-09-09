@@ -100,7 +100,7 @@ class TaskManager extends AbstractDaemon {
 
             set_time_limit(0);
 
-            $this->_queueHandler = new AMQHandler();
+            $this->_queueHandler = AMQHandler::getNewInstanceForDaemons();
             $this->_updateConfiguration();
 
         } catch ( Exception $ex ){

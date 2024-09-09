@@ -8,7 +8,6 @@
 
 namespace Email;
 
-use AMQHandler;
 use INIT;
 use Log;
 use WorkerClient;
@@ -53,7 +52,6 @@ abstract class AbstractEmail {
      * @param $mailConf
      */
     protected function _enqueueEmailDelivery( $mailConf ) {
-        WorkerClient::init( new AMQHandler() );
         WorkerClient::enqueue(
                 'MAIL',
                 '\AsyncTasks\Workers\MailWorker',

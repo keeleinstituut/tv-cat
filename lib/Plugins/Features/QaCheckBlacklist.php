@@ -8,7 +8,6 @@
 
 namespace Features;
 
-use AMQHandler;
 use Chunks_ChunkStruct;
 use Features\QaCheckBlacklist\Utils\BlacklistUtils;
 use Projects\ProjectModel;
@@ -49,7 +48,6 @@ class QaCheckBlacklist extends BaseFeature {
     }
 
     protected static function enqueueTranslationCheck( $queue_element ) {
-        WorkerClient::init( new AMQHandler() );
         WorkerClient::enqueue( 'QA_CHECKS',
                 '\Features\QaCheckBlacklist\Worker\BlacklistWorker',
                 $queue_element,
