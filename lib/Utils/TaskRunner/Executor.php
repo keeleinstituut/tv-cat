@@ -20,6 +20,7 @@ use Predis\PredisException;
 use ReflectionException;
 use SplObserver;
 use SplSubject;
+use Stomp\Network\Observer\Exception\HeartbeatException;
 use Stomp\Transport\Frame;
 use TaskRunner\Commons\AbstractWorker;
 use TaskRunner\Commons\Context;
@@ -155,6 +156,12 @@ class Executor implements SplObserver {
             pcntl_signal( SIGTERM, [ get_called_class(), 'sigSwitch' ] );
             pcntl_signal( SIGINT, [ get_called_class(), 'sigSwitch' ] );
             pcntl_signal( SIGHUP, [ get_called_class(), 'sigSwitch' ] );
+            pcntl_signal( SIGPIPE, [ get_called_class(), 'sigSwitch' ] );
+            pcntl_signal( SIGQUIT, [ get_called_class(), 'sigSwitch' ] );
+            pcntl_signal( SIGSEGV, [ get_called_class(), 'sigSwitch' ] );
+            pcntl_signal( SIGTSTP, [ get_called_class(), 'sigSwitch' ] );
+            pcntl_signal( SIGUSR1, [ get_called_class(), 'sigSwitch' ] );
+            pcntl_signal( SIGUSR2, [ get_called_class(), 'sigSwitch' ] );
 
             $msg = str_pad( " Signal Handler Installed ", 50, "-", STR_PAD_BOTH );
 
@@ -181,6 +188,12 @@ class Executor implements SplObserver {
             case SIGTERM :
             case SIGINT :
             case SIGHUP :
+            case SIGPIPE:
+            case SIGQUIT:
+            case SIGSEGV:
+            case SIGTSTP:
+            case SIGUSR1:
+            case SIGUSR2:
                 static::$__INSTANCE->RUNNING = false;
                 break;
             default :
@@ -198,11 +211,11 @@ class Executor implements SplObserver {
         $this->_frameID = 1;
         do {
 
-            if (!$this->_queueHandler->getClient()->isConnected()) {
-                $this->_logMsg("(Executor " . $this->_executor_instance_id . ") :  EXITING! AMQ connection lost");
-                $this->RUNNING = false;
-                break;
-            }
+//            if (!$this->_queueHandler->getClient()->isConnected()) {
+//                $this->_logMsg("(Executor " . $this->_executor_instance_id . ") :  EXITING! AMQ connection lost");
+//                $this->RUNNING = false;
+//                break;
+//            }
 
 
             try {
@@ -225,6 +238,10 @@ class Executor implements SplObserver {
             } catch ( NoFrameFoundException $e ) {
                 usleep( 250000 );
                 continue;
+            } catch (HeartbeatException $e) {
+                $this->_logMsg("(Executor " . $this->_executor_instance_id . ") :  EXITING! AMQ connection lost");
+                $this->RUNNING = false;
+                break;
             } catch ( Exception $e ) {
                 $this->_logMsg( "--- (Executor " . $this->_executorPID . ") : Failed to read frame from AMQ. Doing nothing, wait and re-try in next cycle." );
                 $this->_logMsg( $e->getMessage() );
@@ -343,7 +360,7 @@ class Executor implements SplObserver {
                 throw new NoFrameFoundException( "--- (Executor " . $this->_executor_instance_id . ") : no frame found. Starting next cycle." );
             }
 
-        } catch ( FrameException | NoFrameFoundException $e ) {
+        } catch ( FrameException | NoFrameFoundException | HeartbeatException $e ) {
             throw $e;
             /* jump the ack */
         } catch ( Exception $e ) {

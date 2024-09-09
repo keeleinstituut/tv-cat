@@ -12,6 +12,7 @@ use Predis\Client as PredisClient;
 use Stomp\Client;
 use Stomp\Exception\ConnectionException;
 use Stomp\Network\Connection;
+use Stomp\Network\Observer\ServerAliveObserver;
 use Stomp\StatefulStomp;
 use Stomp\Transport\Frame;
 use Stomp\Transport\Message;
@@ -79,7 +80,10 @@ class AMQHandler {
 
         }
 
-        $this->statefulStomp = new StatefulStomp( new Client( $connection ) );
+        $connection->getObservers()->addObserver(new ServerAliveObserver());
+        $client = new Client($connection);
+        $client->setHeartbeat(0, 2000); // we would receive server beats within 2 seconds
+        $this->statefulStomp = new StatefulStomp($client);
 
     }
 

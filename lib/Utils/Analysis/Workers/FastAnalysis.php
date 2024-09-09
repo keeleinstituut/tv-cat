@@ -281,8 +281,14 @@ class FastAnalysis extends AbstractDaemon {
 
         switch ( $sig_no ) {
             case SIGTERM :
-            case SIGHUP :
             case SIGINT :
+            case SIGHUP :
+            case SIGPIPE:
+            case SIGQUIT:
+            case SIGSEGV:
+            case SIGTSTP:
+            case SIGUSR1:
+            case SIGUSR2:
                 $run          = static::getInstance();
                 $run->RUNNING = false;
                 break;
