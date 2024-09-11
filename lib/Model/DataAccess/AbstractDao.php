@@ -222,7 +222,13 @@ abstract class DataAccess_AbstractDao {
         $value = null;
         if ( isset( self::$cache_con ) && !empty( self::$cache_con ) ) {
             $key   = md5( $query );
-            $value = unserialize( self::$cache_con->get( $key ) );
+
+            try {
+                $value = unserialize(self::$cache_con->get($key));
+            } catch (Exception $e) {
+                return null;
+            }
+
             $this->_logCache( "GET", $key, $value, $query );
         }
 

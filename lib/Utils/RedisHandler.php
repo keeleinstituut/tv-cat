@@ -1,6 +1,7 @@
 <?php
 
 use Predis\Client;
+use Redis\ResilientRedisClient;
 
 /**
  * Created by PhpStorm.
@@ -48,7 +49,6 @@ class RedisHandler {
     }
 
     /**
-     * @return Client
      */
     private function getClient() {
         $connectionParams = INIT::$REDIS_SERVERS;
@@ -63,8 +63,7 @@ class RedisHandler {
 
         }
 
-        return  new Client( $connectionParams );
-
+        return new ResilientRedisClient( $connectionParams );
     }
 
     protected function formatDSN( $dsnString ) {
