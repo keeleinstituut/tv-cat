@@ -1,5 +1,8 @@
 <?php
 
+use Predis\Client;
+use Redis\ResilientRedisClient;
+
 /**
  * Created by PhpStorm.
  * @author domenico domenico@translated.net / ostico@gmail.com
@@ -10,7 +13,7 @@
 class RedisHandler {
 
     /**
-     * @var Predis\Client
+     * @var Client
      */
     protected $redisHandler;
 
@@ -19,10 +22,9 @@ class RedisHandler {
      *
      * Get the connection to Redis server and return it
      *
-     * @throws ReflectionException
-     * @return Predis\Client
+     * @return Client
      */
-    public function getConnection( ){
+    public function getConnection() {
 
         $resource = null;
         if( $this->redisHandler != null ){
@@ -47,7 +49,6 @@ class RedisHandler {
     }
 
     /**
-     * @return Predis\Client
      */
     private function getClient() {
         $connectionParams = INIT::$REDIS_SERVERS;
@@ -62,19 +63,19 @@ class RedisHandler {
 
         }
 
-        return new Predis\Client( $connectionParams );
+        return new ResilientRedisClient( $connectionParams );
     }
 
-    protected function formatDSN( $dsnString ){
+    protected function formatDSN( $dsnString ) {
 
         if ( !is_null( INIT::$INSTANCE_ID ) ) {
 
             $conf = parse_url( $dsnString );
 
             if ( isset( $conf[ 'query' ] ) ) {
-                $instanceID = "&database=" . (int) INIT::$INSTANCE_ID;
+                $instanceID = "&database=" . INIT::$INSTANCE_ID;
             } else {
-                $instanceID = "?database=" . (int) INIT::$INSTANCE_ID;
+                $instanceID = "?database=" . INIT::$INSTANCE_ID;
             }
 
             return $dsnString . $instanceID;

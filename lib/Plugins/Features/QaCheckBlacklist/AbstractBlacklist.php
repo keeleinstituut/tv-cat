@@ -3,7 +3,9 @@
 namespace Features\QaCheckBlacklist;
 
 use Matecat\Finder\WholeTextFinder;
+use Predis\Client;
 use RedisHandler;
+use ReflectionException;
 
 abstract class AbstractBlacklist {
 
@@ -28,7 +30,7 @@ abstract class AbstractBlacklist {
     protected $content;
 
     /**
-     * @var \Predis\Client
+     * @var Client
      */
     protected $redis ;
 
@@ -39,8 +41,7 @@ abstract class AbstractBlacklist {
      * @param $id_job
      * @param $password
      *
-     * @throws \Predis\Connection\ConnectionException
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function __construct( $path, $id_job, $password ) {
         $this->file_path = $path;
