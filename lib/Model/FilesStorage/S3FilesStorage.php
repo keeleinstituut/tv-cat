@@ -100,6 +100,7 @@ class S3FilesStorage extends AbstractFilesStorage {
             }
 
             self::$CLIENT = new Client( $config );
+            self::$CLIENT->addEncoder(new SpaceCharacterEncoder());
 
             // add caching
             if (INIT::$AWS_CACHING) {
@@ -172,6 +173,7 @@ class S3FilesStorage extends AbstractFilesStorage {
         //
         try {
             $xliffDestination = $this->getXliffDestination( $prefix, $xliffPath, static::$FILES_STORAGE_BUCKET, $originalPath );
+            $xliffDestination = str_replace(' ', '-', $xliffDestination);
 
             $this->s3Client->uploadItem( [
                     'bucket' => static::$FILES_STORAGE_BUCKET,
@@ -468,6 +470,7 @@ class S3FilesStorage extends AbstractFilesStorage {
             $subPathName = str_replace( '|', self::OBJECTS_SAFE_DELIMITER, $iterator->getSubPathName() );
 
             $key = $prefix . DIRECTORY_SEPARATOR . $subPathName;
+            $key = str_replace(' ', '-', $key);
 
             if ( $item->isDir() ) {
                 // create folder

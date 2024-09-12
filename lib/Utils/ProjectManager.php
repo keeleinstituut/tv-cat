@@ -234,6 +234,10 @@ class ProjectManager {
     }
 
     protected function _log( $_msg ) {
+        if (php_sapi_name() === 'cli') {
+            echo json_encode($_msg), PHP_EOL;
+        }
+
         Log::doJsonLog( $_msg );
     }
 

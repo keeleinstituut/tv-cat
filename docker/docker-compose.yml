@@ -10,6 +10,7 @@ services:
       - amq
       - redis
       - matecat-filters
+      - minio
     ports:
       - 8080:80
       - 8443:443
@@ -43,7 +44,14 @@ services:
       - MATECAT_LXQ_LICENSE=false
       - MATECAT_LXQ_PARTNERID=false
 
-      - MATECAT_FILE_STORAGE_METHOD=fs
+      - MATECAT_FILE_STORAGE_METHOD=s3
+      - MATECAT_AWS_REGION=us-east-1
+      - MATECAT_AWS_ENDPOINT=http://minio:9000
+      - MATECAT_AWS_USE_PATH_STYLE_ENDPOINTS=true
+      - MATECAT_AWS_SSL_VERIFY=false
+      - MATECAT_AWS_STORAGE_BASE_BUCKET=storage
+      - MATECAT_AWS_SECRET_KEY=secret
+      - MATECAT_AWS_ACCESS_KEY_ID=access
 
       - MATECAT_AUTOLOAD_PLUGINS=["review_extended"]
 
@@ -111,6 +119,26 @@ services:
     build: ./amq
     ports:
       - 8161:8161
+
+  minio:
+    image: quay.io/minio/minio
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - >
+        minio server /data --console-address ":9001" & 
+        sleep 5 &&
+        mc alias set tolkevarav http://localhost:9000 admin password &&
+        mc mb --ignore-existing tolkevarav/storage &&
+        mc admin user add tolkevarav tv-translation-order secret-key &&
+        mc admin policy attach tolkevarav readwrite --user=tv-translation-order;
+        sleep infinity;
+    ports:
+      - 9004:9000
+      - 9001:9001
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=password
 
   # amq_new:
   #   image: quay.io/artemiscloud/activemq-artemis-broker:latest
