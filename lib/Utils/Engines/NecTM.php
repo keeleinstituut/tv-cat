@@ -9,6 +9,7 @@ use Engines\NecTM\Auth\ServiceAccountJwtRetrieverInterface;
 
 class Engines_NecTM extends Engines_AbstractEngine
 {
+    const LIMIT_FOR_MULTIPLE_TAGS = 1000;
     /**
      * @var string
      */
@@ -61,30 +62,71 @@ class Engines_NecTM extends Engines_AbstractEngine
 
         $results = [];
         if (!empty($decoded['results'])) {
-            $matches = array_values(
-                array_filter($decoded['results'], function ($result) {
-                    return !empty(trim($result['tu']['target_text'] ?? '')) &&
-                        !empty(trim($result['tu']['source_text'] ?? ''));
+            if (!empty($parameters['requestedTags'])) {
+                $requestedTagsMap = array_combine(
+                    $parameters['requestedTags'],
+                    $parameters['requestedTags']
+                );
+
+                $matches = array_values(
+                    array_filter($decoded['results'], function ($result) use ($requestedTagsMap) {
+                        if (empty(trim($result['tu']['target_text'] ?? '')) || empty(trim($result['tu']['source_text'] ?? ''))) {
+                            return false;
+                        }
+
+                        foreach ($result['tag'] ?? [] as $tag) {
+                            if (isset($requestedTagsMap[$tag])) {
+                                return true;
+                            }
+                        }
+
+                        return false;
+                    })
+                );
+            } else {
+                $matches = array_values(
+                    array_filter($decoded['results'], function ($result) {
+                        return !empty(trim($result['tu']['target_text'] ?? '')) &&
+                            !empty(trim($result['tu']['source_text'] ?? ''));
+                    })
+                );
+            }
+
+            $tags = $parameters['requestedTags'] ?? [$parameters['tag']];
+            $responseTags = array_values(
+                array_filter($decoded['tags'], function ($tag) use ($tags) {
+                    return in_array($tag['id'], $tags);
                 })
             );
 
-            $requestedTags = array_values(array_filter($decoded['tags'], function ($tag) use ($parameters) {
-                return in_array($tag['id'], $parameters['tag']);
-            }));
+            $tagNamesMap = [];
+            foreach ($responseTags as $responseTag) {
+                if (!in_array($responseTag['id'], $tags)) {
+                    continue;
+                }
 
-            $results['matches'] = array_map(function ($data) use ($requestedTags) {
+                if (empty($responseTag['name'])) {
+                    continue;
+                }
 
-                $tags = array_filter($requestedTags, function ($tag) use ($data) {
-                    return in_array($tag['id'], $data['tag']);
-                });
+                $tagNamesMap[$responseTag['id']] = $responseTag['name'];
+            }
 
-                $tag_names = array_map(fn ($tag) => $tag['name'], $tags);
+            $results['matches'] = array_map(function ($data) use ($tagNamesMap) {
+                $tagNames = [];
+                foreach ($data['tag'] as $matchTag) {
+                    if (!isset($tagNamesMap[$matchTag])) {
+                        continue;
+                    }
+
+                    $tagNames[] = $tagNamesMap[$matchTag];
+                }
 
                 return [
                     'quality' => $data['match'],
                     'match' => $data['match'] / 100,
                     'last-update-date' => $data['update_date'],
-                    'created-by' => implode(', ', $tag_names),
+                    'created-by' => implode(', ', $tagNames),
                     'segment' => $data['tu']['source_text'],
                     'translation' => $data['tu']['target_text']
                 ];
@@ -116,7 +158,12 @@ class Engines_NecTM extends Engines_AbstractEngine
         $tags = $this->getTags($_config);
 
         if (!empty($tags)) {
-            $parameters['tag'] = $tags;
+            if (count($tags) === 1) {
+                $parameters['tag'] = $tags[0];
+            } else {
+                $parameters['limit'] = self::LIMIT_FOR_MULTIPLE_TAGS;
+                $parameters['requestedTags'] = $tags;
+            }
         }
 
         $jwt = $this->getServiceAccountJwtRetriever()->getJwt();
