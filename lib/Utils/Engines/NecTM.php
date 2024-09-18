@@ -173,9 +173,7 @@ class Engines_NecTM extends Engines_AbstractEngine
             ]
         ]);
 
-        $this->call('translate_relative_url', $parameters, false, false, function ($parameters) {
-            return preg_replace('/(%5B)(.*)(%5D=)/i', '=', http_build_query($parameters));
-        });
+        $this->call('translate_relative_url', $parameters);
 
         return $this->result;
     }
