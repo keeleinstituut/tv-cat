@@ -377,19 +377,28 @@ class Utils {
             return true;
         }
 
-        $mailConf = @parse_ini_file( INIT::$ROOT . '/inc/Error_Mail_List.ini', true );
-
-        if ( empty( $subject ) ) {
-            $subject = 'Alert from MateCat: ' . php_uname( 'n' );
-        } else {
-            $subject .= ' ' . php_uname( 'n' );
+        if (php_sapi_name() !== 'cli') {
+            return true;
         }
+//
+//        $mailConf = @parse_ini_file( INIT::$ROOT . '/inc/Error_Mail_List.ini', true );
+//
+//        if ( empty( $subject ) ) {
+//            $subject = 'Alert from MateCat: ' . php_uname( 'n' );
+//        } else {
+//            $subject .= ' ' . php_uname( 'n' );
+//        }
+//
+//        $queue_element              = array_merge( [], $mailConf );
+//        $queue_element[ 'subject' ] = $subject;
+//        $queue_element[ 'body' ]    = '<pre>' . self::_getBackTrace() . "<br />" . $htmlContent . '</pre>';
 
-        $queue_element              = array_merge( [], $mailConf );
-        $queue_element[ 'subject' ] = $subject;
-        $queue_element[ 'body' ]    = '<pre>' . self::_getBackTrace() . "<br />" . $htmlContent . '</pre>';
+        echo "Error email report:", PHP_EOL;
+        echo "Subject: ", $subject, PHP_EOL;
+        echo "Content: ", $htmlContent, PHP_EOL;
+        echo "Trace: ", self::_getBackTrace(), PHP_EOL;
 
-        WorkerClient::enqueue( 'MAIL', '\AsyncTasks\Workers\ErrMailWorker', $queue_element, [ 'persistent' => WorkerClient::$_HANDLER->persistent ] );
+        //WorkerClient::enqueue( 'MAIL', '\AsyncTasks\Workers\ErrMailWorker', $queue_element, [ 'persistent' => WorkerClient::$_HANDLER->persistent ] );
 
         Log::doJsonLog( 'Message has been sent' );
 

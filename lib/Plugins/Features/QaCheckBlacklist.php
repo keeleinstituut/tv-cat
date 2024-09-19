@@ -10,6 +10,7 @@ namespace Features;
 
 use Chunks_ChunkStruct;
 use Features\QaCheckBlacklist\Utils\BlacklistUtils;
+use INIT;
 use Projects\ProjectModel;
 use Projects_ProjectDao;
 use RedisHandler;
@@ -48,6 +49,10 @@ class QaCheckBlacklist extends BaseFeature {
     }
 
     protected static function enqueueTranslationCheck( $queue_element ) {
+        if (!INIT::$ENABLE_QA_CHECKS) {
+            return;
+        }
+
         WorkerClient::enqueue( 'QA_CHECKS',
                 '\Features\QaCheckBlacklist\Worker\BlacklistWorker',
                 $queue_element,

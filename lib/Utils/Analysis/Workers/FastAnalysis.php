@@ -38,6 +38,8 @@ use WordCount_CounterModel;
  */
 class FastAnalysis extends AbstractDaemon {
 
+    const MAX_ITERATIONS_BEFORE_RESTART = 20;
+
     use ProjectWordCount;
 
     protected static $queueHandler;
@@ -132,8 +134,9 @@ class FastAnalysis extends AbstractDaemon {
      */
     public function main( $args = null ) {
 
+        $iteration = 0;
         do {
-
+            $iteration++;
             try {
                 $this->_checkDatabaseConnection();
                 $projects_list = $this->_getLockProjectForVolumeAnalysis( 5 );
@@ -148,6 +151,11 @@ class FastAnalysis extends AbstractDaemon {
             }
 
             if ( empty( $projects_list ) ) {
+                if ($iteration >= self::MAX_ITERATIONS_BEFORE_RESTART) {
+                    self::_TimeStampMsg( "Killing FastAnalysis to free-up the RAM" );
+                    break;
+                }
+
                 self::_TimeStampMsg( "No projects: wait 3 seconds." );
                 sleep( 3 );
                 continue;
@@ -750,34 +758,9 @@ HD;
      *
      * @return Context
      */
-    protected function _getQueueAddressesByPriority( $queueLen, $id_mt_engine ) {
-
-        $mtEngine = null;
-        try {
-            $mtEngine = Engine::getInstance( $id_mt_engine );
-        } catch ( Exception $e ) {
-            self::_TimeStampMsg( "Caught Exception: " . $e->getMessage() );
-        }
-
+    protected function _getQueueAddressesByPriority($queueLen, $id_mt_engine) {
         //anyway take the defaults
-        $contextList = $this->_queueContextList->list;
-
-        //use this kind of construct to easy add/remove queues and to disable feature by: comment rows or change the switch flag to false
-        switch ( true ) {
-            case ( !$mtEngine instanceof \Engines_MyMemory && !$mtEngine instanceof \Engines_NONE ):
-                $context = $contextList[ 'P3' ];
-                break;
-            case ( $queueLen >= 10000 ): // at rate of 100 segments/s ( 100 processes ) ~ 2m 30s
-                $context = $contextList[ 'P2' ];
-                break;
-            default:
-                $context = $contextList[ 'P1' ];
-                break;
-
-        }
-
-        return $context;
-
+        return $this->_queueContextList->list['P1'];
     }
 
     protected function _getLockProjectForVolumeAnalysis( $limit = 1 ) {

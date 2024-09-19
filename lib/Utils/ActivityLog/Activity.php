@@ -3,6 +3,7 @@
 namespace ActivityLog;
 
 use Exception;
+use INIT;
 use Log;
 use Utils;
 use WorkerClient;
@@ -16,6 +17,9 @@ use WorkerClient;
 class Activity {
 
     public static function save( ActivityLogStruct $activityLog ){
+        if (!INIT::$STORE_ACTIVITY_LOGS) {
+            return;
+        }
 
         try{
             WorkerClient::enqueue( 'ACTIVITYLOG', '\AsyncTasks\Workers\ActivityLogWorker', $activityLog, array( 'persistent' => WorkerClient::$_HANDLER->persistent ) );

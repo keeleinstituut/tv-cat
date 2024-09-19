@@ -2,6 +2,7 @@
 
 namespace Features;
 
+use INIT;
 use LQA\QA;
 use TaskRunner\Commons\QueueElement;
 use Translations\WarningDao;
@@ -38,6 +39,10 @@ class QaCheckGlossary extends BaseFeature {
     }
 
     protected static function enqueueTranslationCheck( $queue_element ) {
+        if (!INIT::$ENABLE_QA_CHECKS) {
+            return;
+        }
+
         WorkerClient::enqueue( 'QA_CHECKS',
                 '\Features\QaCheckGlossary\Worker\GlossaryWorker',
                 $queue_element,
