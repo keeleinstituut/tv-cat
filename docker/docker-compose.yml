@@ -83,10 +83,8 @@ services:
       - MYSQL_PORT=3306
 
       # Defining amount of workers for TM analysis and for getting contributions
-      - TM_ANALYSIS_P1_MAX_EXECUTORS=1
-      - TM_ANALYSIS_P2_MAX_EXECUTORS=1
-      - TM_ANALYSIS_P3_MAX_EXECUTORS=1
-      - GET_CONTRIBUTION_MAX_EXECUTORS=1
+      - TM_ANALYSIS_P1_MAX_EXECUTORS=3
+      - GET_CONTRIBUTION_MAX_EXECUTORS=3
     volumes:
       - ../lib:/var/www/html/lib
       - ../migrations:/var/www/html/migrations

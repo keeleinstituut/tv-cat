@@ -459,6 +459,10 @@ class INIT {
 
     public static $SEND_ERR_MAIL_REPORT = true;
 
+    public static $STORE_ACTIVITY_LOGS = false;
+
+    public static $ENABLE_QA_CHECKS = false;
+
     public static $NEC_TM_BASE_URL = 'http://localhost:5001';
 
     /**

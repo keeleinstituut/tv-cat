@@ -19,7 +19,7 @@ class Functions {
 
 
     public static function commonVarsForDecorator( PHPTALWithAppend $template ) {
-        $template->dqf_enabled       = true ;
+        $template->dqf_enabled       = false ;
         $template->dqf_content_types = (new ContentType())->getArray();
         $template->dqf_industry      = (new Industry())->getArray();
         $template->dqf_process       = (new Process())->getArray();
