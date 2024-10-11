@@ -106,7 +106,10 @@ class ProjectsController extends KleinController
         }
 
         if ($enableMT) {
-            Jobs_JobDao::updateAllJobsMTByProjectId($project->id, Engines_MTee::getMTeeID());
+            /**
+             * MTee is not used since 01.10.2024
+             */
+            //Jobs_JobDao::updateAllJobsMTByProjectId($project->id, Engines_MTee::getMTeeID());
             return $this->response->json([]);
         }
 

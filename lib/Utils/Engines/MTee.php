@@ -77,6 +77,11 @@ class Engines_MTee extends Engines_AbstractEngine
 
     public function get($_config)
     {
+        /**
+         * MTee is not used since 01.10.2024
+         */
+        return [];
+
         if (!self::isSupportedLanguageDirection($_config['target'], $_config['source'])) {
             // {"error":{"code":404006,"message":"Language direction is not found"}} is the response from MTee
             $this->result = $this->_decode([

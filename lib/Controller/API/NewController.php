@@ -354,7 +354,7 @@ class NewController extends ajaxController
         }
 
         if (!isset($this->postInput['mt_engine'])) {
-            $this->postInput['mt_engine'] = Engines_MTee::getMTeeID();
+            $this->postInput['mt_engine'] = Constants_Engines::NO_MT_ENGINE_ID;
         }
 
         if ($this->postInput['tms_engine'] != 0) {
