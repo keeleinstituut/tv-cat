@@ -10,6 +10,7 @@ use Engine;
 use Engines_MTee;
 use Engines_NecTM;
 use Exception;
+use INIT;
 use Jobs_JobDao;
 use Projects_ProjectDao;
 use TMKeysUtils;
@@ -106,7 +107,13 @@ class ProjectsController extends KleinController
         }
 
         if ($enableMT) {
-            Jobs_JobDao::updateAllJobsMTByProjectId($project->id, Engines_MTee::getMTeeID());
+            /**
+             * MTee is not used since 01.10.2024
+             */
+            if (INIT::$MTEE_ENABLED === true) {
+                Jobs_JobDao::updateAllJobsMTByProjectId($project->id, Engines_MTee::getMTeeID());
+            }
+
             return $this->response->json([]);
         }
 
