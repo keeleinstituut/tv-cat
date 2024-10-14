@@ -300,6 +300,7 @@ class INIT {
     public static $REPLACE_HISTORY_TTL;
 
     public static $MTEE_BASE_URL = 'https://mtee.eki.ee/api';
+    public static $MTEE_ENABLED = false;
 
     public static $EKILEX_API_KEY = '';
     public static $EKILEX_API_BASE_URL = 'https://ekilex.ee/api';
