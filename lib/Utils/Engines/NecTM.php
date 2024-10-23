@@ -122,13 +122,18 @@ class Engines_NecTM extends Engines_AbstractEngine
                     $tagNames[] = $tagNamesMap[$matchTag];
                 }
 
+                if ($ice = intval($data['match']) > 100) {
+                    $data['match'] = 100;
+                }
+
                 return [
                     'quality' => $data['match'],
                     'match' => $data['match'] / 100,
                     'last-update-date' => $data['update_date'],
                     'created-by' => implode(', ', $tagNames),
                     'segment' => $data['tu']['source_text'],
-                    'translation' => $data['tu']['target_text']
+                    'translation' => $data['tu']['target_text'],
+                    'ICE' => $ice
                 ];
             }, $matches);
 
@@ -145,6 +150,9 @@ class Engines_NecTM extends Engines_AbstractEngine
     public function get($_config)
     {
         $_config['segment'] = $this->_preserveSpecialStrings($_config['segment']);
+        if (preg_match("/^(-?@-?)/", $_config['segment'], $segment_file_chr)) {
+            $_config['segment'] = preg_replace("/^(-?@-?)/", "", $_config['segment']);
+        }
 
         $parameters = [
             'q' => $_config['segment'],
@@ -152,8 +160,14 @@ class Engines_NecTM extends Engines_AbstractEngine
             'tlang' => $this->_fixLangCode($_config['target']),
             'limit' => $_config['num_result'],
             'aut_trans' => false,
-            'concordance' => boolval($_config['isConcordance'] ?? false)
+            'concordance' => boolval($_config['isConcordance'] ?? false),
         ];
+
+        if (!empty($_config['context_after']) || !empty($_config['context_before'])) {
+            $sourceMetaData['context_after'] = preg_replace("/^(-?@-?)/", "", @$_config['context_after']);
+            $sourceMetaData['context_before'] = preg_replace("/^(-?@-?)/", "", @$_config['context_before']);
+            $parameters['smeta'] = json_encode($sourceMetaData);
+        }
 
         $tags = $this->getTags($_config);
 
@@ -191,6 +205,12 @@ class Engines_NecTM extends Engines_AbstractEngine
             $parameters['tag'] = $tags;
         } else {
             return [];
+        }
+
+        if (!empty($_config['context_after']) || !empty($_config['context_before'])) {
+            $sourceMetaData['context_after'] = preg_replace("/^(-?@-?)/", "", @$_config['context_after']);
+            $sourceMetaData['context_before'] = preg_replace("/^(-?@-?)/", "", @$_config['context_before']);
+            $parameters['smeta'] = json_encode($sourceMetaData);
         }
 
         $jwt = $this->getServiceAccountJwtRetriever()->getJwt();
