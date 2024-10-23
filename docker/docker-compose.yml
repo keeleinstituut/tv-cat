@@ -67,11 +67,11 @@ services:
       - SSE_QUEUE_USER=admin
       - SSE_QUEUE_PASSWORD=admin
 
-      - MATECAT_NECTM_KEYCLOAK_BASE_URL=https://sso.dev.tolkevarav.eki.ee
+      - MATECAT_NECTM_KEYCLOAK_BASE_URL=http://host.docker.internal:8180
       - MATECAT_NECTM_KEYCLOAK_REALM=tolkevarav-dev
-      - MATECAT_NECTM_KEYCLOAK_CLIENT_ID=tv-cat-service
-      - MATECAT_NECTM_KEYCLOAK_CLIENT_SECRET=supersecret
-      - MATECAT_NEC_TM_BASE_URL=https://api.dev.tolkevarav.eki.ee/tm/api/v1/
+      - MATECAT_NECTM_KEYCLOAK_CLIENT_ID=${NECTM_KEYCLOAK_CLIENT_ID}
+      - MATECAT_NECTM_KEYCLOAK_CLIENT_SECRET=${NECTM_KEYCLOAK_CLIENT_SECRET}
+      - MATECAT_NEC_TM_BASE_URL=http://host.docker.internal:5000/api/v1/
 
       - MATECAT_EKILEX_API_BASE_URL=https://ekilex.ee/api
       - MATECAT_EKILEX_API_KEY=supersecret
