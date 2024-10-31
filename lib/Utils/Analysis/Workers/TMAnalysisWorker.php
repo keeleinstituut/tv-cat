@@ -433,6 +433,21 @@ class TMAnalysisWorker extends AbstractWorker {
             }
         }
 
+        // if NecTM says is ICE, return ICE
+        if ( $isICE ) {
+            return "ICE";
+        }
+
+        // if there is a repetition with a 100% match type, return 100%
+        if ( $ind == 100 && $fast_match_type == 'REPETITIONS' ) {
+            return $tm_match_fuzzy_band;
+        }
+
+        // if there is a repetition from Fast, keep it in REPETITIONS bucket
+        if ( $fast_match_type == 'REPETITIONS' ) {
+            return $fast_match_type;
+        }
+
         /**
          * Apply the TM discount rate and/or force the value obtained from TM for
          * matches between 50%-74% because is never returned in Fast Analysis; it's rate is set default as equals to NO_MATCH

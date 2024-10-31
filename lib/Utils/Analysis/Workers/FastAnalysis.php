@@ -400,8 +400,9 @@ class FastAnalysis extends AbstractDaemon {
         $tuple_list             = [];
         $bind_values            = [];
         $totalSegmentsToAnalyze = 0;
+        $segmentsWithRepetitionMatch = self::_getSegmentsHashesWithRepetition($pid);
+        $processedSegmentsWithRepetitionMatch = [];
         foreach ( $this->segments as $k => $v ) {
-
             $jid_pass = explode( "-", $v[ 'jsid' ] );
 
             // only to remember the meaning of $k
@@ -409,6 +410,16 @@ class FastAnalysis extends AbstractDaemon {
             //$id_segment = $jid_fid[ 0 ];
 
             $list_id_jobs_password = $jid_pass[ 1 ];
+
+            // MyMemory FastAnalysis provided repetitions, but as we don't use it anymore,
+            // we have to calculate them ourselves
+            $segmentHash = $v['segment_hash'];
+            if (empty($v['match_type']) && !empty($segmentsWithRepetitionMatch[$segmentHash])) {
+                if (!empty($processedSegmentsWithRepetitionMatch[$segmentHash])) {
+                    $v['match_type'] = 'REPETITIONS';
+                }
+                $processedSegmentsWithRepetitionMatch[$segmentHash] = true;
+            }
 
             list( $eq_word, $standard_words, $match_type ) = $this->_getWordCountForSegment( $v, $equivalentWordMapping );
 
@@ -614,9 +625,12 @@ class FastAnalysis extends AbstractDaemon {
     }
 
     protected function _getWordCountForSegment( $segmentArray, $equivalentWordMapping ) {
-        if (!isset($segmentArray[ 'match_type' ]) || !isset($segmentArray[ 'wc' ])) {
-            $segmentArray[ 'match_type' ] = "NO_MATCH";
-            $segmentArray[ 'wc' ] = $segmentArray['raw_word_count'];
+        if (empty($segmentArray['match_type'])) {
+            $segmentArray['match_type'] = 'NO_MATCH';
+        }
+
+        if (empty($segmentArray['wc'])) {
+            $segmentArray['wc'] = $segmentArray['raw_word_count'];
         }
 
         switch ( $segmentArray[ 'match_type' ] ) {
@@ -699,6 +713,37 @@ HD;
         }, $results );
 
         return $results;
+    }
+
+
+    protected static function _getSegmentsHashesWithRepetition($pid) {
+        $query = <<<HD
+            SELECT s.segment_hash as s_hash, COUNT(*) AS repetitions_count
+            FROM segments AS s
+                     INNER JOIN files_job AS fj ON fj.id_file = s.id_file
+                     INNER JOIN jobs as j ON fj.id_job = j.id
+            WHERE j.id_project = ?
+              AND show_in_cattool != 0
+            GROUP BY s_hash HAVING repetitions_count > 1;
+HD;
+
+        $db = Database::obtain();
+        try {
+            $stmt = $db->getConnection()->prepare( $query );
+            $stmt->setFetchMode( PDO::FETCH_ASSOC );
+            $stmt->execute( [ $pid ] );
+            $results = $stmt->fetchAll();
+        } catch ( PDOException $e ) {
+            Log::doJsonLog( $e->getMessage() );
+            throw $e;
+        }
+
+        $indexByHash = [];
+        foreach ($results as $item) {
+            $indexByHash[$item['s_hash']] = $item['repetitions_count'];
+        }
+
+        return $indexByHash;
     }
 
     /**
