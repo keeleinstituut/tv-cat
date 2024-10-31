@@ -12,10 +12,10 @@ class xliffToTargetController extends downloadController {
         $file_path       = $_FILES['xliff']['tmp_name'] . '.xlf';
         move_uploaded_file($_FILES['xliff']['tmp_name'], $file_path);
 
-        $conversion = Filters::xliffToTarget(array(
-          array(
-            'document_content' => file_get_contents($file_path))
-        ));
+        $conversion = Filters::xliffToTarget(
+            [['document_content' => file_get_contents($file_path)]],
+            [$_FILES['xliff']['tmp_name']]
+    );
         $conversion = $conversion[0];
 
         if ($conversion['isSuccess'] === true) {

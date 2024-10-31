@@ -3,6 +3,8 @@
 // TODO: files should remain on disk, and not copied and transformed in memory several times
 use FilesStorage\AbstractFilesStorage;
 use FilesStorage\FilesStorageFactory;
+use Filters\XmlFileInlineTagHtmlEncoder;
+use Filters\XmlInlineTagHtmlDecoder;
 
 class Filters {
 
@@ -134,8 +136,18 @@ class Filters {
         $extension = AbstractFilesStorage::pathinfo_fix( $filePath, PATHINFO_EXTENSION );
         $filename  = "$basename.$extension";
 
+        $processingFilePath = $filePath;
+        if ($extension === 'xml') {
+            try {
+                $encoder = new XmlFileInlineTagHtmlEncoder($filePath);
+                $processingFilePath = $encoder->getEncodedFilePath();
+            } catch (RuntimeException $e) {
+                Log::doJsonLog($e->getMessage());
+            }
+        }
+
         $data = [
-                'documentContent' => Utils::curlFile( $filePath ),
+                'documentContent' => Utils::curlFile( $processingFilePath ),
                 'sourceLocale'    => Langs_Languages::getInstance()->getLangRegionCode( $sourceLang ),
                 'targetLocale'    => Langs_Languages::getInstance()->getLangRegionCode( $targetLang ),
                 'segmentation'    => $segmentation,
@@ -152,10 +164,14 @@ class Filters {
 
         $filtersResponse = self::sendToFilters( [ $data ], self::SOURCE_TO_XLIFF_ENDPOINT );
 
+        if ($processingFilePath !== $filePath) {
+            unlink($processingFilePath);
+        }
+
         return $filtersResponse[ 0 ];
     }
 
-    public static function xliffToTarget( $xliffsData ) {
+    public static function xliffToTarget( $xliffsData, $fileNames = null ) {
         $dataGroups = [];
         $tmpFiles   = [];
 
@@ -179,7 +195,24 @@ class Filters {
             unlink( $tmpFile );
         }
 
+        if (!empty($fileNames)) {
+            foreach ($fileNames as $fileID => $fileName) {
+                if (self::isXML($fileName) && !empty($responses[$fileID]['document_content'])) {
+                    XmlInlineTagHtmlDecoder::decode($responses[$fileID]['document_content']);
+                }
+            }
+        }
+
         return $responses;
+    }
+
+    private static function isXML($filename): bool
+    {
+        if (empty($filename)) {
+            return false;
+        }
+
+        return AbstractFilesStorage::pathinfo_fix($filename, PATHINFO_EXTENSION ) === 'xml';
     }
 
     /**
