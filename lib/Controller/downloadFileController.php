@@ -134,6 +134,7 @@ class downloadFileController extends downloadController {
         foreach ( $files_job as $chunk ) {
 
             $files_to_be_converted = [];
+            $files_names = [];
 
             foreach ( $chunk as $file ) {
 
@@ -272,12 +273,12 @@ class downloadFileController extends downloadController {
                     $output_content[ $fileID ][ 'target' ]         = $jobData[ 'target' ];
 
                     $files_to_be_converted [ $fileID ] = $output_content[ $fileID ];
-
+                    $files_names[$fileID] = $output_content[ $fileID ] ['output_filename'];
                 }
 
             }
 
-            $convertResult = Filters::xliffToTarget( $files_to_be_converted );
+            $convertResult = Filters::xliffToTarget( $files_to_be_converted, $files_names );
 
             // check for errors and log them on fatal_errors.txt
             foreach ( $convertResult as $id => $result ){
