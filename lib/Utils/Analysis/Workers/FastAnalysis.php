@@ -400,15 +400,48 @@ class FastAnalysis extends AbstractDaemon {
         $tuple_list             = [];
         $bind_values            = [];
         $totalSegmentsToAnalyze = 0;
+        $segmentsWithRepetitionMatch = self::_getSegmentsHashesWithRepetition($pid);
+        $wordCountIndex = $this->_setupWordCountIndex();
+        $processedSegmentsWithRepetitionMatch = [];
         foreach ( $this->segments as $k => $v ) {
-
             $jid_pass = explode( "-", $v[ 'jsid' ] );
 
             // only to remember the meaning of $k
             // EX: 21529088-42593:b433193493c6,42594:b4331aacf3d4
             //$id_segment = $jid_fid[ 0 ];
-
             $list_id_jobs_password = $jid_pass[ 1 ];
+
+
+            // MyMemory FastAnalysis provided repetitions, but as we don't use it anymore,
+            // we have to calculate them ourselves
+            $segmentHash = $v['segment_hash'];
+            if (empty($v['match_type']) && !empty($segmentsWithRepetitionMatch[$segmentHash])) {
+                if (!empty($processedSegmentsWithRepetitionMatch[$segmentHash])) {
+                    $v['match_type'] = 'REPETITIONS';
+                }
+                $processedSegmentsWithRepetitionMatch[$segmentHash] = true;
+            }
+
+            // MyMemory FastAnalysis provided internal matches, but as we don't use it anymore,
+            // we have to calculate them ourselves
+            if (empty($v['match_type']) || $v['match_type'] === 'NO_MATCH') {
+                $hasInternalMatch = false;
+                $segmentsIndexes = $this->_getSegmentsWithPotentialInternalMatch($wordCountIndex,  $v['raw_word_count']);
+                foreach ($segmentsIndexes as $segmentIndex) {
+                    if ($v['segment_hash'] === $this->segments[$segmentIndex]['segment_hash']) {
+                        continue;
+                    }
+
+                    if ($this->_isInternalMatch($v['segment'], $this->segments[$segmentIndex]['segment'])) {
+                        $hasInternalMatch = true;
+                        $this->segments[$segmentIndex]['match_type'] = 'INTERNAL';
+                    }
+                }
+
+                if ($hasInternalMatch) {
+                    $v['match_type'] = 'INTERNAL';
+                }
+            }
 
             list( $eq_word, $standard_words, $match_type ) = $this->_getWordCountForSegment( $v, $equivalentWordMapping );
 
@@ -614,9 +647,12 @@ class FastAnalysis extends AbstractDaemon {
     }
 
     protected function _getWordCountForSegment( $segmentArray, $equivalentWordMapping ) {
-        if (!isset($segmentArray[ 'match_type' ]) || !isset($segmentArray[ 'wc' ])) {
-            $segmentArray[ 'match_type' ] = "NO_MATCH";
-            $segmentArray[ 'wc' ] = $segmentArray['raw_word_count'];
+        if (empty($segmentArray['match_type'])) {
+            $segmentArray['match_type'] = 'NO_MATCH';
+        }
+
+        if (empty($segmentArray['wc'])) {
+            $segmentArray['wc'] = $segmentArray['raw_word_count'];
         }
 
         switch ( $segmentArray[ 'match_type' ] ) {
@@ -699,6 +735,37 @@ HD;
         }, $results );
 
         return $results;
+    }
+
+
+    protected static function _getSegmentsHashesWithRepetition($pid) {
+        $query = <<<HD
+            SELECT s.segment_hash as s_hash, COUNT(*) AS repetitions_count
+            FROM segments AS s
+                     INNER JOIN files_job AS fj ON fj.id_file = s.id_file
+                     INNER JOIN jobs as j ON fj.id_job = j.id
+            WHERE j.id_project = ?
+              AND show_in_cattool != 0
+            GROUP BY s_hash HAVING repetitions_count > 1;
+HD;
+
+        $db = Database::obtain();
+        try {
+            $stmt = $db->getConnection()->prepare( $query );
+            $stmt->setFetchMode( PDO::FETCH_ASSOC );
+            $stmt->execute( [ $pid ] );
+            $results = $stmt->fetchAll();
+        } catch ( PDOException $e ) {
+            Log::doJsonLog( $e->getMessage() );
+            throw $e;
+        }
+
+        $indexByHash = [];
+        foreach ($results as $item) {
+            $indexByHash[$item['s_hash']] = $item['repetitions_count'];
+        }
+
+        return $indexByHash;
     }
 
     /**
@@ -812,4 +879,50 @@ HD;
 
     }
 
+    private function _setupWordCountIndex()
+    {
+        $wcIndex = [];
+        foreach ($this->segments as $idx => $segment) {
+            $wcIndex[$segment['raw_word_count']][] = $idx;
+        }
+
+        return $wcIndex;
+    }
+
+    private function _getSegmentsWithPotentialInternalMatch($wcIndex, $segmentRawWordCount)
+    {
+        $segmentsToCheck = [];
+        for ($wordCount = ceil($segmentRawWordCount * 0.75); $wordCount <= ceil($segmentRawWordCount * 1.25); $wordCount++) {
+            if (!isset($wcIndex[$wordCount])) {
+                continue;
+            }
+
+            array_push($segmentsToCheck, ...$wcIndex[$wordCount]);
+        }
+
+        return $segmentsToCheck;
+    }
+
+    private function _isInternalMatch($segment1, $segment2)
+    {
+        if ($segment1 === $segment2) {
+            return true;
+        }
+
+        $levDistance = levenshtein($segment1, $segment2);
+        if ($levDistance === -1) {
+            return false;
+        }
+
+        $maxLen = max(mb_strlen($segment1), mb_strlen($segment2));
+        if ($maxLen === 0) {
+            return false;
+        }
+
+        $similarity = (1 - $levDistance / $maxLen) * 100;
+
+        //similar_text($segment1, $segment2, $similarity);
+
+        return $similarity > 85; // Medium Fuzzy Match (85%-94%) + High Fuzzy Match (95%-99%)
+    }
 }

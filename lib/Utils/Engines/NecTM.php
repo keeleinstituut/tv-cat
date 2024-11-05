@@ -10,6 +10,10 @@ use Engines\NecTM\Auth\ServiceAccountJwtRetrieverInterface;
 class Engines_NecTM extends Engines_AbstractEngine
 {
     const LIMIT_FOR_MULTIPLE_TAGS = 1000;
+    const MIN_MATCH_PERCENT = 20;
+
+    const PRIVATE_TAG_TYPE = 'private';
+
     /**
      * @var string
      */
@@ -99,6 +103,7 @@ class Engines_NecTM extends Engines_AbstractEngine
                 })
             );
 
+            $tagTypesMap = [];
             $tagNamesMap = [];
             foreach ($responseTags as $responseTag) {
                 if (!in_array($responseTag['id'], $tags)) {
@@ -110,16 +115,20 @@ class Engines_NecTM extends Engines_AbstractEngine
                 }
 
                 $tagNamesMap[$responseTag['id']] = $responseTag['name'];
+                $tagTypesMap[$responseTag['id']] = $responseTag['type'];
             }
 
-            $results['matches'] = array_map(function ($data) use ($tagNamesMap) {
+            $results['matches'] = array_map(function ($data) use ($tagNamesMap, $tagTypesMap) {
                 $tagNames = [];
+                $privateTags = [];
                 foreach ($data['tag'] as $matchTag) {
-                    if (!isset($tagNamesMap[$matchTag])) {
-                        continue;
+                    if (isset($tagTypesMap[$matchTag]) && $tagTypesMap[$matchTag] === self::PRIVATE_TAG_TYPE) {
+                        $privateTags[] = $matchTag;
                     }
 
-                    $tagNames[] = $tagNamesMap[$matchTag];
+                    if (isset($tagNamesMap[$matchTag])) {
+                        $tagNames[] = $tagNamesMap[$matchTag];
+                    }
                 }
 
                 if ($ice = intval($data['match']) > 100) {
@@ -133,7 +142,8 @@ class Engines_NecTM extends Engines_AbstractEngine
                     'created-by' => implode(', ', $tagNames),
                     'segment' => $data['tu']['source_text'],
                     'translation' => $data['tu']['target_text'],
-                    'ICE' => $ice
+                    'ICE' => $ice,
+                    'key' => implode(',', $privateTags)
                 ];
             }, $matches);
 
@@ -161,6 +171,7 @@ class Engines_NecTM extends Engines_AbstractEngine
             'limit' => $_config['num_result'],
             'aut_trans' => false,
             'concordance' => boolval($_config['isConcordance'] ?? false),
+            'min_match' => self::MIN_MATCH_PERCENT,
         ];
 
         if (!empty($_config['context_after']) || !empty($_config['context_before'])) {
@@ -198,7 +209,7 @@ class Engines_NecTM extends Engines_AbstractEngine
             'stext' => preg_replace("/^(-?@-?)/", "", $_config['segment']),
             'ttext' => preg_replace("/^(-?@-?)/", "", $_config['newtranslation']),
             'slang' => $this->_fixLangCode($_config['source']),
-            'tlang' => $this->_fixLangCode($_config['target'])
+            'tlang' => $this->_fixLangCode($_config['target']),
         ];
 
         if (!empty($tags = $this->getTags($_config))) {
