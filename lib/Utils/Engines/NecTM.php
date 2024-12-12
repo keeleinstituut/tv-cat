@@ -9,7 +9,6 @@ use Engines\NecTM\Auth\ServiceAccountJwtRetrieverInterface;
 
 class Engines_NecTM extends Engines_AbstractEngine
 {
-    const LIMIT_FOR_MULTIPLE_TAGS = 30;
     const MIN_MATCH_PERCENT = 20;
 
     const PRIVATE_TAG_TYPE = 'private';
@@ -64,39 +63,17 @@ class Engines_NecTM extends Engines_AbstractEngine
             $decoded = $rawValue;
         }
 
+
         $results = [];
         if (!empty($decoded['results'])) {
-            if (!empty($parameters['requestedTags'])) {
-                $requestedTagsMap = array_combine(
-                    $parameters['requestedTags'],
-                    $parameters['requestedTags']
-                );
+            $matches = array_values(
+                array_filter($decoded['results'], function ($result) {
+                    return !empty(trim($result['tu']['target_text'] ?? '')) &&
+                        !empty(trim($result['tu']['source_text'] ?? ''));
+                })
+            );
 
-                $matches = array_values(
-                    array_filter($decoded['results'], function ($result) use ($requestedTagsMap) {
-                        if (empty(trim($result['tu']['target_text'] ?? '')) || empty(trim($result['tu']['source_text'] ?? ''))) {
-                            return false;
-                        }
-
-                        foreach ($result['tag'] ?? [] as $tag) {
-                            if (isset($requestedTagsMap[$tag])) {
-                                return true;
-                            }
-                        }
-
-                        return false;
-                    })
-                );
-            } else {
-                $matches = array_values(
-                    array_filter($decoded['results'], function ($result) {
-                        return !empty(trim($result['tu']['target_text'] ?? '')) &&
-                            !empty(trim($result['tu']['source_text'] ?? ''));
-                    })
-                );
-            }
-
-            $tags = $parameters['requestedTags'] ?? [$parameters['tag']];
+            $tags = $parameters['tag'];
             $responseTags = array_values(
                 array_filter($decoded['tags'], function ($tag) use ($tags) {
                     return in_array($tag['id'], $tags);
@@ -179,12 +156,7 @@ class Engines_NecTM extends Engines_AbstractEngine
         $tags = $this->getTags($_config);
 
         if (!empty($tags)) {
-            if (count($tags) === 1) {
-                $parameters['tag'] = $tags[0];
-            } else {
-                $parameters['limit'] = self::LIMIT_FOR_MULTIPLE_TAGS;
-                $parameters['requestedTags'] = $tags;
-            }
+            $parameters['tag'] = $tags;
         }
 
         $jwt = $this->getServiceAccountJwtRetriever()->getJwt();
@@ -194,7 +166,9 @@ class Engines_NecTM extends Engines_AbstractEngine
             ]
         ]);
 
-        $this->call('translate_relative_url', $parameters);
+        $this->call('translate_relative_url', $parameters, false, false, function ($parameters) {
+            return preg_replace('/(%5B)([0-9]+)(%5D=)/', '=', http_build_query($parameters));
+        });
 
         return $this->result;
     }
