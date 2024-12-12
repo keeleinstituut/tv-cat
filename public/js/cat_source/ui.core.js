@@ -463,8 +463,7 @@ window.UI = {
       !alreadySet &&
       !emptyTranslation &&
       segment.modified &&
-      (segment.status === config.status_labels.NEW.toUpperCase() ||
-        segment.status === config.status_labels.DRAFT.toUpperCase())
+      (segment.status === 'NEW' || segment.status === 'DRAFT')
     )
   },
 
