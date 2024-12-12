@@ -9,7 +9,7 @@ use Engines\NecTM\Auth\ServiceAccountJwtRetrieverInterface;
 
 class Engines_NecTM extends Engines_AbstractEngine
 {
-    const LIMIT_FOR_MULTIPLE_TAGS = 1000;
+    const LIMIT_FOR_MULTIPLE_TAGS = 30;
     const MIN_MATCH_PERCENT = 20;
 
     const PRIVATE_TAG_TYPE = 'private';
@@ -160,7 +160,7 @@ class Engines_NecTM extends Engines_AbstractEngine
     public function get($_config)
     {
         $_config['segment'] = $this->_preserveSpecialStrings($_config['segment']);
-        if (preg_match("/^(-?@-?)/", $_config['segment'], $segment_file_chr)) {
+        if (preg_match("/^(-?@-?)/", $_config['segment'])) {
             $_config['segment'] = preg_replace("/^(-?@-?)/", "", $_config['segment']);
         }
 
@@ -174,11 +174,7 @@ class Engines_NecTM extends Engines_AbstractEngine
             'min_match' => self::MIN_MATCH_PERCENT,
         ];
 
-        if (!empty($_config['context_after']) || !empty($_config['context_before'])) {
-            $sourceMetaData['context_after'] = preg_replace("/^(-?@-?)/", "", @$_config['context_after']);
-            $sourceMetaData['context_before'] = preg_replace("/^(-?@-?)/", "", @$_config['context_before']);
-            $parameters['smeta'] = json_encode($sourceMetaData);
-        }
+        $this->setSourceMetadata($_config, $parameters);
 
         $tags = $this->getTags($_config);
 
@@ -218,11 +214,7 @@ class Engines_NecTM extends Engines_AbstractEngine
             return [];
         }
 
-        if (!empty($_config['context_after']) || !empty($_config['context_before'])) {
-            $sourceMetaData['context_after'] = preg_replace("/^(-?@-?)/", "", @$_config['context_after']);
-            $sourceMetaData['context_before'] = preg_replace("/^(-?@-?)/", "", @$_config['context_before']);
-            $parameters['smeta'] = json_encode($sourceMetaData);
-        }
+        $this->setSourceMetadata($_config, $parameters);
 
         $jwt = $this->getServiceAccountJwtRetriever()->getJwt();
         $this->_setAdditionalCurlParams([
@@ -248,6 +240,15 @@ class Engines_NecTM extends Engines_AbstractEngine
     {
         $l = explode("-", strtolower(trim($lang)));
         return $l[0];
+    }
+
+    private function setSourceMetadata($segment, &$parameters): void
+    {
+        if (!empty($segment['context_after']) || !empty($segment['context_before'])) {
+            $sourceMetaData['context_after'] = preg_replace("/^(-?@-?)/", "", @$segment['context_after']) ?: null;
+            $sourceMetaData['context_before'] = preg_replace("/^(-?@-?)/", "", @$segment['context_before']) ?: null;
+            $parameters['smeta'] = json_encode($sourceMetaData);
+        }
     }
 
     /**
