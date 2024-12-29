@@ -22,6 +22,7 @@ use TaskRunner\Commons\Context;
 class AMQHandler {
 
     const AMQ_JMX_CALL_MAX_RETRY = 20;
+    const STOMP_SEND_MAX_RETRY = 20;
 
     /**
      * @var PredisClient
@@ -163,16 +164,31 @@ class AMQHandler {
     }
 
     /**
-     * @param string  $destination
+     * @param string $destination
      * @param Message $message
      *
      * @return bool
+     * @throws ConnectionException
      */
     private function _send( $destination, Message $message ) {
-        $r = $this->statefulStomp->send( $destination, $message );
-        $this->statefulStomp->getClient()->disconnect( true );
+        $sent = false;
+        $attempt = 0;
+        do {
+            try {
+                $attempt++;
+                $r = $this->statefulStomp->send($destination, $message);
+                $sent = true;
+            } catch (ConnectionException $e) {
+                if ($attempt >= self::STOMP_SEND_MAX_RETRY) {
+                    throw $e;
+                }
+                usleep(250000); // 250 milliseconds
+            } finally {
+                $this->statefulStomp->getClient()->disconnect(true);
+            }
+        } while (!$sent && $attempt < self::STOMP_SEND_MAX_RETRY);
 
-        return $r;
+        return $r ?? false;
     }
 
     /**
