@@ -118,13 +118,19 @@ class getContributionController extends ajaxController {
             $this->_getContexts( $jobStruct->source, $jobStruct->target );
         }
 
+        $filter = MateCatFilter::getInstance( $this->featureSet, $jobStruct->source, $jobStruct->target, $dataRefMap);
+
+        $segmentLayer0 = $filter->fromLayer1ToLayer0($this->text);
+        $contextBeforeLayer0 = $filter->fromLayer1ToLayer0($this->context_before);
+        $contextAfterLayer0 = $filter->fromLayer1ToLayer0($this->context_after);
+
         $contributionRequest                    = new ContributionRequestStruct();
         $contributionRequest->user              = $this->user;
         $contributionRequest->dataRefMap        = $dataRefMap;
         $contributionRequest->contexts          = [
-                'context_before' => $this->context_before,
-                'segment'        => $this->text,
-                'context_after'  => $this->context_after
+                'context_before' => $contextBeforeLayer0,
+                'segment'        => $segmentLayer0,
+                'context_after'  => $contextAfterLayer0,
         ];
         $contributionRequest->jobStruct         = $jobStruct;
         $contributionRequest->projectStruct     = $projectStruct;

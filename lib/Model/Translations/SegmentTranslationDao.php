@@ -963,4 +963,31 @@ class Translations_SegmentTranslationDao extends DataAccess_AbstractDao {
 
         return $affected_rows;
     }
+
+    public static function getPropagatedTranslationsBySegmentId($segment_id) {
+        $query = "
+            SELECT s.id,
+                t.autopropagated_from,
+                sb.segment AS context_before,
+                s.segment  AS segment,
+                sa.segment AS context_after,
+                t.translation as translation
+            FROM   segment_translations t
+                JOIN segments s
+                    ON t.id_segment = s.id
+                JOIN segments sa
+                    ON sa.id = s.id + 1
+                JOIN segments sb
+                    ON sb.id = s.id - 1
+            WHERE  t.autopropagated_from = ?;
+        ";
+
+        $db   = Database::obtain();
+        $stmt = $db->getConnection()->prepare( $query );
+        $stmt->setFetchMode( PDO::FETCH_ASSOC );
+        $stmt->execute([$segment_id]);
+        $results = $stmt->fetchAll();
+
+        return $results;
+    }
 }

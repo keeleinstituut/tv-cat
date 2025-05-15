@@ -450,12 +450,13 @@ class setTranslationController extends ajaxController {
                 'segments_for_propagation' => []
         ];
 
-        if ( $this->propagate && in_array( $this->status, [
-                        Constants_TranslationStatus::STATUS_TRANSLATED,
-                        Constants_TranslationStatus::STATUS_APPROVED,
-                        Constants_TranslationStatus::STATUS_REJECTED
-                ] )
-        ) {
+        $shouldDoPropagation =  $this->propagate && in_array( $this->status, [
+                Constants_TranslationStatus::STATUS_TRANSLATED,
+                Constants_TranslationStatus::STATUS_APPROVED,
+                Constants_TranslationStatus::STATUS_REJECTED
+        ] );
+
+        if ($shouldDoPropagation) {
             //propagate translations
             $TPropagation                             = new Translations_SegmentTranslationStruct();
             $TPropagation[ 'status' ]                 = $this->status;
@@ -700,7 +701,15 @@ class setTranslationController extends ajaxController {
         $this->result[ 'propagation' ] = $propagationTotal;
         $this->result[ 'stats' ]       = $this->featureSet->filter( 'filterStatsResponse', $this->result[ 'stats' ], [ 'chunk' => $this->chunk, 'segmentId' => $this->id_segment ] );
 
-        $this->evalSetContribution( $new_translation, $old_translation );
+        $this->evalSetContribution( $new_translation, $old_translation, $this->filter->fromLayer1ToLayer0($this->context_before), $this->filter->fromLayer1ToLayer0($this->context_after) );
+
+        if ($shouldDoPropagation) {
+            $propagatedSegments = Translations_SegmentTranslationDao::getPropagatedTranslationsBySegmentId($this->id_segment);
+
+            foreach ( $propagatedSegments as $key => $value ) {
+                $this->evalSetContribution( $new_translation, $old_translation, $value['context_before'], $value['context_after']);
+            }
+        }
     }
 
     /**
@@ -934,7 +943,7 @@ class setTranslationController extends ajaxController {
      * @throws \API\V2\Exceptions\AuthenticationError
      * @throws \Exceptions\ValidationError
      */
-    private function evalSetContribution( $_Translation, $old_translation ) {
+    private function evalSetContribution( $_Translation, $old_translation, $context_before, $context_after ) {
         if ( in_array( $this->status, [
                 Constants_TranslationStatus::STATUS_DRAFT,
                 Constants_TranslationStatus::STATUS_NEW
@@ -951,6 +960,7 @@ class setTranslationController extends ajaxController {
             return;
         }
 
+
         /**
          * Set the new contribution in queue
          */
@@ -959,13 +969,13 @@ class setTranslationController extends ajaxController {
         $contributionStruct->id_job               = $this->id_job;
         $contributionStruct->job_password         = $this->password;
         $contributionStruct->id_segment           = $this->id_segment;
-        $contributionStruct->segment              = $this->filter->fromLayer0ToLayer1( $this->segment[ 'segment' ] );
-        $contributionStruct->translation          = $this->filter->fromLayer0ToLayer1( $_Translation[ 'translation' ] );
+        $contributionStruct->segment              = $this->segment[ 'segment' ];
+        $contributionStruct->translation          = $_Translation[ 'translation'];
         $contributionStruct->api_key              = \INIT::$MYMEMORY_API_KEY;
         $contributionStruct->uid                  = $this->user->uid;
         $contributionStruct->oldTranslationStatus = $old_translation[ 'status' ];
-        $contributionStruct->oldSegment           = $this->filter->fromLayer0ToLayer1( $this->segment[ 'segment' ] ); //
-        $contributionStruct->oldTranslation       = $this->filter->fromLayer0ToLayer1( $old_translation[ 'translation' ] );
+        $contributionStruct->oldSegment           = $this->segment[ 'segment' ]; //
+        $contributionStruct->oldTranslation       = $old_translation[ 'translation' ];
 
         /*
          * This parameter is not used by the application, but we use it to for information integrity
@@ -985,8 +995,8 @@ class setTranslationController extends ajaxController {
         $contributionStruct->propagationRequest = $this->propagate;
         $contributionStruct->id_mt              = $this->chunk->id_mt_engine;
 
-        $contributionStruct->context_after  = $this->context_after;
-        $contributionStruct->context_before = $this->context_before;
+        $contributionStruct->context_after  = $context_after;
+        $contributionStruct->context_before = $context_before;
 
         $this->featureSet->filter(
                 'filterContributionStructOnSetTranslation',
