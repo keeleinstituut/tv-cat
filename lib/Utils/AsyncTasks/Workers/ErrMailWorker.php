@@ -140,7 +140,8 @@ class ErrMailWorker extends AbstractWorker {
         if(!$mail->send()) {
             $this->_doLog( "--- (Worker " . $this->_workerPid . ") : Mailer Error: " . $mail->ErrorInfo );
             $this->_doLog( "--- (Worker " . $this->_workerPid . ") : Message could not be sent: \n\n" . $mail->AltBody );
-            throw new ReQueueException( 'Mailer Error: ' . $mail->ErrorInfo );
+            // throw new ReQueueException( 'Mailer Error: ' . $mail->ErrorInfo );
+            return true;
         }
 
         $this->_doLog( "--- (Worker " . $this->_workerPid . ") : Message has been sent." );

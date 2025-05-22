@@ -176,7 +176,7 @@ class Engines_NecTM extends Engines_AbstractEngine
     public function update($_config)
     {
         $parameters = [
-            'stext' => preg_replace("/^(-?@-?)/", "", $_config['segment']),
+            'stext' => preg_replace("/^(-?@-?)/", "", $this->_preserveSpecialStrings($_config['segment'])),
             'ttext' => preg_replace("/^(-?@-?)/", "", $_config['newtranslation']),
             'slang' => $this->_fixLangCode($_config['source']),
             'tlang' => $this->_fixLangCode($_config['target']),
