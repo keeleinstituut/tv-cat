@@ -67,6 +67,11 @@ class TMAnalysisWorker extends AbstractWorker {
     protected $featureSet;
 
     /**
+     * @var MateCatFilter
+     */
+    protected $filter;
+
+    /**
      * Concrete Method to start the activity of the worker
      *
      * @param AbstractElement $queueElement
@@ -89,6 +94,10 @@ class TMAnalysisWorker extends AbstractWorker {
 
         //reset matches vector
         $this->_matches = null;
+
+        // Initialize layer filter
+        $featureSet = ( $this->featureSet !== null ) ? $this->featureSet : new \FeatureSet();
+        $this->filter = MateCatFilter::getInstance( $featureSet, $queueElement->params->source, $queueElement->params->target, [] );
 
         /**
          * @var $queueElement QueueElement
@@ -154,8 +163,6 @@ class TMAnalysisWorker extends AbstractWorker {
      */
     protected function _updateRecord( QueueElement $queueElement ) {
 
-        $featureSet = ( $this->featureSet !== null ) ? $this->featureSet : new \FeatureSet();
-        $filter     = MateCatFilter::getInstance( $featureSet, $queueElement->params->source, $queueElement->params->target, [] );
         $suggestion = $this->_matches[ 0 ][ 'raw_translation' ]; //No layering needed
 
         $suggestion_match  = $this->_matches[ 0 ][ 'match' ];
@@ -219,7 +226,7 @@ class TMAnalysisWorker extends AbstractWorker {
         $suggestion = $check->getTargetSeg();
         $err_json2  = ( $check->thereAreErrors() ) ? $check->getErrorsJSON() : '';
 
-        $suggestion = $filter->fromLayer1ToLayer0( $suggestion );
+        $suggestion = $this->filter->fromLayer1ToLayer0( $suggestion );
 
         $segment = ( new \Segments_SegmentDao() )->getById( $queueElement->params->id_segment );
 
@@ -470,13 +477,13 @@ class TMAnalysisWorker extends AbstractWorker {
     protected function _getMatches( QueueElement $queueElement ) {
 
         $_config              = [];
-        $_config[ 'segment' ] = $queueElement->params->segment;
+        $_config[ 'segment' ] = $this->filter->fromLayer1ToLayer0($queueElement->params->segment);
         $_config[ 'source' ]  = $queueElement->params->source;
         $_config[ 'target' ]  = $queueElement->params->target;
         $_config[ 'email' ]   = \INIT::$MYMEMORY_TM_API_KEY;
 
-        $_config[ 'context_before' ]    = $queueElement->params->context_before;
-        $_config[ 'context_after' ]     = $queueElement->params->context_after;
+        $_config[ 'context_before' ] = $this->filter->fromLayer1ToLayer0($queueElement->params->context_before);
+        $_config[ 'context_after' ] = $this->filter->fromLayer1ToLayer0($queueElement->params->context_after);
         $_config[ 'additional_params' ] = @$queueElement->params->additional_params;
 
         $tm_keys = \TmKeyManagement_TmKeyManagement::getJobTmKeys( $queueElement->params->tm_keys, 'r', 'tm' );

@@ -963,4 +963,44 @@ class Translations_SegmentTranslationDao extends DataAccess_AbstractDao {
 
         return $affected_rows;
     }
+
+    // Returns segments with after and before contexts that have been
+    // autopropagated from segment with $segment_id
+    public static function getPropagatedTranslationsBySegmentId($segment_id) {
+        $segment = ( new \Segments_SegmentDao() )->getById($segment_id);
+
+        $query = "
+            WITH seg_map
+                AS (SELECT row_number()
+                            OVER (
+                                ORDER BY id) AS rownum,
+                            segment,
+                            id
+                    FROM   segments
+                    WHERE  id_file = ?
+                            AND show_in_cattool = 1)
+            SELECT s.id,
+                t.autopropagated_from,
+                sb.segment    AS context_before,
+                s.segment     AS segment,
+                sa.segment    AS context_after,
+                t.translation AS translation
+            FROM   segment_translations t
+                JOIN seg_map s
+                    ON t.id_segment = s.id
+                LEFT JOIN seg_map sa
+                        ON sa.rownum = s.rownum + 1
+                LEFT JOIN seg_map sb
+                        ON sb.rownum = s.rownum - 1
+            WHERE  t.autopropagated_from = ?; 
+        ";
+
+        $db   = Database::obtain();
+        $stmt = $db->getConnection()->prepare( $query );
+        $stmt->setFetchMode( PDO::FETCH_ASSOC );
+        $stmt->execute([$segment->id_file, $segment->id]);
+        $results = $stmt->fetchAll();
+
+        return $results;
+    }
 }
