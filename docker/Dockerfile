@@ -22,7 +22,7 @@ RUN grunt deploy
 #########
 #########
 #########
-FROM php:7.4.26-apache-buster as runtime
+FROM php:7.4.33-apache-bullseye as runtime
 
 ENV APP_ROOT /var/www/html
 
