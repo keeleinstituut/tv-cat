@@ -38,7 +38,7 @@ export const DownloadMenu = ({password, jid, isGDriveProject}) => {
             : 'false'
         }
       >
-        {downloadTranslationAvailable ? (
+        {/* {downloadTranslationAvailable ? (
           <li className="item downloadTranslation" data-value="translation">
             <a title="Tõlge" alt="Tõlge" href="#">
               {isGDriveProject
@@ -52,7 +52,7 @@ export const DownloadMenu = ({password, jid, isGDriveProject}) => {
               {isGDriveProject ? 'Preview in Google Drive' : 'Mustand'}
             </a>
           </li>
-        )}
+        )} */}
         {!isGDriveProject && (
           <li className="item" data-value="original">
             <a
