@@ -172,6 +172,19 @@ class Log {
         }
     }
 
+    public static function doSimpleLog( $content, $filename = null ) {
+        if ( !is_null( $filename ) ) {
+            $old_name      = Log::$fileName;
+            Log::$fileName = $filename;
+        }
+
+        self::_writeTo($content);
+
+        if ( !is_null( $filename ) ) {
+            Log::$fileName = $old_name;
+        }
+    }
+
     public static function getLogger() {
         if ( !self::$useMonolog ) {
             throw new Exception( 'Logger is not set. Is monolog available?' );

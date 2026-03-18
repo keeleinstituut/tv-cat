@@ -63,7 +63,6 @@ class Engines_NecTM extends Engines_AbstractEngine
             $decoded = $rawValue;
         }
 
-
         $results = [];
         if (!empty($decoded['results'])) {
             $matches = array_values(
@@ -76,20 +75,21 @@ class Engines_NecTM extends Engines_AbstractEngine
             $tags = $parameters['tag'];
             $responseTags = array_values(
                 array_filter($decoded['tags'], function ($tag) use ($tags) {
-                    return in_array($tag['id'], $tags);
+                    return true;
+                    // return in_array($tag['id'], $tags);
                 })
             );
 
             $tagTypesMap = [];
             $tagNamesMap = [];
             foreach ($responseTags as $responseTag) {
-                if (!in_array($responseTag['id'], $tags)) {
-                    continue;
-                }
+                // if (!in_array($responseTag['id'], $tags)) {
+                //     continue;
+                // }
 
-                if (empty($responseTag['name'])) {
-                    continue;
-                }
+                // if (empty($responseTag['name'])) {
+                //     continue;
+                // }
 
                 $tagNamesMap[$responseTag['id']] = $responseTag['name'];
                 $tagTypesMap[$responseTag['id']] = $responseTag['type'];
@@ -166,9 +166,7 @@ class Engines_NecTM extends Engines_AbstractEngine
             ]
         ]);
 
-        $this->call('translate_relative_url', $parameters, false, false, function ($parameters) {
-            return preg_replace('/(%5B)([0-9]+)(%5D=)/', '=', http_build_query($parameters));
-        });
+        $this->call('translate_relative_url', $parameters, false, false);
 
         return $this->result;
     }
