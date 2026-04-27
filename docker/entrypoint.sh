@@ -82,6 +82,8 @@ chmod 400 $APP_ROOT/inc/oauth-token-key.txt
 chmod 400 $APP_ROOT/inc/login_secret.dat
 chmod 400 $APP_ROOT/nodejs/config.ini
 
+mkdir -p $MATECAT_STORAGE_DIR/log_archive
+
 ln -sf /proc/1/fd/1 $MATECAT_STORAGE_DIR/log_archive/API.log
 ln -sf /proc/1/fd/1 $MATECAT_STORAGE_DIR/log_archive/TaskManager.log
 ln -sf /proc/1/fd/1 $MATECAT_STORAGE_DIR/log_archive/activity_log.log
