@@ -145,7 +145,7 @@ class Engines_NecTM extends Engines_AbstractEngine
             'q' => $_config['segment'],
             'slang' => $this->_fixLangCode($_config['source']),
             'tlang' => $this->_fixLangCode($_config['target']),
-            // 'limit' => $_config['num_result'],
+            'limit' => $_config['num_result'],
             'aut_trans' => false,
             'concordance' => boolval($_config['isConcordance'] ?? false),
             'min_match' => self::MIN_MATCH_PERCENT,
